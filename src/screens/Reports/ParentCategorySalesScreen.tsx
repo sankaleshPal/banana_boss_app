@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo, useCallback } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { ReportsStackParamList } from '@/types/navigation';
@@ -15,21 +15,31 @@ export function ParentCategorySalesScreen() {
   const setDateRange = useAppStore((s) => s.setReportsDateRange);
   const { data, isLoading, isError, refetch } = useParentCategoryReport(outletId, dateRange.from, dateRange.to);
 
-  const columns = ['Parent Category', 'Count', 'Qty', 'Gross', 'Discount', 'Tax', 'Total'];
-  const rows = (data?.data || []).map((row: any) => [
-    row.parentCategory,
-    row.count,
-    row.quantity,
-    row.gross,
-    row.discount,
-    row.tax,
-    row.total,
-  ]);
+  const columns = useMemo(
+    () => ['Parent Category', 'Count', 'Qty', 'Gross', 'Discount', 'Tax', 'Total'],
+    [],
+  );
+
+  const rows = useMemo(
+    () =>
+      (data?.data ?? []).map((row: any) => [
+        row.parentCategory ?? row.category ?? '-',
+        row.count ?? 0,
+        row.quantity ?? 0,
+        row.gross ?? row.grossAmount ?? 0,
+        row.discount ?? 0,
+        row.tax ?? row.gst ?? 0,
+        row.total ?? 0,
+      ]),
+    [data],
+  );
+
+  const handleDateChange = useCallback((r: any) => setDateRange(r), [setDateRange]);
 
   return (
     <ScreenWrapper>
       <TopBar title="Parent Category Sales" showBack onBack={() => navigation.goBack()} />
-      <DateRangePicker value={dateRange} onChange={setDateRange} />
+      <DateRangePicker value={dateRange} onChange={handleDateChange} />
       <ReportTable columns={columns} rows={rows} isLoading={isLoading} isError={isError} onRetry={refetch} />
     </ScreenWrapper>
   );

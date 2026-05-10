@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { ReportsStackParamList } from '@/types/navigation';
@@ -14,13 +14,18 @@ export function OutstandingDuesScreen() {
   const { data, isLoading, isError, refetch } = useOutstandingDuesReport(outletId);
   const { format } = useCurrency();
 
-  const columns = ['Customer', 'Phone', 'Amount', 'Status'];
-  const rows = (data?.data || []).map((row: any) => [
-    row.customerName,
-    row.phone || '-',
-    format(row.amount || 0),
-    row.status,
-  ]);
+  const columns = useMemo(() => ['Customer', 'Phone', 'Amount', 'Status'], []);
+
+  const rows = useMemo(
+    () =>
+      (data?.data ?? []).map((row: any) => [
+        row.customerName ?? '-',
+        row.phone ?? '-',
+        format(row.amount ?? 0),
+        row.status ?? '-',
+      ]),
+    [data, format],
+  );
 
   return (
     <ScreenWrapper>

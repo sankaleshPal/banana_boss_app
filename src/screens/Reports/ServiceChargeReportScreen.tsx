@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { ReportsStackParamList } from '@/types/navigation';
@@ -16,19 +16,32 @@ export function ServiceChargeReportScreen() {
   const [page, setPage] = useState(1);
   const { data, isLoading, isError, refetch } = useServiceChargeReport(outletId, dateRange.from, dateRange.to, page);
 
-  const columns = ['Bill #', 'Service Charge', 'Container Charge', 'Delivery Charge', 'Total'];
-  const rows = (data?.data || []).map((row: any) => [
-    row.invoiceNumber,
-    row.serviceCharge,
-    row.containerCharge,
-    row.deliveryCharge,
-    row.total,
-  ]);
+  const columns = useMemo(
+    () => ['Bill #', 'Service Charge', 'Container Charge', 'Delivery Charge', 'Total'],
+    [],
+  );
+
+  const rows = useMemo(
+    () =>
+      (data?.data ?? []).map((row: any) => [
+        row.invoiceNumber ?? '-',
+        row.serviceCharge ?? 0,
+        row.containerCharge ?? 0,
+        row.deliveryCharge ?? 0,
+        row.total ?? 0,
+      ]),
+    [data],
+  );
+
+  const handleDateChange = useCallback(
+    (r: any) => { setDateRange(r); setPage(1); },
+    [setDateRange],
+  );
 
   return (
     <ScreenWrapper>
       <TopBar title="Service Charge Report" showBack onBack={() => navigation.goBack()} />
-      <DateRangePicker value={dateRange} onChange={(r) => { setDateRange(r); setPage(1); }} />
+      <DateRangePicker value={dateRange} onChange={handleDateChange} />
       <ReportTable columns={columns} rows={rows} isLoading={isLoading} isError={isError} onRetry={refetch} />
       {data?.pagination && <PaginationBar pagination={data.pagination} onPageChange={setPage} />}
     </ScreenWrapper>

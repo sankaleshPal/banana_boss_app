@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo, useCallback } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { ReportsStackParamList } from '@/types/navigation';
@@ -15,13 +15,24 @@ export function DiscountReportScreen() {
   const setDateRange = useAppStore((s) => s.setReportsDateRange);
   const { data, isLoading, isError, refetch } = useDiscountReport(outletId, dateRange.from, dateRange.to);
 
-  const columns = ['Discount Name', 'Count', 'Amount'];
-  const rows = (data?.data || []).map((row: any) => [row.discountName, row.count, row.amount]);
+  const columns = useMemo(() => ['Discount Name', 'Count', 'Amount'], []);
+
+  const rows = useMemo(
+    () =>
+      (data?.data ?? []).map((row: any) => [
+        row.discountName ?? '-',
+        row.count ?? 0,
+        row.amount ?? 0,
+      ]),
+    [data],
+  );
+
+  const handleDateChange = useCallback((r: any) => setDateRange(r), [setDateRange]);
 
   return (
     <ScreenWrapper>
       <TopBar title="Discount Report" showBack onBack={() => navigation.goBack()} />
-      <DateRangePicker value={dateRange} onChange={setDateRange} />
+      <DateRangePicker value={dateRange} onChange={handleDateChange} />
       <ReportTable columns={columns} rows={rows} isLoading={isLoading} isError={isError} onRetry={refetch} />
     </ScreenWrapper>
   );

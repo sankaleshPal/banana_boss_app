@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { ReportsStackParamList } from '@/types/navigation';
@@ -16,20 +16,30 @@ export function OpenItemSalesScreen() {
   const [page, setPage] = useState(1);
   const { data, isLoading, isError, refetch } = useOpenItemReport(outletId, dateRange.from, dateRange.to, page);
 
-  const columns = ['Item Name', 'Qty', 'Gross', 'Discount', 'Tax', 'Total'];
-  const rows = (data?.data || []).map((row: any) => [
-    row.itemName,
-    row.quantity,
-    row.gross,
-    row.discount,
-    row.tax,
-    row.total,
-  ]);
+  const columns = useMemo(() => ['Item Name', 'Qty', 'Gross', 'Discount', 'Tax', 'Total'], []);
+
+  const rows = useMemo(
+    () =>
+      (data?.data ?? []).map((row: any) => [
+        row.itemName ?? '-',
+        row.quantity ?? 0,
+        row.gross ?? row.grossAmount ?? 0,
+        row.discount ?? 0,
+        row.tax ?? row.gst ?? 0,
+        row.total ?? 0,
+      ]),
+    [data],
+  );
+
+  const handleDateChange = useCallback(
+    (r: any) => { setDateRange(r); setPage(1); },
+    [setDateRange],
+  );
 
   return (
     <ScreenWrapper>
       <TopBar title="Open Item Sales" showBack onBack={() => navigation.goBack()} />
-      <DateRangePicker value={dateRange} onChange={(r) => { setDateRange(r); setPage(1); }} />
+      <DateRangePicker value={dateRange} onChange={handleDateChange} />
       <ReportTable columns={columns} rows={rows} isLoading={isLoading} isError={isError} onRetry={refetch} />
       {data?.pagination && <PaginationBar pagination={data.pagination} onPageChange={setPage} />}
     </ScreenWrapper>
