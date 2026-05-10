@@ -1,0 +1,38 @@
+import React, { useState } from 'react';
+import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import type { ReportsStackParamList } from '@/types/navigation';
+import { useOutlet } from '@/hooks/useOutlet';
+import { useAppStore } from '@/stores/appStore';
+import { useItemReport } from '@/queries/reports';
+import { ScreenWrapper, TopBar } from '@/components/layout';
+import { DateRangePicker, ReportTable, PaginationBar } from '@/components/shared';
+
+export function ItemSalesReportScreen() {
+  const navigation = useNavigation<NativeStackNavigationProp<ReportsStackParamList>>();
+  const { outletId } = useOutlet();
+  const dateRange = useAppStore((s) => s.reportsDateRange);
+  const setDateRange = useAppStore((s) => s.setReportsDateRange);
+  const [page, setPage] = useState(1);
+  const { data, isLoading, isError, refetch } = useItemReport(outletId, dateRange.from, dateRange.to, page);
+
+  const columns = ['Item Name', 'Qty', 'Gross', 'Discount', 'Tax', 'Total', 'Contribution%'];
+  const rows = (data?.data || []).map((row: any) => [
+    row.itemName,
+    row.quantity,
+    row.grossAmount,
+    row.discount,
+    row.tax,
+    row.totalSales,
+    row.contributionPercent,
+  ]);
+
+  return (
+    <ScreenWrapper>
+      <TopBar title="Item Sales Report" showBack onBack={() => navigation.goBack()} />
+      <DateRangePicker value={dateRange} onChange={(r) => { setDateRange(r); setPage(1); }} />
+      <ReportTable columns={columns} rows={rows} isLoading={isLoading} isError={isError} onRetry={refetch} />
+      {data?.pagination && <PaginationBar pagination={data.pagination} onPageChange={setPage} />}
+    </ScreenWrapper>
+  );
+}

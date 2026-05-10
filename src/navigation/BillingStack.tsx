@@ -1,0 +1,26 @@
+import React from 'react';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import type { BillingStackParamList } from '@/types/navigation';
+import { BillingOverviewScreen } from '@/screens/Billing/BillingOverviewScreen';
+import { SalesDashboardScreen } from '@/screens/Billing/SalesDashboardScreen';
+import { BillsListScreen } from '@/screens/Billing/BillsListScreen';
+import { BillDetailScreen } from '@/screens/Billing/BillDetailScreen';
+import { PaymentModesScreen } from '@/screens/Billing/PaymentModesScreen';
+import { DuesScreen } from '@/screens/Billing/DuesScreen';
+import { NpcScreen } from '@/screens/Billing/NpcScreen';
+
+const Stack = createNativeStackNavigator<BillingStackParamList>();
+
+export function BillingStack() {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen name="BillingOverview" component={BillingOverviewScreen} options={{ title: 'Billing' }} />
+      <Stack.Screen name="SalesDashboard" component={SalesDashboardScreen} options={{ title: 'Sales Dashboard' }} />
+      <Stack.Screen name="BillsList" component={BillsListScreen} options={{ title: 'Bills' }} />
+      <Stack.Screen name="BillDetail" component={BillDetailScreen} options={{ title: 'Bill Detail' }} />
+      <Stack.Screen name="PaymentModes" component={PaymentModesScreen} options={{ title: 'Payment Modes' }} />
+      <Stack.Screen name="Dues" component={DuesScreen} options={{ title: 'Dues' }} />
+      <Stack.Screen name="Npc" component={NpcScreen} options={{ title: 'NPC' }} />
+    </Stack.Navigator>
+  );
+}
