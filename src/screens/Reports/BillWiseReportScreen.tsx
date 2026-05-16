@@ -23,18 +23,22 @@ export function BillWiseReportScreen() {
 
   const rows = useMemo(
     () =>
-      (data?.data ?? []).map((row: any) => [
-        row.invoiceNumber ?? '-',
-        row.createdAt ? new Date(row.createdAt).toLocaleDateString() : '-',
-        row.userName ?? row.customerName ?? '-',
-        row.tableName ?? '-',
-        row.waiterName ?? '-',
-        row.paymentMethod ?? '-',
-        row.subtotal ?? 0,
-        row.discount ?? 0,
-        row.tax ?? row.gst ?? 0,
-        row.total ?? row.payable ?? 0,
-      ]),
+      (data?.data ?? []).map((row: any) => {
+        // Backend shape: { bill: { invoiceNumber, payable, paymentMethod, subtotal, discountTotal, totalTax, createdAt }, userName, tableName, waiterName }
+        const bill = row.bill ?? row;
+        return [
+          bill.invoiceNumber ?? '-',
+          bill.createdAt ? new Date(bill.createdAt).toLocaleDateString() : '-',
+          row.userName ?? bill.customerName ?? '-',
+          row.tableName ?? '-',
+          row.waiterName ?? '-',
+          bill.paymentMethod ?? '-',
+          bill.subtotal ?? 0,
+          bill.discountTotal ?? bill.discount ?? 0,
+          bill.totalTax ?? bill.tax ?? 0,
+          bill.payable ?? bill.total ?? 0,
+        ];
+      }),
     [data],
   );
 

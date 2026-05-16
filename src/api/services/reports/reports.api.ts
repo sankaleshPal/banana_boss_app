@@ -24,62 +24,128 @@ export interface ReportResponse<T = any> {
   totals?: Record<string, number | string>;
 }
 
+// The backend wraps every response as:
+//   ApiResponse.data = [{ outletId, outletname, from, to, <namedField>: [...] }]
+// After apiClient strips the outer envelope we get that array.
+// Each helper below extracts the correct named field into { data: [] }.
+function extractField<T>(raw: any[], field: string): ReportResponse<T> {
+  const first = Array.isArray(raw) ? (raw[0] ?? {}) : raw ?? {};
+  const arr = first[field];
+  return {
+    data: Array.isArray(arr) ? arr : arr != null ? [arr] : [],
+    pagination: first.pagination,
+    totals: first.totals,
+  };
+}
+
 export const reportsApi = {
-  getNetSalesSummary(outletId: string, from: number, to: number): Promise<ReportResponse> {
+  // Net-sales returns a nested object — consumed as a raw array by NetSalesSummaryScreen
+  getNetSalesSummary(outletId: string, from: number, to: number): Promise<any[]> {
     return apiClient.get(`/r/reports/sales/net-summary?${reportQuery(outletId, from, to)}`);
   },
-  getBillWiseFlat(outletId: string, from: number, to: number, opts?: { page?: number; limit?: number }): Promise<ReportResponse> {
-    return apiClient.get(`/r/reports/sales/bill-wise?${reportQuery(outletId, from, to, opts?.page, opts?.limit)}`);
+
+  // bills: [{ bill: { invoiceNumber, payable, paymentMethod, ... }, userName, tableName, waiterName }]
+  async getBillWiseFlat(outletId: string, from: number, to: number, opts?: { page?: number; limit?: number }): Promise<ReportResponse> {
+    const raw = await apiClient.get<any[]>(`/r/reports/sales/bill-wise?${reportQuery(outletId, from, to, opts?.page, opts?.limit)}`);
+    return extractField(raw, 'bills');
   },
-  getItemSales(outletId: string, from: number, to: number, opts?: { page?: number; limit?: number }): Promise<ReportResponse> {
-    return apiClient.get(`/r/reports/item?${reportQuery(outletId, from, to, opts?.page, opts?.limit)}`);
+
+  // items: [{ itemName, quantity, discountAmount, gross, tax, total, ... }]
+  async getItemSales(outletId: string, from: number, to: number, opts?: { page?: number; limit?: number }): Promise<ReportResponse> {
+    const raw = await apiClient.get<any[]>(`/r/reports/item?${reportQuery(outletId, from, to, opts?.page, opts?.limit)}`);
+    return extractField(raw, 'items');
   },
-  getOpenItemSales(outletId: string, from: number, to: number, opts?: { page?: number; limit?: number }): Promise<ReportResponse> {
-    return apiClient.get(`/r/reports/open-item?${reportQuery(outletId, from, to, opts?.page, opts?.limit)}`);
+
+  // openItems: [{ itemName, quantity, gross, discount, tax, total }]
+  async getOpenItemSales(outletId: string, from: number, to: number, opts?: { page?: number; limit?: number }): Promise<ReportResponse> {
+    const raw = await apiClient.get<any[]>(`/r/reports/open-item?${reportQuery(outletId, from, to, opts?.page, opts?.limit)}`);
+    return extractField(raw, 'openItems');
   },
-  getCategorySales(outletId: string, from: number, to: number): Promise<ReportResponse> {
-    return apiClient.get(`/r/reports/category?${reportQuery(outletId, from, to)}`);
+
+  // categories: [{ category, count, quantity, gross, discount, tax, total, contributionPercent }]
+  async getCategorySales(outletId: string, from: number, to: number): Promise<ReportResponse> {
+    const raw = await apiClient.get<any[]>(`/r/reports/category?${reportQuery(outletId, from, to)}`);
+    return extractField(raw, 'categories');
   },
-  getParentCategorySales(outletId: string, from: number, to: number): Promise<ReportResponse> {
-    return apiClient.get(`/r/reports/parent-category?${reportQuery(outletId, from, to)}`);
+
+  // parentCategories: [{ parentCategory, count, quantity, gross, discount, tax, total }]
+  async getParentCategorySales(outletId: string, from: number, to: number): Promise<ReportResponse> {
+    const raw = await apiClient.get<any[]>(`/r/reports/parent-category?${reportQuery(outletId, from, to)}`);
+    return extractField(raw, 'parentCategories');
   },
-  getDiscountReport(outletId: string, from: number, to: number): Promise<ReportResponse> {
-    return apiClient.get(`/r/reports/discount?${reportQuery(outletId, from, to)}`);
+
+  // discounts: [{ discountName, count, amount }]
+  async getDiscountReport(outletId: string, from: number, to: number): Promise<ReportResponse> {
+    const raw = await apiClient.get<any[]>(`/r/reports/discount?${reportQuery(outletId, from, to)}`);
+    return extractField(raw, 'discounts');
   },
-  getServiceChargeReport(outletId: string, from: number, to: number, opts?: { page?: number; limit?: number }): Promise<ReportResponse> {
-    return apiClient.get(`/r/reports/service-charge?${reportQuery(outletId, from, to, opts?.page, opts?.limit)}`);
+
+  // serviceCharge: [{ invoiceNumber, serviceCharge, containerCharge, deliveryCharge, total }]
+  async getServiceChargeReport(outletId: string, from: number, to: number, opts?: { page?: number; limit?: number }): Promise<ReportResponse> {
+    const raw = await apiClient.get<any[]>(`/r/reports/service-charge?${reportQuery(outletId, from, to, opts?.page, opts?.limit)}`);
+    return extractField(raw, 'serviceCharge');
   },
-  getAddonWiseSales(outletId: string, from: number, to: number): Promise<ReportResponse> {
-    return apiClient.get(`/r/reports/addon?${reportQuery(outletId, from, to)}`);
+
+  // addons: [{ addonName, quantity, amount, totalSales }]
+  async getAddonWiseSales(outletId: string, from: number, to: number): Promise<ReportResponse> {
+    const raw = await apiClient.get<any[]>(`/r/reports/addon?${reportQuery(outletId, from, to)}`);
+    return extractField(raw, 'addons');
   },
-  getDeletedKotSummary(outletId: string, from: number, to: number, opts?: { page?: number; limit?: number }): Promise<ReportResponse> {
-    return apiClient.get(`/r/reports/deleted-kot?${reportQuery(outletId, from, to, opts?.page, opts?.limit)}`);
+
+  // rows: [{ kotId, itemName, quantity, amount, reason, createdAt }]
+  async getDeletedKotSummary(outletId: string, from: number, to: number, opts?: { page?: number; limit?: number }): Promise<ReportResponse> {
+    const raw = await apiClient.get<any[]>(`/r/reports/deleted-kot?${reportQuery(outletId, from, to, opts?.page, opts?.limit)}`);
+    return extractField(raw, 'rows');
   },
-  getTransferKotSummary(outletId: string, from: number, to: number, opts?: { page?: number; limit?: number }): Promise<ReportResponse> {
-    return apiClient.get(`/r/reports/transfer-kot?${reportQuery(outletId, from, to, opts?.page, opts?.limit)}`);
+
+  // transfers: [{ kotId, fromTable, toTable, itemNames, createdAt }]
+  async getTransferKotSummary(outletId: string, from: number, to: number, opts?: { page?: number; limit?: number }): Promise<ReportResponse> {
+    const raw = await apiClient.get<any[]>(`/r/reports/transfer-kot?${reportQuery(outletId, from, to, opts?.page, opts?.limit)}`);
+    return extractField(raw, 'transfers');
   },
-  getTransferTableSummary(outletId: string, from: number, to: number, opts?: { page?: number; limit?: number }): Promise<ReportResponse> {
-    return apiClient.get(`/r/reports/transfer-table?${reportQuery(outletId, from, to, opts?.page, opts?.limit)}`);
+
+  // transfers: [{ fromTable, toTable, itemNames, createdAt }]
+  async getTransferTableSummary(outletId: string, from: number, to: number, opts?: { page?: number; limit?: number }): Promise<ReportResponse> {
+    const raw = await apiClient.get<any[]>(`/r/reports/transfer-table?${reportQuery(outletId, from, to, opts?.page, opts?.limit)}`);
+    return extractField(raw, 'transfers');
   },
-  getTableWiseSales(outletId: string, from: number, to: number): Promise<ReportResponse> {
-    return apiClient.get(`/r/reports/table?${reportQuery(outletId, from, to)}`);
+
+  // tables: [{ tableName, billCount, quantity, gross, tax, total }]
+  async getTableWiseSales(outletId: string, from: number, to: number): Promise<ReportResponse> {
+    const raw = await apiClient.get<any[]>(`/r/reports/table?${reportQuery(outletId, from, to)}`);
+    return extractField(raw, 'tables');
   },
-  getExtraChargeReport(outletId: string, from: number, to: number): Promise<ReportResponse> {
-    return apiClient.get(`/r/reports/charge?${reportQuery(outletId, from, to)}`);
+
+  // charges: full charge object — wrapped in array for consistency
+  async getExtraChargeReport(outletId: string, from: number, to: number): Promise<ReportResponse> {
+    const raw = await apiClient.get<any[]>(`/r/reports/charge?${reportQuery(outletId, from, to)}`);
+    return extractField(raw, 'charges');
   },
-  getItemTypeSales(outletId: string, from: number, to: number): Promise<ReportResponse> {
-    return apiClient.get(`/r/reports/item-type?${reportQuery(outletId, from, to)}`);
+
+  // itemTypes: [{ itemType, quantity, gross, tax, total }]
+  async getItemTypeSales(outletId: string, from: number, to: number): Promise<ReportResponse> {
+    const raw = await apiClient.get<any[]>(`/r/reports/item-type?${reportQuery(outletId, from, to)}`);
+    return extractField(raw, 'itemTypes');
   },
-  getItemVariantSales(outletId: string, from: number, to: number): Promise<ReportResponse> {
-    return apiClient.get(`/r/reports/item-variant?${reportQuery(outletId, from, to)}`);
+
+  // itemVariants: [{ itemName, variantName, addonNames, quantity, gross, tax, total }]
+  async getItemVariantSales(outletId: string, from: number, to: number): Promise<ReportResponse> {
+    const raw = await apiClient.get<any[]>(`/r/reports/item-variant?${reportQuery(outletId, from, to)}`);
+    return extractField(raw, 'itemVariants');
   },
-  getAreaReport(outletId: string, from: number, to: number): Promise<ReportResponse> {
-    return apiClient.get(`/r/reports/area/summary?${reportQuery(outletId, from, to)}`);
+
+  // NOTE: Area report routes do not exist on the backend yet — return empty until implemented
+  getAreaReport(_outletId: string, _from: number, _to: number): Promise<ReportResponse> {
+    return Promise.resolve({ data: [] });
   },
-  getAreaItemSaleReport(outletId: string, from: number, to: number): Promise<ReportResponse> {
-    return apiClient.get(`/r/reports/area/item-sales?${reportQuery(outletId, from, to)}`);
+
+  getAreaItemSaleReport(_outletId: string, _from: number, _to: number): Promise<ReportResponse> {
+    return Promise.resolve({ data: [] });
   },
-  getOutstandingDues(outletId: string): Promise<ReportResponse> {
-    return apiClient.get(`/r/reports/dues/outstanding?outletId=${outletId}`);
+
+  // outstandingDues: [{ customerName, phone, amount, status }]
+  async getOutstandingDues(outletId: string): Promise<ReportResponse> {
+    const raw = await apiClient.get<any[]>(`/r/reports/dues/outstanding?outletId=${outletId}`);
+    return extractField(raw, 'outstandingDues');
   },
 };
