@@ -79,7 +79,7 @@ export function BillsListScreen() {
   return (
     <ScreenWrapper>
       <TopBar title="Bills" showBack onBack={() => navigation.goBack()} />
-      <DateRangePicker value={dateRange} onChange={(r) => { setDateRange(r); setPage(1); }} />
+      <DateRangePicker value={dateRange} onChange={(r) => { setDateRange(r); setPage(1); }} outletId={outletId} />
       <SearchBar value={search} onChange={setSearch} placeholder="Search invoice, customer, table..." />
 
       {isLoading && <LoadingSkeleton type="bill-row" count={6} />}

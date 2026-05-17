@@ -12,7 +12,10 @@ export function useAuth() {
   const setOutlets = useAuthStore((s) => s.setOutlets);
   const setRememberedPhone = useAuthStore((s) => s.setRememberedPhone);
   const clearAuth = useAuthStore((s) => s.clearAuth);
-  const isAuthenticated = useAuthStore((s) => s.isAuthenticated());
+  // Derive directly from staff so zustand re-renders when staff changes to null.
+  // Calling a method selector (s.isAuthenticated()) can miss updates because
+  // the function reference stays stable even when the underlying data changes.
+  const isAuthenticated = Array.isArray(staff) && staff.length > 0;
 
   const login = useCallback(
     async (phone: string, password: string, remember = false) => {

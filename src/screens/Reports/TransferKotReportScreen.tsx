@@ -38,7 +38,7 @@ export function TransferKotReportScreen() {
   return (
     <ScreenWrapper>
       <TopBar title="Transfer KOT Report" showBack onBack={() => navigation.goBack()} />
-      <DateRangePicker value={dateRange} onChange={handleDateChange} />
+      <DateRangePicker value={dateRange} onChange={handleDateChange} outletId={outletId} />
       <ReportTable columns={columns} rows={rows} isLoading={isLoading} isError={isError} onRetry={refetch} />
       {data?.pagination && <PaginationBar pagination={data.pagination} onPageChange={setPage} />}
     </ScreenWrapper>

@@ -43,7 +43,7 @@ export function ItemSalesReportScreen() {
   return (
     <ScreenWrapper>
       <TopBar title="Item Sales Report" showBack onBack={() => navigation.goBack()} />
-      <DateRangePicker value={dateRange} onChange={handleDateChange} />
+      <DateRangePicker value={dateRange} onChange={handleDateChange} outletId={outletId} />
       <ReportTable
         columns={columns}
         rows={rows}

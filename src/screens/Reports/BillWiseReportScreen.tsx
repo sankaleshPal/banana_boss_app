@@ -58,7 +58,7 @@ export function BillWiseReportScreen() {
   return (
     <ScreenWrapper>
       <TopBar title="Bill-wise Report" showBack onBack={() => navigation.goBack()} />
-      <DateRangePicker value={dateRange} onChange={handleDateChange} />
+      <DateRangePicker value={dateRange} onChange={handleDateChange} outletId={outletId} />
       <ReportTable
         columns={columns}
         rows={rows}

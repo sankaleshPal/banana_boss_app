@@ -73,7 +73,7 @@ export function NetSalesSummaryScreen() {
   return (
     <ScreenWrapper scrollable refreshControl onRefresh={handleRefresh}>
       <TopBar title="Net Sales Summary" showBack onBack={() => navigation.goBack()} />
-      <DateRangePicker value={dateRange} onChange={(r) => { setDateRange(r); }} />
+      <DateRangePicker value={dateRange} onChange={(r) => { setDateRange(r); }} outletId={outletId} />
 
       {isLoading && <LoadingSkeleton type="metric-card" count={6} />}
       {isError && !isLoading && <ErrorState onRetry={handleRefresh} />}

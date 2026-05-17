@@ -9,3 +9,14 @@ export function useOutletsQuery(enabled = true) {
     enabled,
   });
 }
+
+/** Fetch a single outlet's details (including billingStartTime / billingEndTime). */
+export function useOutletDetails(outletId: string | null) {
+  return useQuery({
+    queryKey: ['outlet-details', outletId],
+    queryFn: () => outletApi.get(outletId!),
+    enabled: !!outletId,
+    staleTime: 1000 * 60 * 5, // 5 min
+  });
+}
+

@@ -53,3 +53,45 @@ export function formatDateTime(ts: number): string {
     minute: '2-digit',
   });
 }
+
+// ── Billing-timing helpers (ported from banana_boss reportDateRange.ts) ──────
+
+/**
+ * Apply a billing start/end time (minutes-from-midnight) to a calendar Date.
+ * Handles the legacy case where a full timestamp was stored instead of minutes:
+ * any value > 1440 is treated as a timestamp and hours/minutes are extracted.
+ */
+export function applyBillingTime(date: Date, rawValue: number): Date {
+  const d = new Date(date);
+  d.setHours(0, 0, 0, 0);
+  let minutes = typeof rawValue === 'number' ? rawValue : 0;
+  if (minutes > 1440) {
+    const tmp = new Date(minutes);
+    minutes = tmp.getHours() * 60 + tmp.getMinutes();
+  }
+  const h = Math.floor(minutes / 60);
+  const m = minutes % 60;
+  d.setHours(h, m, 0, 0);
+  return d;
+}
+
+/**
+ * Convert a calendar date-range into the correct billing window.
+ * Mirrors banana_boss getBusinessDayRange exactly:
+ *  - from = billingStartTime on the first selected day
+ *  - to   = billingEndTime on (last day + 1), minus 1 ms
+ * When both times are 0, produces a standard midnight-to-midnight range.
+ */
+export function getBusinessDayRange(
+  from: Date,
+  to: Date,
+  startTime: number,
+  endTime: number,
+): { from: Date; to: Date } {
+  const fromDate = applyBillingTime(from, startTime);
+  const nextDay = new Date(to);
+  nextDay.setDate(nextDay.getDate() + 1);
+  const rawToDate = applyBillingTime(nextDay, endTime);
+  const toDate = new Date(rawToDate.getTime() - 1);
+  return { from: fromDate, to: toDate };
+}

@@ -7,8 +7,10 @@ import { AppTabs } from './AppTabs';
 export function RootNavigator() {
   const { isAuthenticated } = useAuth();
 
+  // key forces NavigationContainer (and its child navigators) to fully remount
+  // when auth state flips — guarantees stale navigation state is cleared on logout.
   return (
-    <NavigationContainer>
+    <NavigationContainer key={isAuthenticated ? 'auth' : 'guest'}>
       {isAuthenticated ? <AppTabs /> : <AuthStack />}
     </NavigationContainer>
   );

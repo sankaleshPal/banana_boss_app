@@ -48,7 +48,7 @@ export function ReportsOverviewScreen() {
         <Text style={{ fontSize: 12, color: '#9CA3AF', marginTop: 2 }}>{currentOutlet?.name}</Text>
       </View>
 
-      <DateRangePicker value={reportsDateRange} onChange={setReportsDateRange} />
+      <DateRangePicker value={reportsDateRange} onChange={setReportsDateRange} outletId={currentOutlet?._id ?? null} />
 
       {reportGroups.map((group) => (
         <View key={group.title} style={{ marginTop: 20 }}>
