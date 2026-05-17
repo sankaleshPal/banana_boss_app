@@ -27,7 +27,7 @@ export function useBillsListQuery(
 ) {
   return useQuery({
     queryKey: queryKeys.bills.list(outletId, from, to, page, limit, filters ?? {}),
-    queryFn: () => billsApi.getBills(outletId!, from, to, page, limit, filters),
+    queryFn: () => billsApi.getList(outletId!, from, to, page, limit, filters),
     enabled: !!outletId && !!from && !!to && (enabled !== false),
   });
 }
@@ -35,7 +35,7 @@ export function useBillsListQuery(
 export function useBillByIdQuery(billId: string | null) {
   return useQuery({
     queryKey: queryKeys.bills.byId(billId),
-    queryFn: () => billsApi.getBillById(billId!),
+    queryFn: () => billsApi.getDetail(billId!),
     enabled: !!billId,
   });
 }

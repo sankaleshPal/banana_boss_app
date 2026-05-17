@@ -21,12 +21,11 @@ export function SalesDashboardScreen() {
   const { format } = useCurrency();
   const handleRefresh = useCallback(() => { refetch(); }, [refetch]);
 
-  // ── Destructure using the exact same paths as banana_boss UnifiedSalesDashboard ──
+  // Destructure exactly as banana_boss UnifiedSalesDashboard does
   const paidAll         = (data as any)?.paidAll         ?? { totals: {}, paymentModes: {}, roundOff: {} };
   const paidNormal      = (data as any)?.paidNormal      ?? { totals: {} };
   const duesSettlements = (data as any)?.duesSettlements ?? { totals: {} };
   const discountSummary = (data as any)?.discountSummary ?? { onPaid: {}, onDues: {} };
-  const rewardsSummary  = (data as any)?.rewardsSummary  ?? { all: {}, onPaid: {}, onDues: {} };
   const duesSummary     = (data as any)?.duesSummary     ?? { duesGiven: 0, duesOutstanding: 0, ordersPending: 0, duesGetBack: 0 };
   const taxesSummary    = (data as any)?.taxesSummary    ?? { all: {}, onPaid: {} };
   const runningTables   = (data as any)?.runningTables   ?? { tables: [], totalActiveTableValue: 0 };
@@ -36,10 +35,7 @@ export function SalesDashboardScreen() {
     (duesSummary?.duesOutstanding || 0) > 0 ||
     (duesSummary?.ordersPending || 0) > 0;
 
-  // paidAll.paymentModes is Record<string, number>
   const paymentModeEntries = Object.entries(paidAll?.paymentModes ?? {}) as [string, number][];
-
-  // runningTables.tables is [{ name, amount }]
   const tables = (runningTables?.tables ?? []) as { name: string; amount: number }[];
 
   return (
@@ -52,7 +48,7 @@ export function SalesDashboardScreen() {
 
       {data && !isLoading && (
         <>
-          {/* ── Revenue Overview ─────────────────────────────────────────── */}
+          {/* Revenue Overview */}
           <MotiView
             from={{ opacity: 0, translateY: 16 }}
             animate={{ opacity: 1, translateY: 0 }}
@@ -62,9 +58,9 @@ export function SalesDashboardScreen() {
             <ScrollView horizontal showsHorizontalScrollIndicator={false}>
               <View style={{ flexDirection: 'row', gap: 10 }}>
                 {[
-                  { title: 'Net Sales',      value: format(paidAll?.totals?.netAfterDiscountAndCharges || 0), icon: 'trending-up',   tone: 'success' as const, delay: 0 },
-                  { title: 'Orders',         value: String(paidAll?.totals?.ordersCount || 0),               icon: 'shopping-bag',   tone: 'default' as const, delay: 60 },
-                  { title: 'Guests',         value: String(paidAll?.totals?.paxCount || 0),                  icon: 'users',          tone: 'default' as const, delay: 120 },
+                  { title: 'Net Sales',      value: format(paidAll?.totals?.netAfterDiscountAndCharges || 0), icon: 'trending-up',  tone: 'success'  as const, delay: 0 },
+                  { title: 'Orders',         value: String(paidAll?.totals?.ordersCount || 0),               icon: 'shopping-bag', tone: 'default'  as const, delay: 60 },
+                  { title: 'Guests',         value: String(paidAll?.totals?.paxCount || 0),                  icon: 'users',        tone: 'default'  as const, delay: 120 },
                   { title: 'Normal Sales',   value: format(paidNormal?.totals?.netAfterDiscountAndCharges || 0), icon: 'check-circle', tone: 'default' as const, delay: 180 },
                   { title: 'Dues Recovered', value: format(duesSettlements?.totals?.netAfterDiscountAndCharges || 0), icon: 'refresh-cw', tone: 'default' as const, delay: 240 },
                 ].map((card) => (
@@ -81,7 +77,7 @@ export function SalesDashboardScreen() {
             </ScrollView>
           </MotiView>
 
-          {/* ── Payment Modes ─────────────────────────────────────────────── */}
+          {/* Payment Modes */}
           {paymentModeEntries.length > 0 && (
             <MotiView
               from={{ opacity: 0, translateY: 12 }}
@@ -109,7 +105,7 @@ export function SalesDashboardScreen() {
             </MotiView>
           )}
 
-          {/* ── Discounts & Taxes ─────────────────────────────────────────── */}
+          {/* Discounts & Taxes */}
           <MotiView
             from={{ opacity: 0, translateY: 12 }}
             animate={{ opacity: 1, translateY: 0 }}
@@ -119,17 +115,16 @@ export function SalesDashboardScreen() {
             <ScrollView horizontal showsHorizontalScrollIndicator={false}>
               <View style={{ flexDirection: 'row', gap: 10 }}>
                 {[
-                  { title: 'Discount',      value: format(discountSummary?.onPaid?.total || 0),           icon: 'percent',   tone: 'danger' as const, delay: 0 },
-                  { title: 'GST',           value: format(taxesSummary?.onPaid?.tax || 0),                icon: 'file-text', tone: 'default' as const, delay: 70 },
-                  { title: 'Service Chg',   value: format(taxesSummary?.onPaid?.serviceCharge || 0),      icon: 'briefcase', tone: 'default' as const, delay: 140 },
-                  { title: 'Tips',          value: format(taxesSummary?.onPaid?.tip || 0),                icon: 'smile',     tone: 'default' as const, delay: 210 },
-                  { title: 'Rewards Given', value: `${rewardsSummary?.all?.coinsGiven || 0} pts`,         icon: 'gift',      tone: 'default' as const, delay: 280 },
-                ].map((card) => (
+                  { title: 'Discount',    value: format(discountSummary?.onPaid?.total || 0),           icon: 'percent',   tone: 'danger'  as const },
+                  { title: 'GST',         value: format(taxesSummary?.onPaid?.tax || 0),                icon: 'file-text', tone: 'default' as const },
+                  { title: 'Service Chg', value: format(taxesSummary?.onPaid?.serviceCharge || 0),      icon: 'briefcase', tone: 'default' as const },
+                  { title: 'Tips',        value: format(taxesSummary?.onPaid?.tip || 0),                icon: 'smile',     tone: 'default' as const },
+                ].map((card, i) => (
                   <MotiView
                     key={card.title}
                     from={{ opacity: 0, scale: 0.92 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    transition={{ type: 'timing', duration: 400, delay: 400 + card.delay }}
+                    transition={{ type: 'timing', duration: 350, delay: 400 + i * 60 }}
                   >
                     <MetricCard title={card.title} value={card.value} icon={card.icon} tone={card.tone} />
                   </MotiView>
@@ -138,31 +133,37 @@ export function SalesDashboardScreen() {
             </ScrollView>
           </MotiView>
 
-          {/* ── Dues Position (conditional) ───────────────────────────────── */}
+          {/* Dues Position */}
           {hasDues && (
             <MotiView
               from={{ opacity: 0, translateY: 12 }}
               animate={{ opacity: 1, translateY: 0 }}
-              transition={{ type: 'timing', duration: 400, delay: 520 }}
+              transition={{ type: 'timing', duration: 400, delay: 500 }}
             >
-              <Text style={s.sectionLabel}>Dues &amp; Credits</Text>
-              <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
-                {[
-                  { label: 'Outstanding',   value: format(duesSummary?.duesOutstanding || 0) },
-                  { label: 'Given (New)',    value: format(duesSummary?.duesGiven || 0) },
-                  { label: 'Recovered',     value: format(duesSummary?.duesGetBack || 0) },
-                  { label: 'Pending Orders',value: String(duesSummary?.ordersPending || 0) },
-                ].map(({ label, value }) => (
-                  <View key={label} style={s.duesChip}>
-                    <Text style={s.duesChipLabel}>{label}</Text>
-                    <Text style={s.duesChipValue}>{value}</Text>
-                  </View>
-                ))}
-              </View>
+              <Text style={s.sectionLabel}>Dues Position</Text>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                <View style={{ flexDirection: 'row', gap: 10 }}>
+                  {[
+                    { title: 'Dues Given',      value: format(duesSummary?.duesGiven || 0),       icon: 'arrow-up-circle',   tone: 'danger'  as const },
+                    { title: 'Outstanding',     value: format(duesSummary?.duesOutstanding || 0), icon: 'alert-circle',      tone: 'danger'  as const },
+                    { title: 'Pending Orders',  value: String(duesSummary?.ordersPending || 0),   icon: 'clock',             tone: 'default' as const },
+                    { title: 'Get Back',        value: format(duesSummary?.duesGetBack || 0),     icon: 'arrow-down-circle', tone: 'success' as const },
+                  ].map((card, i) => (
+                    <MotiView
+                      key={card.title}
+                      from={{ opacity: 0, scale: 0.92 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ type: 'timing', duration: 350, delay: 500 + i * 60 }}
+                    >
+                      <MetricCard title={card.title} value={card.value} icon={card.icon} tone={card.tone} />
+                    </MotiView>
+                  ))}
+                </View>
+              </ScrollView>
             </MotiView>
           )}
 
-          {/* ── Running Tables ────────────────────────────────────────────── */}
+          {/* Running Tables */}
           {tables.length > 0 && (
             <MotiView
               from={{ opacity: 0, translateY: 12 }}
@@ -170,61 +171,85 @@ export function SalesDashboardScreen() {
               transition={{ type: 'timing', duration: 400, delay: 600 }}
             >
               <Text style={s.sectionLabel}>
-                Active Tables ({tables.length}) — Total: {format(runningTables?.totalActiveTableValue || 0)}
+                Running Tables ({tables.length}) — {format(runningTables?.totalActiveTableValue || 0)}
               </Text>
-              {tables.map((table, i) => (
-                <MotiView
-                  key={table.name || String(i)}
-                  from={{ opacity: 0, translateX: -10 }}
-                  animate={{ opacity: 1, translateX: 0 }}
-                  transition={{ type: 'timing', duration: 300, delay: 600 + i * 50 }}
-                >
-                  <View style={s.tableRow}>
-                    <Text style={s.tableRowName}>{table.name || `Table ${i + 1}`}</Text>
-                    <Text style={s.tableRowAmount}>{format(table.amount || 0)}</Text>
-                  </View>
-                </MotiView>
-              ))}
+              <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                <View style={{ flexDirection: 'row', gap: 8 }}>
+                  {tables.map((t, i) => (
+                    <MotiView
+                      key={`${t.name}-${i}`}
+                      from={{ opacity: 0, translateX: 12 }}
+                      animate={{ opacity: 1, translateX: 0 }}
+                      transition={{ type: 'timing', duration: 350, delay: 600 + i * 50 }}
+                    >
+                      <View style={s.tableChip}>
+                        <Text style={s.tableChipName}>{t.name}</Text>
+                        <Text style={s.tableChipValue}>{format(t.amount)}</Text>
+                      </View>
+                    </MotiView>
+                  ))}
+                </View>
+              </ScrollView>
             </MotiView>
           )}
         </>
       )}
-
-      <View style={{ height: 32 }} />
     </ScreenWrapper>
   );
 }
 
 const s = {
   sectionLabel: {
-    fontSize: 11, fontWeight: '800' as const, color: '#9CA3AF',
-    letterSpacing: 1, textTransform: 'uppercase' as const,
-    marginTop: 24, marginBottom: 12,
+    fontSize: 11,
+    fontWeight: '800' as const,
+    color: '#9CA3AF',
+    letterSpacing: 1,
+    textTransform: 'uppercase' as const,
+    marginTop: 20,
+    marginBottom: 10,
   },
   modeChip: {
-    backgroundColor: '#F3F4F6', borderRadius: 12,
-    paddingHorizontal: 16, paddingVertical: 12, minWidth: 120,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    alignItems: 'center' as const,
+    minWidth: 100,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 3,
+    elevation: 1,
   },
   modeChipLabel: {
-    fontSize: 10, fontWeight: '800' as const, color: '#9CA3AF',
-    textTransform: 'uppercase' as const, letterSpacing: 0.8, marginBottom: 4,
+    fontSize: 11,
+    color: '#6B7280',
+    fontWeight: '600' as const,
+    textTransform: 'capitalize' as const,
+    marginBottom: 4,
   },
-  modeChipValue: { fontSize: 18, fontWeight: '900' as const, color: '#111827' },
-  duesChip: {
-    backgroundColor: '#FEF2F2', borderRadius: 10,
-    paddingHorizontal: 14, paddingVertical: 10, minWidth: '47%' as any,
-    borderWidth: 1, borderColor: 'rgba(239,68,68,0.15)',
+  modeChipValue: {
+    fontSize: 16,
+    fontWeight: '800' as const,
+    color: '#111827',
   },
-  duesChipLabel: {
-    fontSize: 10, fontWeight: '700' as const, color: '#EF4444',
-    textTransform: 'uppercase' as const, letterSpacing: 0.8, marginBottom: 4,
+  tableChip: {
+    backgroundColor: '#FEF9C3',
+    borderRadius: 10,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    alignItems: 'center' as const,
+    minWidth: 80,
   },
-  duesChipValue: { fontSize: 16, fontWeight: '800' as const, color: '#991B1B' },
-  tableRow: {
-    flexDirection: 'row' as const, justifyContent: 'space-between' as const,
-    alignItems: 'center' as const, backgroundColor: '#FFFFFF', borderRadius: 10,
-    padding: 14, marginBottom: 8, borderWidth: 1, borderColor: 'rgba(0,0,0,0.05)',
+  tableChipName: {
+    fontSize: 11,
+    color: '#92400E',
+    fontWeight: '700' as const,
+    marginBottom: 3,
   },
-  tableRowName:   { fontSize: 14, fontWeight: '700' as const, color: '#111827' },
-  tableRowAmount: { fontSize: 14, fontWeight: '900' as const, color: '#059669' },
-} as const;
+  tableChipValue: {
+    fontSize: 14,
+    fontWeight: '800' as const,
+    color: '#78350F',
+  },
+};

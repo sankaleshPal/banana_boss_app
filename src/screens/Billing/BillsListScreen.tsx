@@ -93,7 +93,7 @@ export function BillsListScreen() {
         contentContainerStyle={{ paddingBottom: 24 }}
       />
 
-      {data && data.pagination.totalPages > 1 && (
+      {data && Math.ceil((data.total || 0) / (data.limit || 20)) > 1 && (
         <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', paddingVertical: 12 }}>
           <TouchableOpacity
             onPress={() => setPage((p) => Math.max(1, p - 1))}
@@ -103,12 +103,12 @@ export function BillsListScreen() {
             <Icon name="chevron-left" size={20} color="#111827" />
           </TouchableOpacity>
           <Text style={{ marginHorizontal: 12, fontSize: 13, fontWeight: '700' }}>
-            Page {page} of {data.pagination.totalPages}
+            Page {page} of {Math.ceil((data.total || 0) / (data.limit || 20))}
           </Text>
           <TouchableOpacity
-            onPress={() => setPage((p) => Math.min(data.pagination.totalPages, p + 1))}
-            disabled={page >= data.pagination.totalPages}
-            style={{ padding: 8, opacity: page >= data.pagination.totalPages ? 0.4 : 1 }}
+            onPress={() => setPage((p) => Math.min(Math.ceil((data.total || 0) / (data.limit || 20)), p + 1))}
+            disabled={page >= Math.ceil((data.total || 0) / (data.limit || 20))}
+            style={{ padding: 8, opacity: page >= Math.ceil((data.total || 0) / (data.limit || 20)) ? 0.4 : 1 }}
           >
             <Icon name="chevron-right" size={20} color="#111827" />
           </TouchableOpacity>

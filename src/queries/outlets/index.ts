@@ -19,4 +19,3 @@ export function useOutletDetails(outletId: string | null) {
     staleTime: 1000 * 60 * 5, // 5 min
   });
 }
-

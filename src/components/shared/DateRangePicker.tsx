@@ -2,21 +2,20 @@
  * DateRangePicker — bottom-sheet preset picker with billing-timing support.
  *
  * Mirrors the logic of banana_boss's DateRangeDropdown:
- *  - Named presets (Today / Yesterday / Week / Month): tap → apply + close.
+ *  - Named presets (Today / Yesterday / Week / Month): tap -> apply + close.
  *  - Billing times from the outlet detail (billingStartTime / billingEndTime)
  *    are applied automatically to every preset, exactly as the web dashboard does.
  *  - When billing times load / change, the current named preset is re-applied
  *    with corrected timestamps (no user action required).
  */
 import React, { useState, useCallback, useEffect } from 'react';
-import { View, Text, TouchableOpacity, Modal } from 'react-native';
+import { View, Text, TouchableOpacity, Modal, Pressable } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
 import { useOutletDetails } from '@/queries/outlets';
 import { formatDateShort, getBusinessDayRange } from '@/utils/date';
 import type { DateRangeValue, DateRangePreset } from '@/stores/appStore';
 
-// ─── Preset helpers (same as banana_boss utils) ───────────────────────────────
-
+// Preset raw-range helpers (calendar-only, no billing offset)
 function getTodayRaw(): { from: number; to: number } {
   const from = new Date(); from.setHours(0, 0, 0, 0);
   const to   = new Date(); to.setHours(23, 59, 59, 999);
@@ -24,7 +23,7 @@ function getTodayRaw(): { from: number; to: number } {
 }
 function getYesterdayRaw(): { from: number; to: number } {
   const from = new Date(); from.setDate(from.getDate() - 1); from.setHours(0, 0, 0, 0);
-  const to   = new Date(); to.setDate(to.getDate() - 1);     to.setHours(23, 59, 59, 999);
+  const to   = new Date(); to.setDate(to.getDate() - 1); to.setHours(23, 59, 59, 999);
   return { from: from.getTime(), to: to.getTime() };
 }
 function getThisWeekRaw(): { from: number; to: number } {
@@ -39,7 +38,6 @@ function getThisMonthRaw(): { from: number; to: number } {
   const to   = new Date(now); to.setHours(23, 59, 59, 999);
   return { from: from.getTime(), to: to.getTime() };
 }
-
 function getRawRange(preset: DateRangePreset): { from: number; to: number } {
   switch (preset) {
     case 'today':      return getTodayRaw();
@@ -57,30 +55,27 @@ const PRESETS: { label: string; value: DateRangePreset }[] = [
   { label: 'This Month', value: 'this_month' },
 ];
 
-// ─── Props ────────────────────────────────────────────────────────────────────
-
 interface DateRangePickerProps {
   value: DateRangeValue;
   onChange: (range: DateRangeValue) => void;
-  /** Pass the selected outlet's ID so billing times can be fetched and applied */
   outletId?: string | null;
+  /** Render the trigger button in light-on-dark style (for dark headers) */
+  dark?: boolean;
 }
-
-// ─── Component ────────────────────────────────────────────────────────────────
 
 export const DateRangePicker = React.memo(function DateRangePicker({
   value,
   onChange,
   outletId,
+  dark = false,
 }: DateRangePickerProps) {
   const [open, setOpen] = useState(false);
 
-  // Fetch outlet billing times (same as banana_boss useOutletDetails)
   const { data: outletDetail } = useOutletDetails(outletId ?? null);
   const billingStart = outletDetail?.billingStartTime ?? 0;
   const billingEnd   = outletDetail?.billingEndTime   ?? 0;
 
-  // ── Apply billing times to a raw midnight-to-midnight range ────────────────
+  // Apply billing offset to a raw calendar range
   const applyBilling = useCallback(
     (raw: { from: number; to: number }): { from: number; to: number } => {
       const { from, to } = getBusinessDayRange(
@@ -94,20 +89,17 @@ export const DateRangePicker = React.memo(function DateRangePicker({
     [billingStart, billingEnd],
   );
 
-  // When outlet billing times load/change, re-apply them to the current named
-  // preset — matching banana_boss's useEffect on billingStart/billingEnd.
+  // Re-apply when billing times load / change (mirrors banana_boss DateRangeDropdown)
   useEffect(() => {
-    if (!billingStart && !billingEnd) return;    // no billing config
-    if (value.preset === 'custom') return;       // never override a custom range
+    if (!billingStart && !billingEnd) return;
+    if (value.preset === 'custom') return;
     const raw = getRawRange(value.preset);
     const { from, to } = applyBilling(raw);
     if (from !== value.from || to !== value.to) {
       onChange({ from, to, preset: value.preset });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [billingStart, billingEnd]);
+  }, [billingStart, billingEnd]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // ── Preset selection ───────────────────────────────────────────────────────
   const selectPreset = useCallback(
     (preset: DateRangePreset) => {
       const raw = getRawRange(preset);
@@ -118,133 +110,169 @@ export const DateRangePicker = React.memo(function DateRangePicker({
     [applyBilling, onChange],
   );
 
-  // ── Trigger label ──────────────────────────────────────────────────────────
-  const triggerLabel = (() => {
-    switch (value.preset) {
-      case 'today':      return 'Today';
-      case 'yesterday':  return 'Yesterday';
-      case 'this_week':  return `Week  ${formatDateShort(value.from)} – ${formatDateShort(value.to)}`;
-      case 'this_month': return `Month  ${formatDateShort(value.from)} – ${formatDateShort(value.to)}`;
-      case 'custom':     return `${formatDateShort(value.from)} – ${formatDateShort(value.to)}`;
-      default:           return 'Select range';
-    }
-  })();
+  // Label for the trigger
+  const label =
+    value.preset === 'custom'
+      ? `${formatDateShort(value.from)} – ${formatDateShort(value.to)}`
+      : PRESETS.find((p) => p.value === value.preset)?.label ?? 'Select date';
+
+  const hasBilling = billingStart > 0 || billingEnd > 0;
+
+  // Trigger button styling
+  const triggerBg     = dark ? 'rgba(255,255,255,0.12)' : '#FFFFFF';
+  const triggerText   = dark ? '#FFFFFF' : '#111827';
+  const triggerBorder = dark ? 'transparent' : 'rgba(0,0,0,0.08)';
+  const iconColor     = dark ? '#FFFFFF' : '#6B7280';
 
   return (
     <>
-      {/* Trigger */}
+      {/* ── Trigger ──────────────────────────────────────────────── */}
       <TouchableOpacity
         onPress={() => setOpen(true)}
-        style={s.trigger}
+        activeOpacity={0.75}
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          backgroundColor: triggerBg,
+          borderRadius: 10,
+          paddingHorizontal: 12,
+          paddingVertical: 8,
+          borderWidth: 1,
+          borderColor: triggerBorder,
+          alignSelf: 'flex-start',
+          gap: 6,
+        }}
       >
-        <Icon name="calendar" size={14} color="#374151" style={{ marginRight: 6 }} />
-        <Text style={s.triggerText}>{triggerLabel}</Text>
-        <Icon name="chevron-down" size={14} color="#9CA3AF" style={{ marginLeft: 4 }} />
+        <Icon name="calendar" size={14} color={iconColor} />
+        <Text style={{ fontSize: 13, fontWeight: '600', color: triggerText }}>{label}</Text>
+        <Icon name="chevron-down" size={13} color={iconColor} />
       </TouchableOpacity>
 
-      {/* Bottom-sheet modal */}
-      <Modal visible={open} transparent animationType="slide">
-        <View style={s.overlay}>
-          <View style={s.sheet}>
-            {/* Header */}
-            <View style={s.sheetHeader}>
-              <Text style={s.sheetTitle}>Select Date Range</Text>
-              <TouchableOpacity onPress={() => setOpen(false)}>
-                <Icon name="x" size={22} color="#111827" />
-              </TouchableOpacity>
-            </View>
+      {/* ── Modal sheet ──────────────────────────────────────────── */}
+      <Modal
+        visible={open}
+        transparent
+        animationType="fade"
+        statusBarTranslucent
+        onRequestClose={() => setOpen(false)}
+      >
+        <Pressable
+          style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.45)', justifyContent: 'flex-end' }}
+          onPress={() => setOpen(false)}
+        >
+          <Pressable onPress={() => {}}>
+            <View
+              style={{
+                backgroundColor: '#FFFFFF',
+                borderTopLeftRadius: 20,
+                borderTopRightRadius: 20,
+                paddingTop: 8,
+                paddingBottom: 40,
+              }}
+            >
+              {/* drag handle */}
+              <View
+                style={{
+                  width: 36,
+                  height: 4,
+                  borderRadius: 2,
+                  backgroundColor: '#E5E7EB',
+                  alignSelf: 'center',
+                  marginBottom: 16,
+                }}
+              />
 
-            {/* Billing-time note */}
-            {(billingStart !== 0 || billingEnd !== 0) && (
-              <View style={s.billingNote}>
-                <Icon name="clock" size={12} color="#6366F1" style={{ marginRight: 5 }} />
-                <Text style={s.billingNoteText}>
-                  Billing window applied: {billingStart % 60 === 0
-                    ? `${billingStart / 60}:00` : `${Math.floor(billingStart/60)}:${String(billingStart%60).padStart(2,'0')}`
-                  } – {billingEnd % 60 === 0
-                    ? `${billingEnd / 60}:00` : `${Math.floor(billingEnd/60)}:${String(billingEnd%60).padStart(2,'0')}`
-                  }
-                </Text>
-              </View>
-            )}
+              <Text
+                style={{
+                  fontSize: 16,
+                  fontWeight: '800',
+                  color: '#111827',
+                  paddingHorizontal: 20,
+                  marginBottom: 16,
+                  letterSpacing: -0.3,
+                }}
+              >
+                Select Date Range
+              </Text>
 
-            {/* Preset list */}
-            {PRESETS.map((p) => {
-              const isActive = value.preset === p.value;
-              return (
-                <TouchableOpacity
-                  key={p.value}
-                  onPress={() => selectPreset(p.value)}
-                  style={[s.presetRow, isActive && s.presetRowActive]}
+              {PRESETS.map((p) => {
+                const active = value.preset === p.value;
+                return (
+                  <TouchableOpacity
+                    key={p.value}
+                    onPress={() => selectPreset(p.value)}
+                    activeOpacity={0.7}
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      paddingHorizontal: 20,
+                      paddingVertical: 15,
+                      backgroundColor: active ? '#F9FAFB' : 'transparent',
+                    }}
+                  >
+                    <View
+                      style={{
+                        width: 20,
+                        height: 20,
+                        borderRadius: 10,
+                        borderWidth: 2,
+                        borderColor: active ? '#111827' : '#D1D5DB',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        marginRight: 14,
+                      }}
+                    >
+                      {active && (
+                        <View
+                          style={{
+                            width: 10,
+                            height: 10,
+                            borderRadius: 5,
+                            backgroundColor: '#111827',
+                          }}
+                        />
+                      )}
+                    </View>
+                    <Text
+                      style={{
+                        fontSize: 15,
+                        fontWeight: active ? '700' : '500',
+                        color: active ? '#111827' : '#374151',
+                        flex: 1,
+                      }}
+                    >
+                      {p.label}
+                    </Text>
+                    {active && (
+                      <Icon name="check" size={16} color="#111827" />
+                    )}
+                  </TouchableOpacity>
+                );
+              })}
+
+              {hasBilling && (
+                <View
+                  style={{
+                    marginHorizontal: 20,
+                    marginTop: 16,
+                    backgroundColor: '#FEF9C3',
+                    borderRadius: 10,
+                    padding: 12,
+                    flexDirection: 'row',
+                    alignItems: 'flex-start',
+                    gap: 8,
+                  }}
                 >
-                  <Text style={[s.presetLabel, isActive && s.presetLabelActive]}>
-                    {p.label}
+                  <Icon name="clock" size={13} color="#92400E" style={{ marginTop: 1 }} />
+                  <Text style={{ fontSize: 12, color: '#78350F', flex: 1, lineHeight: 18 }}>
+                    Billing shift applied — dates use your outlet's configured start &amp; end times.
                   </Text>
-                  {isActive && <Icon name="check" size={16} color="#111827" />}
-                </TouchableOpacity>
-              );
-            })}
-          </View>
-        </View>
+                </View>
+              )}
+            </View>
+          </Pressable>
+        </Pressable>
       </Modal>
     </>
   );
 });
-
-// ─── Styles ───────────────────────────────────────────────────────────────────
-
-const s = {
-  trigger: {
-    flexDirection: 'row' as const,
-    alignItems: 'center' as const,
-    backgroundColor: '#F3F4F6',
-    paddingHorizontal: 12,
-    paddingVertical: 9,
-    borderRadius: 10,
-    alignSelf: 'flex-start' as const,
-    marginVertical: 8,
-  },
-  triggerText: { fontSize: 13, fontWeight: '600' as const, color: '#374151' },
-  overlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.42)',
-    justifyContent: 'flex-end' as const,
-  },
-  sheet: {
-    backgroundColor: '#FFFFFF',
-    borderTopLeftRadius: 22,
-    borderTopRightRadius: 22,
-    padding: 20,
-    paddingBottom: 36,
-  },
-  sheetHeader: {
-    flexDirection: 'row' as const,
-    justifyContent: 'space-between' as const,
-    alignItems: 'center' as const,
-    marginBottom: 16,
-  },
-  sheetTitle: { fontSize: 18, fontWeight: '800' as const, color: '#111827' },
-  billingNote: {
-    flexDirection: 'row' as const,
-    alignItems: 'center' as const,
-    backgroundColor: '#EEF2FF',
-    borderRadius: 8,
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    marginBottom: 12,
-  },
-  billingNoteText: { fontSize: 11, fontWeight: '600' as const, color: '#4338CA' },
-  presetRow: {
-    flexDirection: 'row' as const,
-    alignItems: 'center' as const,
-    justifyContent: 'space-between' as const,
-    paddingVertical: 14,
-    paddingHorizontal: 14,
-    borderRadius: 12,
-    backgroundColor: '#F9FAFB',
-    marginBottom: 8,
-  },
-  presetRowActive: { backgroundColor: '#FDE047' },
-  presetLabel: { fontSize: 14, fontWeight: '600' as const, color: '#111827' },
-  presetLabelActive: { fontWeight: '700' as const },
-} as const;

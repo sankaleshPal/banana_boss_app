@@ -1,14 +1,60 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, Keyboard } from 'react-native';
+import { View, Text, TouchableOpacity, Keyboard, StatusBar } from 'react-native';
 import { useAuth } from '@/hooks/useAuth';
 import { useAppStore } from '@/stores/appStore';
 import { AppInput, AppButton, AppLoader } from '@/components/primitives';
 import { KeyboardWrapper } from '@/components/layout';
 import Icon from 'react-native-vector-icons/Feather';
 
+/** Banana logo mark — yellow B on dark background */
+function BananaLogo() {
+  return (
+    <View
+      style={{
+        width: 80,
+        height: 80,
+        borderRadius: 24,
+        backgroundColor: '#111827',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginBottom: 20,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.18,
+        shadowRadius: 12,
+        elevation: 8,
+      }}
+    >
+      {/* Outer yellow circle */}
+      <View
+        style={{
+          width: 56,
+          height: 56,
+          borderRadius: 28,
+          backgroundColor: '#FDE047',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
+        <Text
+          style={{
+            fontSize: 28,
+            fontWeight: '900',
+            color: '#111827',
+            lineHeight: 32,
+            marginTop: 2,
+          }}
+        >
+          B
+        </Text>
+      </View>
+    </View>
+  );
+}
+
 export function LoginScreen() {
   const { login, rememberedPhone } = useAuth();
-  const setSelectedBusiness = useAppStore((s) => s.setSelectedBusiness);
+  // Login already sets selectedBusiness inside useAuth.login — no need to call it here.
 
   const [phone, setPhone] = useState(rememberedPhone || '');
   const [password, setPassword] = useState('');
@@ -26,10 +72,8 @@ export function LoginScreen() {
     }
     setLoading(true);
     try {
-      const staff = await login(phone.trim(), password.trim(), remember);
-      if (staff && staff.length > 0) {
-        setSelectedBusiness(staff[0].outletId);
-      }
+      await login(phone.trim(), password.trim(), remember);
+      // selectedBusiness is set inside login() — navigation happens via RootNavigator
     } catch (e: any) {
       setError(e?.message || 'Login failed. Please try again.');
     } finally {
@@ -38,61 +82,89 @@ export function LoginScreen() {
   };
 
   return (
-    <KeyboardWrapper style={{ backgroundColor: '#FFFFFF' }}>
+    <KeyboardWrapper style={{ backgroundColor: '#F3F4F6' }}>
+      <StatusBar barStyle="dark-content" backgroundColor="#F3F4F6" />
       <View style={{ flex: 1, justifyContent: 'center', padding: 24 }}>
-        <View style={{ alignItems: 'center', marginBottom: 32 }}>
-          <View
-            style={{
-              width: 72,
-              height: 72,
-              borderRadius: 18,
-              backgroundColor: '#FDE047',
-              alignItems: 'center',
-              justifyContent: 'center',
-              marginBottom: 16,
-            }}
-          >
-            <Icon name="box" size={36} color="#111827" />
-          </View>
-          <Text style={{ fontSize: 26, fontWeight: '900', color: '#111827' }}>Banana Boss</Text>
-          <Text style={{ fontSize: 13, color: '#9CA3AF', marginTop: 4 }}>Reports & Billing</Text>
+
+        {/* ── Brand ──────────────────────────────────────────────── */}
+        <View style={{ alignItems: 'center', marginBottom: 40 }}>
+          <BananaLogo />
+          <Text style={{ fontSize: 28, fontWeight: '900', color: '#111827', letterSpacing: -0.5 }}>
+            Banana Boss
+          </Text>
+          <Text style={{ fontSize: 13, color: '#9CA3AF', marginTop: 4 }}>
+            Reports & Billing
+          </Text>
         </View>
 
-        <AppInput
-          label="Phone Number"
-          placeholder="Enter phone number"
-          keyboardType="phone-pad"
-          value={phone}
-          onChangeText={setPhone}
-          leftIcon="phone"
-        />
-        <AppInput
-          label="Password"
-          placeholder="Enter password"
-          secureTextEntry={secure}
-          value={password}
-          onChangeText={setPassword}
-          leftIcon="lock"
-          rightIcon={secure ? 'eye-off' : 'eye'}
-          onRightIconPress={() => setSecure(!secure)}
-        />
-
-        <TouchableOpacity
-          onPress={() => setRemember(!remember)}
-          style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 16 }}
+        {/* ── Card ───────────────────────────────────────────────── */}
+        <View
+          style={{
+            backgroundColor: '#FFFFFF',
+            borderRadius: 20,
+            padding: 24,
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.07,
+            shadowRadius: 12,
+            elevation: 4,
+          }}
         >
-          <Icon name={remember ? 'check-square' : 'square'} size={18} color={remember ? '#111827' : '#9CA3AF'} />
-          <Text style={{ marginLeft: 8, fontSize: 13, color: '#374151' }}>Remember me</Text>
-        </TouchableOpacity>
+          <AppInput
+            label="Phone Number"
+            placeholder="Enter phone number"
+            keyboardType="phone-pad"
+            value={phone}
+            onChangeText={setPhone}
+            leftIcon="phone"
+          />
+          <AppInput
+            label="Password"
+            placeholder="Enter password"
+            secureTextEntry={secure}
+            value={password}
+            onChangeText={setPassword}
+            leftIcon="lock"
+            rightIcon={secure ? 'eye-off' : 'eye'}
+            onRightIconPress={() => setSecure(!secure)}
+          />
 
-        {error ? (
-          <Text style={{ color: '#EF4444', fontSize: 13, marginBottom: 12 }}>{error}</Text>
-        ) : null}
+          <TouchableOpacity
+            onPress={() => setRemember(!remember)}
+            style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 20 }}
+          >
+            <Icon
+              name={remember ? 'check-square' : 'square'}
+              size={18}
+              color={remember ? '#111827' : '#9CA3AF'}
+            />
+            <Text style={{ marginLeft: 8, fontSize: 13, color: '#374151', fontWeight: '500' }}>
+              Remember me
+            </Text>
+          </TouchableOpacity>
 
-        <AppButton label="Login" onPress={handleLogin} loading={loading} />
+          {error ? (
+            <View
+              style={{
+                backgroundColor: '#FEF2F2',
+                borderRadius: 10,
+                padding: 12,
+                marginBottom: 16,
+                flexDirection: 'row',
+                alignItems: 'center',
+                gap: 8,
+              }}
+            >
+              <Icon name="alert-circle" size={15} color="#EF4444" />
+              <Text style={{ color: '#EF4444', fontSize: 13, flex: 1 }}>{error}</Text>
+            </View>
+          ) : null}
+
+          <AppButton label="Login" onPress={handleLogin} loading={loading} />
+        </View>
       </View>
 
-      <AppLoader visible={loading && false} fullScreen />
+      <AppLoader visible={false} fullScreen />
     </KeyboardWrapper>
   );
 }

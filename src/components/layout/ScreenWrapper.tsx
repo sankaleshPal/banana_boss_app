@@ -4,7 +4,6 @@ import {
   ScrollView,
   RefreshControl,
   type ViewProps,
-  SafeAreaView,
 } from 'react-native';
 
 interface ScreenWrapperProps extends ViewProps {
@@ -13,6 +12,7 @@ interface ScreenWrapperProps extends ViewProps {
   refreshControl?: boolean;
   onRefresh?: () => void;
   padding?: boolean;
+  bg?: string;
 }
 
 export const ScreenWrapper = React.memo(function ScreenWrapper({
@@ -21,34 +21,38 @@ export const ScreenWrapper = React.memo(function ScreenWrapper({
   refreshControl,
   onRefresh,
   padding = true,
+  bg = '#F3F4F6',
   style,
   ...props
 }: ScreenWrapperProps) {
+  const outerStyle = { flex: 1, backgroundColor: bg };
   const contentStyle = { flex: 1, paddingHorizontal: padding ? 16 : 0 };
 
   if (scrollable) {
     return (
-      <SafeAreaView style={{ flex: 1, backgroundColor: '#FFFFFF' }}>
+      <View style={outerStyle}>
         <ScrollView
-          style={contentStyle}
+          style={{ flex: 1 }}
+          contentContainerStyle={{ paddingHorizontal: padding ? 16 : 0, paddingBottom: 32 }}
           refreshControl={
             refreshControl && onRefresh ? (
-              <RefreshControl refreshing={false} onRefresh={onRefresh} />
+              <RefreshControl refreshing={false} onRefresh={onRefresh} tintColor="#111827" />
             ) : undefined
           }
+          showsVerticalScrollIndicator={false}
           {...props}
         >
           {children}
         </ScrollView>
-      </SafeAreaView>
+      </View>
     );
   }
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#FFFFFF' }}>
+    <View style={outerStyle}>
       <View style={[contentStyle, style]} {...props}>
         {children}
       </View>
-    </SafeAreaView>
+    </View>
   );
 });

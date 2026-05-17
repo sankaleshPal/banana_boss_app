@@ -11,37 +11,31 @@ export const billsApi = {
       `/r/dine-in/bills/dashboard?outletId=${outletId}&from=${from}&to=${to}`,
     );
 
-    // ── Compatibility mapping ──────────────────────────────────────────────
-    // Backend returns the new nested structure (paidAll.totals, paidAll.charges, etc.).
-    // We synthesise a simplified `overall` + `paymentMethods` so older read
-    // paths (if any) still work, and we expose `paidAll.paymentModes` as
-    // the top-level `paymentMethods` map.
+    // Synthesise legacy `overall` and `paymentMethods` fields so any
+    // older read paths still work if the backend returns the new nested shape.
     if (data && data.paidAll && !data.overall) {
       data.overall = {
-        totalSale: data.paidAll.totals?.netAfterDiscountAndCharges ?? 0,
-        totalOrders: data.paidAll.totals?.ordersCount ?? 0,
-        totalDiscount: data.discountSummary?.onPaid?.total ?? data.paidAll.discounts?.total ?? 0,
-        totalTax: data.taxesSummary?.onPaid?.tax ?? data.paidAll.charges?.tax ?? 0,
-        serviceCharge: data.taxesSummary?.onPaid?.serviceCharge ?? data.paidAll.charges?.serviceCharge ?? 0,
-        tips: data.taxesSummary?.onPaid?.tip ?? data.paidAll.charges?.tip ?? 0,
-        netIncome: data.paidAll.totals?.realisedRevenue ?? 0,
+        totalSale:      data.paidAll.totals?.netAfterDiscountAndCharges ?? 0,
+        totalOrders:    data.paidAll.totals?.ordersCount ?? 0,
+        totalDiscount:  data.discountSummary?.onPaid?.total ?? 0,
+        totalTax:       data.taxesSummary?.onPaid?.tax ?? 0,
+        serviceCharge:  data.taxesSummary?.onPaid?.serviceCharge ?? 0,
+        tips:           data.taxesSummary?.onPaid?.tip ?? 0,
       };
     }
-
-    // Normalise paymentMethods: the new shape stores them under paidAll.paymentModes
-    if (data && data.paidAll?.paymentModes && !data.paymentMethods) {
-      data.paymentMethods = data.paidAll.paymentModes as Record<string, number>;
+    if (data?.paidAll?.paymentModes && !data.paymentMethods) {
+      data.paymentMethods = data.paidAll.paymentModes;
     }
 
     return data as BillsDashboardData;
   },
 
-  getBills(
+  async getList(
     outletId: string,
     from: number,
     to: number,
-    page: number,
-    limit: number,
+    page = 1,
+    limit = 20,
     filters?: BillsListFilters,
   ): Promise<BillsListPage> {
     const params = new URLSearchParams({
@@ -51,15 +45,20 @@ export const billsApi = {
       page: String(page),
       limit: String(limit),
     });
-    if (filters) {
-      Object.entries(filters).forEach(([key, value]) => {
-        if (value && value !== 'ALL') params.append(key, String(value));
-      });
-    }
+    if (filters?.status && filters.status !== 'ALL') params.set('status', filters.status);
+    if (filters?.paymentMethod && filters.paymentMethod !== 'ALL') params.set('paymentMethod', filters.paymentMethod);
+    if (filters?.billNo) params.set('billNo', filters.billNo);
+    if (filters?.tableNo) params.set('tableNo', filters.tableNo);
+    if (filters?.customerName) params.set('customerName', filters.customerName);
+    if (filters?.mobile) params.set('mobile', filters.mobile);
+    if (filters?.totalMin) params.set('totalMin', filters.totalMin);
+    if (filters?.totalMax) params.set('totalMax', filters.totalMax);
+    if (filters?.areaId && filters.areaId !== 'ALL') params.set('areaId', filters.areaId);
+
     return apiClient.get(`/r/dine-in/bills?${params.toString()}`);
   },
 
-  getBillById(billId: string): Promise<BillListItem | null> {
+  async getDetail(billId: string): Promise<BillListItem> {
     return apiClient.get(`/r/dine-in/bills/${billId}`);
   },
 };

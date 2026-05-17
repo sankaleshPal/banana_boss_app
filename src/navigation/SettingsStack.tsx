@@ -6,11 +6,17 @@ import { OutletSelectorScreen } from '@/screens/Settings/OutletSelectorScreen';
 
 const Stack = createNativeStackNavigator<SettingsStackParamList>();
 
+const screenOptions = {
+  headerShown: false,
+  contentStyle: { backgroundColor: '#F3F4F6' },
+  animation: 'slide_from_right' as const,
+};
+
 export function SettingsStack() {
   return (
-    <Stack.Navigator>
-      <Stack.Screen name="SettingsOverview" component={SettingsOverviewScreen} options={{ title: 'Settings' }} />
-      <Stack.Screen name="OutletSelector" component={OutletSelectorScreen} options={{ title: 'Select Outlet' }} />
+    <Stack.Navigator screenOptions={screenOptions}>
+      <Stack.Screen name="SettingsOverview" component={SettingsOverviewScreen} />
+      <Stack.Screen name="OutletSelector" component={OutletSelectorScreen} />
     </Stack.Navigator>
   );
 }

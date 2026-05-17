@@ -12,7 +12,10 @@ export function useOutlet() {
     return outlets.find((o) => o._id === selectedBusiness) || null;
   }, [outlets, selectedBusiness]);
 
-  const outletId = currentOutlet?._id ?? null;
+  // Use selectedBusiness directly — do NOT gate on currentOutlet being found.
+  // outlets may not have loaded yet even though selectedBusiness is set,
+  // which previously caused outletId = null and all queries to be disabled.
+  const outletId = selectedBusiness ?? null;
 
   return {
     outletId,

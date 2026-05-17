@@ -29,8 +29,6 @@ export interface BillListItem {
   splitCount?: number;
 }
 
-// ─── New nested structure returned by the current backend ────────────────────
-
 export interface DashboardTotals {
   grossSubtotal: number;
   netAfterDiscountAndCharges: number;
@@ -77,14 +75,10 @@ export interface DashboardTaxSummary {
   onPaid: Partial<DashboardTaxGroup>;
 }
 
-export interface DashboardRewardsGroup {
-  coinsGiven: number;
-}
-
 export interface DashboardRewardsSummary {
-  all: Partial<DashboardRewardsGroup>;
-  onPaid: Partial<DashboardRewardsGroup>;
-  onDues: Partial<DashboardRewardsGroup>;
+  all: { coinsEarned?: number; coinsUsed?: number };
+  onPaid: { coinsEarned?: number; coinsUsed?: number };
+  onDues: { coinsEarned?: number; coinsUsed?: number };
 }
 
 export interface DashboardDuesSummary {
@@ -104,8 +98,6 @@ export interface DashboardRunningTables {
   totalActiveTableValue: number;
 }
 
-// ─── Normalised "overall" shape (compatibility / simplified read) ─────────────
-
 export interface BillsDashboardOverall {
   totalSale: number;
   totalOrders: number;
@@ -113,18 +105,11 @@ export interface BillsDashboardOverall {
   totalTax: number;
   serviceCharge: number;
   tips: number;
-  netIncome?: number;
-  totalCharges?: number;
 }
 
-// ─── Full data shape ──────────────────────────────────────────────────────────
-
 export interface BillsDashboardData {
-  // Normalised (added by billsApi.getDashboard for backward compat)
   overall?: BillsDashboardOverall;
   paymentMethods?: Record<string, number>;
-
-  // New nested structure
   paidAll?: DashboardPaidGroup;
   paidNormal?: DashboardPaidGroup;
   duesSettlements?: DashboardPaidGroup;
@@ -133,24 +118,6 @@ export interface BillsDashboardData {
   duesSummary?: DashboardDuesSummary;
   taxesSummary?: DashboardTaxSummary;
   runningTables?: DashboardRunningTables;
-}
-
-export interface BillsListAggregation {
-  billCount: number;
-  subtotal: number;
-  tax: number;
-  payable: number;
-}
-
-export interface BillsListPage {
-  data: BillListItem[];
-  pagination: {
-    page: number;
-    limit: number;
-    total: number;
-    totalPages: number;
-  };
-  aggregation?: BillsListAggregation;
 }
 
 export interface BillsListFilters {
@@ -163,4 +130,11 @@ export interface BillsListFilters {
   status?: string;
   paymentMethod?: string;
   areaId?: string;
+}
+
+export interface BillsListPage {
+  data: BillListItem[];
+  total: number;
+  page: number;
+  limit: number;
 }

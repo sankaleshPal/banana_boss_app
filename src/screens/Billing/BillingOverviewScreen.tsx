@@ -6,78 +6,116 @@ import type { BillingStackParamList } from '@/types/navigation';
 import { useOutlet } from '@/hooks/useOutlet';
 import { usePaymentModesQuery } from '@/queries/paymentMode';
 import { useDuesUsersQuery } from '@/queries/duesUser';
-import { ScreenWrapper } from '@/components/layout';
-import { SectionHeader } from '@/components/shared';
 import Icon from 'react-native-vector-icons/Feather';
 import { formatINR } from '@/utils/currency';
 
+type Nav = NativeStackNavigationProp<BillingStackParamList>;
+
 const navItems = [
-  { title: 'Sales Dashboard', subtitle: 'Analytics & metrics', icon: 'bar-chart-2', screen: 'SalesDashboard' as const },
-  { title: 'Billings', subtitle: 'All bills & invoices', icon: 'credit-card', screen: 'BillsList' as const },
-  { title: 'Payment Modes', subtitle: 'Manage payments', icon: 'dollar-sign', screen: 'PaymentModes' as const },
-  { title: 'Dues', subtitle: 'Outstanding amounts', icon: 'users', screen: 'Dues' as const },
+  { title: 'Sales',        subtitle: 'Analytics & metrics',  icon: 'trending-up',   screen: 'SalesDashboard' as const, color: '#FEF9C3' },
+  { title: 'Billings',     subtitle: 'All bills & invoices',  icon: 'file-text',     screen: 'BillsList'      as const, color: '#DBEAFE' },
+  { title: 'Payments',     subtitle: 'Payment modes',         icon: 'credit-card',   screen: 'PaymentModes'   as const, color: '#D1FAE5' },
+  { title: 'Dues',         subtitle: 'Outstanding amounts',   icon: 'users',         screen: 'Dues'           as const, color: '#FFE4E6' },
+  { title: 'NPC',          subtitle: 'No payment collected',  icon: 'x-circle',      screen: 'Npc'            as const, color: '#EDE9FE' },
 ];
 
 export function BillingOverviewScreen() {
-  const navigation = useNavigation<NativeStackNavigationProp<BillingStackParamList>>();
+  const navigation = useNavigation<Nav>();
   const { outletId, currentOutlet } = useOutlet();
   const { data: paymentModes } = usePaymentModesQuery(outletId);
   const { data: duesUsers } = useDuesUsersQuery(outletId);
 
   const totalDues = duesUsers?.reduce((sum, u) => sum + (u.currentDuesAmount || 0), 0) || 0;
 
+  const today = new Date().toLocaleDateString('en-IN', {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+  });
+
   return (
-    <ScreenWrapper scrollable>
-      <View style={{ paddingVertical: 16 }}>
-        <Text style={{ fontSize: 22, fontWeight: '800', color: '#111827' }}>{currentOutlet?.name || 'Billing'}</Text>
-        <Text style={{ fontSize: 12, color: '#9CA3AF', marginTop: 2 }}>
-          {new Date().toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long' })}
+    <View style={{ flex: 1, backgroundColor: '#F3F4F6' }}>
+      {/* ── Header ───────────────────────────────────────────────────── */}
+      <View
+        style={{
+          backgroundColor: '#111827',
+          paddingHorizontal: 20,
+          paddingTop: 56,
+          paddingBottom: 24,
+        }}
+      >
+        <Text style={{ fontSize: 11, color: '#9CA3AF', fontWeight: '600', letterSpacing: 0.8, textTransform: 'uppercase' }}>
+          {today}
+        </Text>
+        <Text style={{ fontSize: 26, fontWeight: '900', color: '#FFFFFF', marginTop: 4, letterSpacing: -0.5 }}>
+          {currentOutlet?.name || 'Billing'}
         </Text>
       </View>
 
-      <SectionHeader title="Quick Access" />
+      {/* ── Grid ─────────────────────────────────────────────────────── */}
+      <ScrollView
+        style={{ flex: 1 }}
+        contentContainerStyle={{ padding: 16, paddingBottom: 32 }}
+        showsVerticalScrollIndicator={false}
+      >
+        <Text
+          style={{
+            fontSize: 11,
+            fontWeight: '800',
+            color: '#9CA3AF',
+            letterSpacing: 1,
+            textTransform: 'uppercase',
+            marginBottom: 14,
+          }}
+        >
+          Quick Access
+        </Text>
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 12 }}>
+          {navItems.map((item) => {
+            const subtitle =
+              item.screen === 'PaymentModes'
+                ? `${paymentModes?.length || 0} modes`
+                : item.screen === 'Dues'
+                ? formatINR(totalDues)
+                : item.subtitle;
 
-      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 12 }}>
-        {navItems.map((item, index) => {
-          const subtitle =
-            item.screen === 'PaymentModes'
-              ? `${paymentModes?.length || 0} modes`
-              : item.screen === 'Dues'
-              ? formatINR(totalDues)
-              : item.subtitle;
-
-          return (
-            <TouchableOpacity
-              key={index}
-              onPress={() => navigation.navigate(item.screen)}
-              style={{
-                width: '47%',
-                backgroundColor: '#FFFFFF',
-                borderRadius: 14,
-                padding: 16,
-                borderWidth: 1,
-                borderColor: 'rgba(0,0,0,0.06)',
-              }}
-            >
-              <View
+            return (
+              <TouchableOpacity
+                key={item.screen}
+                onPress={() => navigation.navigate(item.screen)}
+                activeOpacity={0.75}
                 style={{
-                  width: 40,
-                  height: 40,
-                  borderRadius: 10,
-                  backgroundColor: '#FDE047',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  marginBottom: 12,
+                  width: '47%',
+                  backgroundColor: '#FFFFFF',
+                  borderRadius: 16,
+                  padding: 16,
+                  shadowColor: '#000',
+                  shadowOffset: { width: 0, height: 1 },
+                  shadowOpacity: 0.06,
+                  shadowRadius: 4,
+                  elevation: 2,
                 }}
               >
-                <Icon name={item.icon} size={20} color="#111827" />
-              </View>
-              <Text style={{ fontSize: 14, fontWeight: '700', color: '#111827' }}>{item.title}</Text>
-              <Text style={{ fontSize: 11, color: '#9CA3AF', marginTop: 4 }}>{subtitle}</Text>
-            </TouchableOpacity>
-          );
-        })}
-      </View>
-    </ScreenWrapper>
+                <View
+                  style={{
+                    width: 42,
+                    height: 42,
+                    borderRadius: 12,
+                    backgroundColor: item.color,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    marginBottom: 12,
+                  }}
+                >
+                  <Icon name={item.icon} size={20} color="#111827" />
+                </View>
+                <Text style={{ fontSize: 14, fontWeight: '700', color: '#111827' }}>{item.title}</Text>
+                <Text style={{ fontSize: 11, color: '#9CA3AF', marginTop: 3 }}>{subtitle}</Text>
+              </TouchableOpacity>
+            );
+          })}
+        </View>
+      </ScrollView>
+    </View>
   );
 }
