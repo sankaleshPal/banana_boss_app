@@ -26,7 +26,7 @@ export function PaymentModesScreen() {
     <ScreenWrapper>
       <TopBar title="Payment Modes" showBack onBack={() => navigation.goBack()} />
 
-      {isLoading && <LoadingSkeleton type="bill-row" count={4} />}
+      {isLoading && <LoadingSkeleton type="card-grid" count={6} />}
       {isError && <ErrorState onRetry={refetch} />}
 
       <FlatList

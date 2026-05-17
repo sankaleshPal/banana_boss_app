@@ -1,69 +1,276 @@
+/**
+ * LoadingSkeleton — animated pulse skeletons matching banana_boss web app's loading UI.
+ *
+ * Web pattern (UnifiedSales.tsx, BillingsView.tsx, DuesView.tsx, ModesView.tsx):
+ *  - animate-pulse on grey/white rounded blocks
+ *  - Shapes mirror the real content layout exactly
+ *  - Subtle border + near-white background for card types
+ *  - Thin flat grey bars for list/table row types
+ */
 import React from 'react';
-import { View } from 'react-native';
+import { View, ScrollView } from 'react-native';
+import { MotiView } from 'moti';
+
+// ─── Shared pulse wrapper ─────────────────────────────────────────────────────
+
+function Pulse({ children, delay = 0 }: { children: React.ReactNode; delay?: number }) {
+  return (
+    <MotiView
+      from={{ opacity: 0.35 }}
+      animate={{ opacity: 1 }}
+      transition={{
+        type: 'timing',
+        duration: 900,
+        delay,
+        loop: true,
+        repeatReverse: true,
+      }}
+    >
+      {children}
+    </MotiView>
+  );
+}
+
+// ─── Skeleton atoms ───────────────────────────────────────────────────────────
+
+/** A white card placeholder with border — mirrors the web's card skeleton */
+function CardBlock({
+  height = 112,
+  radius = 18,
+  delay = 0,
+  width,
+}: {
+  height?: number;
+  radius?: number;
+  delay?: number;
+  width?: number | string;
+}) {
+  return (
+    <Pulse delay={delay}>
+      <View
+        style={{
+          height,
+          width: width as any,
+          backgroundColor: '#FFFFFF',
+          borderRadius: radius,
+          borderWidth: 1,
+          borderColor: 'rgba(0,0,0,0.06)',
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: 1 },
+          shadowOpacity: 0.04,
+          shadowRadius: 3,
+          elevation: 1,
+        }}
+      />
+    </Pulse>
+  );
+}
+
+/** A flat grey bar — mirrors the web's list/table row skeleton */
+function BarBlock({
+  height = 56,
+  radius = 12,
+  delay = 0,
+}: {
+  height?: number;
+  radius?: number;
+  delay?: number;
+}) {
+  return (
+    <Pulse delay={delay}>
+      <View
+        style={{
+          height,
+          backgroundColor: 'rgba(0,0,0,0.04)',
+          borderRadius: radius,
+        }}
+      />
+    </Pulse>
+  );
+}
+
+// ─── Main component ───────────────────────────────────────────────────────────
+
+export type SkeletonType =
+  | 'metric-card'   // SalesDashboard, NetSalesSummary — horizontal scroll of metric cards
+  | 'bill-row'      // BillsList, BillDetail — list of bill rows
+  | 'report-table'  // All report screens — table header + data rows
+  | 'report-card'   // Generic 2-col grid of cards
+  | 'card-grid';    // Dues, PaymentModes — 2-col grid of tall cards
 
 interface LoadingSkeletonProps {
-  type: 'metric-card' | 'bill-row' | 'report-table' | 'report-card';
+  type: SkeletonType;
   count?: number;
 }
 
 export const LoadingSkeleton = React.memo(function LoadingSkeleton({
   type,
-  count = 1,
+  count = 4,
 }: LoadingSkeletonProps) {
-  const items = Array.from({ length: count });
 
+  // ── metric-card ─────────────────────────────────────────────────────────────
+  // Mirrors: UnifiedSales.tsx loading state
+  //   - A big full-width block (header/date-picker area)
+  //   - Section label line
+  //   - Horizontal row of metric card blocks
   if (type === 'metric-card') {
+    const cards = Array.from({ length: count });
     return (
-      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 12 }}>
-        {items.map((_, i) => (
+      <View style={{ marginTop: 12 }}>
+        {/* Big header block */}
+        <Pulse delay={0}>
           <View
-            key={i}
             style={{
-              flex: 1,
-              minWidth: 140,
-              height: 100,
-              backgroundColor: '#F3F4F6',
-              borderRadius: 14,
+              height: 80,
+              backgroundColor: '#FFFFFF',
+              borderRadius: 20,
+              borderWidth: 1,
+              borderColor: 'rgba(0,0,0,0.05)',
+              marginBottom: 24,
+              shadowColor: '#000',
+              shadowOffset: { width: 0, height: 1 },
+              shadowOpacity: 0.04,
+              shadowRadius: 4,
+              elevation: 1,
             }}
           />
-        ))}
+        </Pulse>
+
+        {/* Section label line */}
+        <Pulse delay={100}>
+          <View
+            style={{
+              height: 10,
+              width: 120,
+              backgroundColor: 'rgba(0,0,0,0.06)',
+              borderRadius: 6,
+              marginBottom: 14,
+            }}
+          />
+        </Pulse>
+
+        {/* Horizontal metric cards */}
+        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+          <View style={{ flexDirection: 'row', gap: 10 }}>
+            {cards.map((_, i) => (
+              <CardBlock
+                key={i}
+                height={110}
+                radius={18}
+                width={130}
+                delay={i * 80}
+              />
+            ))}
+          </View>
+        </ScrollView>
+
+        {/* Second section */}
+        <Pulse delay={200}>
+          <View
+            style={{
+              height: 10,
+              width: 140,
+              backgroundColor: 'rgba(0,0,0,0.06)',
+              borderRadius: 6,
+              marginTop: 24,
+              marginBottom: 14,
+            }}
+          />
+        </Pulse>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+          <View style={{ flexDirection: 'row', gap: 10 }}>
+            {[0, 1, 2, 3].map((i) => (
+              <CardBlock
+                key={i}
+                height={110}
+                radius={18}
+                width={130}
+                delay={300 + i * 80}
+              />
+            ))}
+          </View>
+        </ScrollView>
       </View>
     );
   }
 
+  // ── bill-row ────────────────────────────────────────────────────────────────
+  // Mirrors: BillingsView.tsx — "h-14 bg-base-200 border-2 rounded-xl animate-pulse"
   if (type === 'bill-row') {
+    const items = Array.from({ length: count });
     return (
-      <View>
+      <View style={{ gap: 8, marginTop: 12 }}>
         {items.map((_, i) => (
-          <View
-            key={i}
-            style={{
-              height: 72,
-              backgroundColor: '#F3F4F6',
-              borderRadius: 10,
-              marginBottom: 8,
-            }}
-          />
+          <Pulse key={i} delay={i * 60}>
+            <View
+              style={{
+                height: 64,
+                backgroundColor: 'rgba(0,0,0,0.04)',
+                borderRadius: 14,
+                flexDirection: 'row',
+                alignItems: 'center',
+                paddingHorizontal: 16,
+                gap: 12,
+              }}
+            >
+              {/* Left content block */}
+              <View style={{ flex: 1, gap: 6 }}>
+                <View style={{ height: 10, width: '55%', backgroundColor: 'rgba(0,0,0,0.07)', borderRadius: 5 }} />
+                <View style={{ height: 8,  width: '35%', backgroundColor: 'rgba(0,0,0,0.04)', borderRadius: 4 }} />
+              </View>
+              {/* Right amount block */}
+              <View style={{ height: 14, width: 64, backgroundColor: 'rgba(0,0,0,0.07)', borderRadius: 6 }} />
+            </View>
+          </Pulse>
         ))}
       </View>
     );
   }
 
+  // ── report-table ────────────────────────────────────────────────────────────
+  // Mirrors: ReportTableView / all report screens — header + data rows
   if (type === 'report-table') {
+    const rows = Array.from({ length: count });
     return (
-      <View>
-        <View style={{ height: 40, backgroundColor: '#F3F4F6', borderRadius: 8, marginBottom: 8 }} />
-        {items.map((_, i) => (
-          <View key={i} style={{ height: 36, backgroundColor: '#F3F4F6', borderRadius: 6, marginBottom: 6 }} />
+      <View style={{ marginTop: 12 }}>
+        {/* Table header */}
+        <BarBlock height={40} radius={10} delay={0} />
+        <View style={{ height: 6 }} />
+        {rows.map((_, i) => (
+          <View key={i} style={{ marginBottom: 5 }}>
+            <BarBlock height={36} radius={8} delay={60 + i * 50} />
+          </View>
         ))}
       </View>
     );
   }
 
+  // ── card-grid ───────────────────────────────────────────────────────────────
+  // Mirrors: DuesView.tsx + ModesView.tsx — "h-28 bg-white rounded-3xl animate-pulse"
+  if (type === 'card-grid') {
+    const items = Array.from({ length: count });
+    return (
+      <View
+        style={{
+          flexDirection: 'row',
+          flexWrap: 'wrap',
+          gap: 12,
+          marginTop: 12,
+        }}
+      >
+        {items.map((_, i) => (
+          <CardBlock key={i} height={110} radius={22} width="47%" delay={i * 70} />
+        ))}
+      </View>
+    );
+  }
+
+  // ── report-card (fallback) ──────────────────────────────────────────────────
+  const items = Array.from({ length: count });
   return (
-    <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 12 }}>
+    <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 12, marginTop: 12 }}>
       {items.map((_, i) => (
-        <View key={i} style={{ width: '47%', height: 90, backgroundColor: '#F3F4F6', borderRadius: 12 }} />
+        <CardBlock key={i} height={90} radius={14} width="47%" delay={i * 70} />
       ))}
     </View>
   );
