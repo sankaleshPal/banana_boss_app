@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, TouchableOpacity, Platform } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Feather';
+import { fonts } from '@/theme';
 
 interface TopBarProps {
   title: string;
@@ -49,8 +50,10 @@ export const TopBar = React.memo(function TopBar({
             marginRight: 10,
             width: 36,
             height: 36,
-            borderRadius: 10,
-            backgroundColor: 'rgba(0,0,0,0.06)',
+            borderRadius: 8,
+            backgroundColor: '#FFFFFF',
+            borderWidth: 1,
+            borderColor: '#E5E7EB',
             alignItems: 'center',
             justifyContent: 'center',
           }}
@@ -59,11 +62,11 @@ export const TopBar = React.memo(function TopBar({
         </TouchableOpacity>
       )}
       <View style={{ flex: 1 }}>
-        <Text style={{ fontSize: 18, fontWeight: '800', color: '#111827', letterSpacing: -0.3 }}>
+        <Text style={{ fontFamily: fonts.bold, fontSize: 18, fontWeight: '700', color: '#0F172A' }}>
           {title}
         </Text>
         {subtitle ? (
-          <Text style={{ fontSize: 12, color: '#6B7280', marginTop: 1 }}>{subtitle}</Text>
+          <Text style={{ fontFamily: fonts.regular, fontSize: 12, color: '#64748B', marginTop: 2 }}>{subtitle}</Text>
         ) : null}
       </View>
       {rightActions}

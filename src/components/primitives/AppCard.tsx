@@ -14,22 +14,24 @@ export const AppCard = React.memo(function AppCard({
   ...props
 }: AppCardProps) {
   const baseStyle: any = {
-    borderRadius: 12,
+    borderRadius: 8,
     padding: 16,
     backgroundColor: '#FFFFFF',
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
   };
 
   if (variant === 'elevated') {
     baseStyle.shadowColor = '#000';
     baseStyle.shadowOffset = { width: 0, height: 2 };
-    baseStyle.shadowOpacity = 0.06;
-    baseStyle.shadowRadius = 8;
-    baseStyle.elevation = 3;
+    baseStyle.shadowOpacity = 0.04;
+    baseStyle.shadowRadius = 6;
+    baseStyle.elevation = 1;
   } else if (variant === 'outlined') {
     baseStyle.borderWidth = 1;
-    baseStyle.borderColor = 'rgba(0,0,0,0.08)';
+    baseStyle.borderColor = '#CBD5E1';
   } else if (variant === 'filled') {
-    baseStyle.backgroundColor = '#F9FAFB';
+    baseStyle.backgroundColor = '#F8FAFC';
   }
 
   const content = (

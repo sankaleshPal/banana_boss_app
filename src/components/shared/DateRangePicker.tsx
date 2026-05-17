@@ -14,6 +14,7 @@ import Icon from 'react-native-vector-icons/Feather';
 import { useOutletDetails } from '@/queries/outlets';
 import { formatDateShort, getBusinessDayRange } from '@/utils/date';
 import type { DateRangeValue, DateRangePreset } from '@/stores/appStore';
+import { fonts } from '@/theme';
 
 // Preset raw-range helpers (calendar-only, no billing offset)
 function getTodayRaw(): { from: number; to: number } {
@@ -134,7 +135,7 @@ export const DateRangePicker = React.memo(function DateRangePicker({
           flexDirection: 'row',
           alignItems: 'center',
           backgroundColor: triggerBg,
-          borderRadius: 10,
+          borderRadius: 8,
           paddingHorizontal: 12,
           paddingVertical: 8,
           borderWidth: 1,
@@ -144,7 +145,7 @@ export const DateRangePicker = React.memo(function DateRangePicker({
         }}
       >
         <Icon name="calendar" size={14} color={iconColor} />
-        <Text style={{ fontSize: 13, fontWeight: '600', color: triggerText }}>{label}</Text>
+        <Text style={{ fontFamily: fonts.medium, fontSize: 13, fontWeight: '500', color: triggerText }}>{label}</Text>
         <Icon name="chevron-down" size={13} color={iconColor} />
       </TouchableOpacity>
 
@@ -185,7 +186,8 @@ export const DateRangePicker = React.memo(function DateRangePicker({
               <Text
                 style={{
                   fontSize: 16,
-                  fontWeight: '800',
+                  fontFamily: fonts.bold,
+                  fontWeight: '700',
                   color: '#111827',
                   paddingHorizontal: 20,
                   marginBottom: 16,
@@ -236,6 +238,7 @@ export const DateRangePicker = React.memo(function DateRangePicker({
                     <Text
                       style={{
                         fontSize: 15,
+                        fontFamily: active ? fonts.bold : fonts.medium,
                         fontWeight: active ? '700' : '500',
                         color: active ? '#111827' : '#374151',
                         flex: 1,

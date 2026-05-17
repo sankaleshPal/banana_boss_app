@@ -6,10 +6,10 @@ import type { AppTabsParamList } from '@/types/navigation';
 import { ReportsStack } from './ReportsStack';
 import { BillingStack } from './BillingStack';
 import { SettingsStack } from './SettingsStack';
+import { fonts } from '@/theme';
 
 const Tab = createBottomTabNavigator<AppTabsParamList>();
 
-const YELLOW = '#F5C518';
 const INACTIVE = '#9CA3AF';
 
 export function AppTabs() {
@@ -41,6 +41,7 @@ export function AppTabs() {
         },
         tabBarLabelStyle: {
           fontSize: 11,
+          fontFamily: fonts.medium,
           fontWeight: '600',
           marginTop: 2,
         },

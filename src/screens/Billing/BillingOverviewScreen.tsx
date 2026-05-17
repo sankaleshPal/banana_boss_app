@@ -8,6 +8,7 @@ import { usePaymentModesQuery } from '@/queries/paymentMode';
 import { useDuesUsersQuery } from '@/queries/duesUser';
 import Icon from 'react-native-vector-icons/Feather';
 import { formatINR } from '@/utils/currency';
+import { fonts } from '@/theme';
 
 type Nav = NativeStackNavigationProp<BillingStackParamList>;
 
@@ -34,20 +35,20 @@ export function BillingOverviewScreen() {
   });
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#F3F4F6' }}>
+    <View style={{ flex: 1, backgroundColor: '#F8FAFC' }}>
       {/* ── Header ───────────────────────────────────────────────────── */}
       <View
         style={{
-          backgroundColor: '#111827',
+          backgroundColor: '#0F172A',
           paddingHorizontal: 20,
           paddingTop: 56,
           paddingBottom: 24,
         }}
       >
-        <Text style={{ fontSize: 11, color: '#9CA3AF', fontWeight: '600', letterSpacing: 0.8, textTransform: 'uppercase' }}>
+        <Text style={{ fontFamily: fonts.medium, fontSize: 11, color: '#CBD5E1', fontWeight: '500', textTransform: 'uppercase' }}>
           {today}
         </Text>
-        <Text style={{ fontSize: 26, fontWeight: '900', color: '#FFFFFF', marginTop: 4, letterSpacing: -0.5 }}>
+        <Text style={{ fontFamily: fonts.bold, fontSize: 26, fontWeight: '700', color: '#FFFFFF', marginTop: 4 }}>
           {currentOutlet?.name || 'Billing'}
         </Text>
       </View>
@@ -61,9 +62,9 @@ export function BillingOverviewScreen() {
         <Text
           style={{
             fontSize: 11,
-            fontWeight: '800',
-            color: '#9CA3AF',
-            letterSpacing: 1,
+            fontFamily: fonts.bold,
+            fontWeight: '700',
+            color: '#64748B',
             textTransform: 'uppercase',
             marginBottom: 14,
           }}
@@ -87,20 +88,17 @@ export function BillingOverviewScreen() {
                 style={{
                   width: '47%',
                   backgroundColor: '#FFFFFF',
-                  borderRadius: 16,
+                  borderRadius: 8,
                   padding: 16,
-                  shadowColor: '#000',
-                  shadowOffset: { width: 0, height: 1 },
-                  shadowOpacity: 0.06,
-                  shadowRadius: 4,
-                  elevation: 2,
+                  borderWidth: 1,
+                  borderColor: '#E5E7EB',
                 }}
               >
                 <View
                   style={{
                     width: 42,
                     height: 42,
-                    borderRadius: 12,
+                    borderRadius: 8,
                     backgroundColor: item.color,
                     alignItems: 'center',
                     justifyContent: 'center',
@@ -109,8 +107,8 @@ export function BillingOverviewScreen() {
                 >
                   <Icon name={item.icon} size={20} color="#111827" />
                 </View>
-                <Text style={{ fontSize: 14, fontWeight: '700', color: '#111827' }}>{item.title}</Text>
-                <Text style={{ fontSize: 11, color: '#9CA3AF', marginTop: 3 }}>{subtitle}</Text>
+                <Text style={{ fontFamily: fonts.bold, fontSize: 14, fontWeight: '700', color: '#0F172A' }}>{item.title}</Text>
+                <Text style={{ fontFamily: fonts.regular, fontSize: 11, color: '#64748B', marginTop: 3 }}>{subtitle}</Text>
               </TouchableOpacity>
             );
           })}

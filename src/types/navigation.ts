@@ -32,7 +32,6 @@ export type BillingStackParamList = {
 
 export type SettingsStackParamList = {
   SettingsOverview: undefined;
-  OutletSelector: undefined;
 };
 
 export type AppTabsParamList = {

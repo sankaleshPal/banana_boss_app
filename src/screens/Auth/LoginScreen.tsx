@@ -1,22 +1,19 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, Keyboard, StatusBar } from 'react-native';
+import { Image, View, Text, TouchableOpacity, Keyboard, StatusBar } from 'react-native';
 import { useAuth } from '@/hooks/useAuth';
-import { useAppStore } from '@/stores/appStore';
 import { AppInput, AppButton, AppLoader } from '@/components/primitives';
 import { KeyboardWrapper } from '@/components/layout';
 import Icon from 'react-native-vector-icons/Feather';
+import { fonts } from '@/theme';
 
-/** Banana logo mark — yellow B on dark background */
+/** Banana Boss logo mark */
 function BananaLogo() {
   return (
     <View
       style={{
-        width: 80,
-        height: 80,
-        borderRadius: 24,
-        backgroundColor: '#111827',
-        alignItems: 'center',
-        justifyContent: 'center',
+        width: 96,
+        height: 96,
+        borderRadius: 18,
         marginBottom: 20,
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 4 },
@@ -25,39 +22,22 @@ function BananaLogo() {
         elevation: 8,
       }}
     >
-      {/* Outer yellow circle */}
-      <View
-        style={{
-          width: 56,
-          height: 56,
-          borderRadius: 28,
-          backgroundColor: '#FDE047',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
-      >
-        <Text
-          style={{
-            fontSize: 28,
-            fontWeight: '900',
-            color: '#111827',
-            lineHeight: 32,
-            marginTop: 2,
-          }}
-        >
-          B
-        </Text>
-      </View>
+      <Image
+        source={require('../../../assets/icon.png')}
+        style={{ width: '100%', height: '100%', borderRadius: 18 }}
+        resizeMode="contain"
+        accessibilityLabel="Banana Boss logo"
+      />
     </View>
   );
 }
 
 export function LoginScreen() {
-  const { login, rememberedPhone } = useAuth();
+  const { login, rememberedPhone, rememberedPassword } = useAuth();
   // Login already sets selectedBusiness inside useAuth.login — no need to call it here.
 
   const [phone, setPhone] = useState(rememberedPhone || '');
-  const [password, setPassword] = useState('');
+  const [password, setPassword] = useState(rememberedPassword || '');
   const [secure, setSecure] = useState(true);
   const [remember, setRemember] = useState(true);
   const [loading, setLoading] = useState(false);
@@ -82,17 +62,17 @@ export function LoginScreen() {
   };
 
   return (
-    <KeyboardWrapper style={{ backgroundColor: '#F3F4F6' }}>
-      <StatusBar barStyle="dark-content" backgroundColor="#F3F4F6" />
+    <KeyboardWrapper style={{ backgroundColor: '#F8FAFC' }}>
+      <StatusBar barStyle="dark-content" backgroundColor="#F8FAFC" />
       <View style={{ flex: 1, justifyContent: 'center', padding: 24 }}>
 
         {/* ── Brand ──────────────────────────────────────────────── */}
         <View style={{ alignItems: 'center', marginBottom: 40 }}>
           <BananaLogo />
-          <Text style={{ fontSize: 28, fontWeight: '900', color: '#111827', letterSpacing: -0.5 }}>
+          <Text style={{ fontFamily: fonts.bold, fontSize: 28, fontWeight: '700', color: '#0F172A' }}>
             Banana Boss
           </Text>
-          <Text style={{ fontSize: 13, color: '#9CA3AF', marginTop: 4 }}>
+          <Text style={{ fontFamily: fonts.regular, fontSize: 13, color: '#64748B', marginTop: 4 }}>
             Reports & Billing
           </Text>
         </View>
@@ -101,7 +81,7 @@ export function LoginScreen() {
         <View
           style={{
             backgroundColor: '#FFFFFF',
-            borderRadius: 20,
+            borderRadius: 8,
             padding: 24,
             shadowColor: '#000',
             shadowOffset: { width: 0, height: 2 },
@@ -138,7 +118,7 @@ export function LoginScreen() {
               size={18}
               color={remember ? '#111827' : '#9CA3AF'}
             />
-            <Text style={{ marginLeft: 8, fontSize: 13, color: '#374151', fontWeight: '500' }}>
+              <Text style={{ marginLeft: 8, fontFamily: fonts.medium, fontSize: 13, color: '#334155', fontWeight: '500' }}>
               Remember me
             </Text>
           </TouchableOpacity>

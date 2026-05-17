@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
+import { fonts } from '@/theme';
 
 interface SectionHeaderProps {
   title: string;
@@ -9,12 +10,12 @@ interface SectionHeaderProps {
 export const SectionHeader = React.memo(function SectionHeader({ title, action }: SectionHeaderProps) {
   return (
     <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginVertical: 12 }}>
-      <Text style={{ fontSize: 11, fontWeight: '800', color: '#9CA3AF', letterSpacing: 1, textTransform: 'uppercase' }}>
+      <Text style={{ fontFamily: fonts.bold, fontSize: 11, fontWeight: '700', color: '#64748B', textTransform: 'uppercase' }}>
         {title}
       </Text>
       {action && (
         <TouchableOpacity onPress={action.onPress}>
-          <Text style={{ fontSize: 12, fontWeight: '700', color: '#111827' }}>{action.label}</Text>
+          <Text style={{ fontFamily: fonts.bold, fontSize: 12, fontWeight: '700', color: '#0F172A' }}>{action.label}</Text>
         </TouchableOpacity>
       )}
     </View>

@@ -1,7 +1,10 @@
 import React, { useMemo } from 'react';
-import { View, Text, ScrollView, FlatList } from 'react-native';
-import { EmptyState, ErrorState, LoadingSkeleton } from './';
+import { ScrollView, Text, View } from 'react-native';
+import { EmptyState } from './EmptyState';
+import { ErrorState } from './ErrorState';
+import { LoadingSkeleton } from './LoadingSkeleton';
 import type { ReportPagination } from '@/types/common';
+import { fonts } from '@/theme';
 
 interface ReportTableProps {
   columns: string[];
@@ -25,75 +28,133 @@ export const ReportTable = React.memo(function ReportTable({
   emptyMessage = 'No data for the selected date range.',
   onRetry,
 }: ReportTableProps) {
+  const columnWidths = useMemo(
+    () =>
+      columns.map((column, index) => {
+        const values = rows.map((row) => String(row[index] ?? ''));
+        if (totalRow) values.push(String(totalRow[index] ?? ''));
+        const longest = Math.max(column.length, ...values.map((value) => value.length));
+        return Math.min(Math.max(longest * 7 + 32, 124), 220);
+      }),
+    [columns, rows, totalRow],
+  );
+  const tableWidth = columnWidths.reduce((sum, width) => sum + width, 0);
+
   if (isLoading) return <LoadingSkeleton type="report-table" count={5} />;
   if (isError) return <ErrorState onRetry={onRetry} />;
-  if (rows.length === 0) return <EmptyState title="No Data" subtitle={emptyMessage} icon="bar-chart-2" />;
+  if (rows.length === 0) {
+    return <EmptyState title="No Data" subtitle={emptyMessage} icon="bar-chart-2" />;
+  }
 
   return (
-    <ScrollView horizontal showsHorizontalScrollIndicator>
-      <View>
-        {/* Header */}
-        <View style={{ flexDirection: 'row', backgroundColor: '#F9FAFB', borderRadius: 8, paddingVertical: 10, paddingHorizontal: 8 }}>
-          {columns.map((col, i) => (
-            <Text
-              key={i}
-              style={{
-                width: 120,
-                fontSize: 11,
-                fontWeight: '800',
-                color: '#6B7280',
-                textTransform: 'uppercase',
-                letterSpacing: 0.5,
-              }}
-            >
-              {col}
-            </Text>
-          ))}
-        </View>
+    <View style={styles.tableShell}>
+      <ScrollView
+        horizontal
+        nestedScrollEnabled
+        showsHorizontalScrollIndicator
+        contentContainerStyle={{ minWidth: tableWidth }}
+      >
+        <View style={{ width: tableWidth }}>
+          <View style={styles.headerRow}>
+            {columns.map((col, index) => (
+              <Text
+                key={`${col}-${index}`}
+                numberOfLines={2}
+                style={[styles.headerCell, { width: columnWidths[index] }]}
+              >
+                {col}
+              </Text>
+            ))}
+          </View>
 
-        {/* Rows */}
-        <FlatList
-          data={rows}
-          keyExtractor={(_, i) => `row-${i}`}
-          renderItem={({ item, index }) => (
+          {rows.map((item, rowIndex) => (
             <View
-              style={{
-                flexDirection: 'row',
-                paddingVertical: 10,
-                paddingHorizontal: 8,
-                backgroundColor: index % 2 === 0 ? '#FFFFFF' : '#F9FAFB',
-              }}
+              key={`row-${rowIndex}`}
+              style={[
+                styles.bodyRow,
+                { backgroundColor: rowIndex % 2 === 0 ? '#FFFFFF' : '#F8FAFC' },
+              ]}
             >
-              {item.map((cell, ci) => (
-                <Text key={ci} style={{ width: 120, fontSize: 13, color: '#374151' }}>
-                  {String(cell)}
+              {columns.map((_, cellIndex) => (
+                <Text
+                  key={`${rowIndex}-${cellIndex}`}
+                  numberOfLines={2}
+                  style={[styles.bodyCell, { width: columnWidths[cellIndex] }]}
+                >
+                  {String(item[cellIndex] ?? '')}
+                </Text>
+              ))}
+            </View>
+          ))}
+
+          {totalRow && (
+            <View style={styles.totalRow}>
+              {columns.map((_, index) => (
+                <Text
+                  key={`total-${index}`}
+                  numberOfLines={2}
+                  style={[styles.totalCell, { width: columnWidths[index] }]}
+                >
+                  {String(totalRow[index] ?? '')}
                 </Text>
               ))}
             </View>
           )}
-          scrollEnabled={false}
-        />
-
-        {/* Total Row */}
-        {totalRow && (
-          <View
-            style={{
-              flexDirection: 'row',
-              paddingVertical: 10,
-              paddingHorizontal: 8,
-              backgroundColor: '#FEF9C3',
-              borderRadius: 8,
-              marginTop: 4,
-            }}
-          >
-            {totalRow.map((cell, i) => (
-              <Text key={i} style={{ width: 120, fontSize: 13, fontWeight: '800', color: '#111827' }}>
-                {String(cell)}
-              </Text>
-            ))}
-          </View>
-        )}
-      </View>
-    </ScrollView>
+        </View>
+      </ScrollView>
+    </View>
   );
 });
+
+const styles = {
+  tableShell: {
+    marginTop: 12,
+    borderRadius: 8,
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+    overflow: 'hidden' as const,
+  },
+  headerRow: {
+    flexDirection: 'row' as const,
+    backgroundColor: '#F8FAFC',
+    borderBottomWidth: 1,
+    borderBottomColor: '#E5E7EB',
+  },
+  headerCell: {
+    paddingVertical: 12,
+    paddingHorizontal: 12,
+    fontFamily: fonts.bold,
+    fontSize: 11,
+    fontWeight: '700' as const,
+    color: '#475569',
+    textTransform: 'uppercase' as const,
+  },
+  bodyRow: {
+    flexDirection: 'row' as const,
+    borderBottomWidth: 1,
+    borderBottomColor: '#EEF2F7',
+  },
+  bodyCell: {
+    paddingVertical: 12,
+    paddingHorizontal: 12,
+    fontFamily: fonts.regular,
+    fontSize: 13,
+    lineHeight: 18,
+    color: '#334155',
+  },
+  totalRow: {
+    flexDirection: 'row' as const,
+    backgroundColor: '#FEF9C3',
+    borderTopWidth: 1,
+    borderTopColor: '#FDE68A',
+  },
+  totalCell: {
+    paddingVertical: 12,
+    paddingHorizontal: 12,
+    fontFamily: fonts.bold,
+    fontSize: 13,
+    fontWeight: '700' as const,
+    color: '#111827',
+  },
+};

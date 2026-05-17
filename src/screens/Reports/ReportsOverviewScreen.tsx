@@ -7,6 +7,7 @@ import { useOutlet } from '@/hooks/useOutlet';
 import { useAppStore } from '@/stores/appStore';
 import { DateRangePicker } from '@/components/shared';
 import Icon from 'react-native-vector-icons/Feather';
+import { fonts } from '@/theme';
 
 const reportGroups = [
   {
@@ -41,20 +42,20 @@ export function ReportsOverviewScreen() {
   const setReportsDateRange = useAppStore((s) => s.setReportsDateRange);
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#F3F4F6' }}>
+    <View style={{ flex: 1, backgroundColor: '#F8FAFC' }}>
       {/* ── Header ─────────────────────────────────────────────────── */}
       <View
         style={{
-          backgroundColor: '#111827',
+          backgroundColor: '#0F172A',
           paddingHorizontal: 20,
           paddingTop: 56,
           paddingBottom: 20,
         }}
       >
-        <Text style={{ fontSize: 11, color: '#9CA3AF', fontWeight: '600', letterSpacing: 0.8, textTransform: 'uppercase' }}>
+        <Text style={{ fontFamily: fonts.medium, fontSize: 11, color: '#CBD5E1', fontWeight: '500', textTransform: 'uppercase' }}>
           Business Insights
         </Text>
-        <Text style={{ fontSize: 26, fontWeight: '900', color: '#FFFFFF', marginTop: 4, letterSpacing: -0.5 }}>
+        <Text style={{ fontFamily: fonts.bold, fontSize: 26, fontWeight: '700', color: '#FFFFFF', marginTop: 4 }}>
           {currentOutlet?.name || 'Reports'}
         </Text>
         <View style={{ marginTop: 14 }}>
@@ -73,9 +74,9 @@ export function ReportsOverviewScreen() {
             <Text
               style={{
                 fontSize: 11,
-                fontWeight: '800',
-                color: '#9CA3AF',
-                letterSpacing: 1,
+                fontFamily: fonts.bold,
+                fontWeight: '700',
+                color: '#64748B',
                 textTransform: 'uppercase',
                 marginBottom: 12,
               }}
@@ -91,20 +92,17 @@ export function ReportsOverviewScreen() {
                   style={{
                     width: '47%',
                     backgroundColor: '#FFFFFF',
-                    borderRadius: 14,
+                    borderRadius: 8,
                     padding: 14,
-                    shadowColor: '#000',
-                    shadowOffset: { width: 0, height: 1 },
-                    shadowOpacity: 0.05,
-                    shadowRadius: 3,
-                    elevation: 1,
+                    borderWidth: 1,
+                    borderColor: '#E5E7EB',
                   }}
                 >
                   <View
                     style={{
                       width: 36,
                       height: 36,
-                      borderRadius: 10,
+                      borderRadius: 8,
                       backgroundColor: item.color,
                       alignItems: 'center',
                       justifyContent: 'center',
@@ -113,7 +111,7 @@ export function ReportsOverviewScreen() {
                   >
                     <Icon name={item.icon} size={18} color="#111827" />
                   </View>
-                  <Text style={{ fontSize: 13, fontWeight: '700', color: '#111827' }}>{item.title}</Text>
+                  <Text style={{ fontFamily: fonts.bold, fontSize: 13, fontWeight: '700', color: '#0F172A' }}>{item.title}</Text>
                 </TouchableOpacity>
               ))}
             </View>

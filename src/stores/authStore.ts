@@ -8,10 +8,12 @@ interface AuthState {
   staff: StaffLoginItem[] | null;
   outlets: OutletListItem[] | null;
   rememberedPhone: string | null;
+  rememberedPassword: string | null;
 
   setStaff: (staff: StaffLoginItem[] | null) => void;
   setOutlets: (outlets: OutletListItem[] | null) => void;
   setRememberedPhone: (phone: string | null) => void;
+  setRememberedPassword: (password: string | null) => void;
   clearAuth: () => void;
 
   isAuthenticated: () => boolean;
@@ -23,10 +25,12 @@ export const useAuthStore = create<AuthState>()(
       staff: null,
       outlets: null,
       rememberedPhone: null,
+      rememberedPassword: null,
 
       setStaff: (staff) => set({ staff }),
       setOutlets: (outlets) => set({ outlets }),
       setRememberedPhone: (phone) => set({ rememberedPhone: phone }),
+      setRememberedPassword: (password) => set({ rememberedPassword: password }),
       clearAuth: () => set({ staff: null, outlets: null }),
 
       isAuthenticated: () => {
@@ -41,6 +45,7 @@ export const useAuthStore = create<AuthState>()(
         staff: state.staff,
         outlets: state.outlets,
         rememberedPhone: state.rememberedPhone,
+        rememberedPassword: state.rememberedPassword,
       }),
     },
   ),

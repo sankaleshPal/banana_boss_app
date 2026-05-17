@@ -21,7 +21,7 @@ export const ScreenWrapper = React.memo(function ScreenWrapper({
   refreshControl,
   onRefresh,
   padding = true,
-  bg = '#F3F4F6',
+  bg = '#F8FAFC',
   style,
   ...props
 }: ScreenWrapperProps) {

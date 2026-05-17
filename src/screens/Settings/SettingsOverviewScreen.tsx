@@ -1,18 +1,13 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, Alert, ScrollView } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import type { SettingsStackParamList } from '@/types/navigation';
 import { useAuth } from '@/hooks/useAuth';
 import { useOutlet } from '@/hooks/useOutlet';
 import Icon from 'react-native-vector-icons/Feather';
-
-type Nav = NativeStackNavigationProp<SettingsStackParamList>;
+import { fonts } from '@/theme';
 
 export function SettingsOverviewScreen() {
-  const navigation = useNavigation<Nav>();
   const { logout, staff } = useAuth();
-  const { currentOutlet, outlets } = useOutlet();
+  const { currentOutlet } = useOutlet();
 
   const me = staff?.[0];
 
@@ -29,11 +24,11 @@ export function SettingsOverviewScreen() {
   };
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#F3F4F6' }}>
+    <View style={{ flex: 1, backgroundColor: '#F8FAFC' }}>
       {/* ── Header ─────────────────────────────────────────────────── */}
       <View
         style={{
-          backgroundColor: '#111827',
+          backgroundColor: '#0F172A',
           paddingHorizontal: 20,
           paddingTop: 56,
           paddingBottom: 24,
@@ -44,22 +39,22 @@ export function SettingsOverviewScreen() {
           style={{
             width: 52,
             height: 52,
-            borderRadius: 16,
+            borderRadius: 8,
             backgroundColor: '#FDE047',
             alignItems: 'center',
             justifyContent: 'center',
             marginBottom: 12,
           }}
         >
-          <Text style={{ fontSize: 22, fontWeight: '900', color: '#111827' }}>
+          <Text style={{ fontFamily: fonts.bold, fontSize: 22, fontWeight: '700', color: '#111827' }}>
             {(me?.name || me?.nickName || 'U')[0].toUpperCase()}
           </Text>
         </View>
-        <Text style={{ fontSize: 20, fontWeight: '800', color: '#FFFFFF' }}>
+        <Text style={{ fontFamily: fonts.bold, fontSize: 20, fontWeight: '700', color: '#FFFFFF' }}>
           {me?.name || me?.nickName || 'Staff'}
         </Text>
         {me?.roleName ? (
-          <Text style={{ fontSize: 12, color: '#9CA3AF', marginTop: 2 }}>{me.roleName}</Text>
+          <Text style={{ fontFamily: fonts.regular, fontSize: 12, color: '#CBD5E1', marginTop: 2 }}>{me.roleName}</Text>
         ) : null}
       </View>
 
@@ -71,16 +66,14 @@ export function SettingsOverviewScreen() {
         {/* ── Outlet Section ─────────────────────────────────────── */}
         <Text style={sectionLabel}>Outlet</Text>
 
-        <TouchableOpacity
-          onPress={() => navigation.navigate('OutletSelector')}
+        <View
           style={cardRow}
-          activeOpacity={0.75}
         >
           <View
             style={{
               width: 38,
               height: 38,
-              borderRadius: 10,
+              borderRadius: 8,
               backgroundColor: '#FEF9C3',
               alignItems: 'center',
               justifyContent: 'center',
@@ -91,15 +84,9 @@ export function SettingsOverviewScreen() {
           </View>
           <View style={{ flex: 1 }}>
             <Text style={cardTitle}>Current Outlet</Text>
-            <Text style={cardSubtitle}>{currentOutlet?.name || 'Tap to select'}</Text>
+            <Text style={cardSubtitle}>{currentOutlet?.name || 'Assigned from login'}</Text>
           </View>
-          {(outlets?.length || 0) > 1 && (
-            <View style={{ backgroundColor: '#F3F4F6', borderRadius: 8, paddingHorizontal: 8, paddingVertical: 3, marginRight: 8 }}>
-              <Text style={{ fontSize: 11, color: '#6B7280', fontWeight: '600' }}>{outlets!.length} outlets</Text>
-            </View>
-          )}
-          <Icon name="chevron-right" size={16} color="#9CA3AF" />
-        </TouchableOpacity>
+        </View>
 
         {/* ── Account Section ────────────────────────────────────── */}
         <Text style={[sectionLabel, { marginTop: 24 }]}>Account</Text>
@@ -131,9 +118,9 @@ export function SettingsOverviewScreen() {
 
 const sectionLabel: import('react-native').TextStyle = {
   fontSize: 11,
-  fontWeight: '800',
-  color: '#9CA3AF',
-  letterSpacing: 1,
+  fontFamily: fonts.bold,
+  fontWeight: '700',
+  color: '#64748B',
   textTransform: 'uppercase',
   marginBottom: 10,
 };
@@ -142,10 +129,10 @@ const cardRow: import('react-native').ViewStyle = {
   flexDirection: 'row',
   alignItems: 'center',
   backgroundColor: '#FFFFFF',
-  borderRadius: 14,
+  borderRadius: 8,
   padding: 14,
   borderWidth: 1,
-  borderColor: 'rgba(0,0,0,0.06)',
+  borderColor: '#E5E7EB',
   shadowColor: '#000',
   shadowOffset: { width: 0, height: 1 },
   shadowOpacity: 0.05,
@@ -155,12 +142,14 @@ const cardRow: import('react-native').ViewStyle = {
 
 const cardTitle: import('react-native').TextStyle = {
   fontSize: 14,
+  fontFamily: fonts.bold,
   fontWeight: '700',
-  color: '#111827',
+  color: '#0F172A',
 };
 
 const cardSubtitle: import('react-native').TextStyle = {
   fontSize: 12,
-  color: '#9CA3AF',
+  fontFamily: fonts.regular,
+  color: '#64748B',
   marginTop: 2,
 };

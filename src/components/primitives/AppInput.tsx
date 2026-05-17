@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, TextInput, Text, TouchableOpacity, type TextInputProps } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
+import { fonts } from '@/theme';
 
 interface AppInputProps extends TextInputProps {
   label?: string;
@@ -22,7 +23,7 @@ export const AppInput = React.memo(function AppInput({
   return (
     <View style={{ marginBottom: 12 }}>
       {label && (
-        <Text style={{ fontSize: 12, fontWeight: '600', color: '#374151', marginBottom: 6 }}>
+        <Text style={{ fontFamily: fonts.medium, fontSize: 12, fontWeight: '500', color: '#334155', marginBottom: 6 }}>
           {label}
         </Text>
       )}
@@ -31,15 +32,15 @@ export const AppInput = React.memo(function AppInput({
           flexDirection: 'row',
           alignItems: 'center',
           borderWidth: 1,
-          borderColor: error ? '#EF4444' : 'rgba(0,0,0,0.08)',
-          borderRadius: 10,
+          borderColor: error ? '#EF4444' : '#E5E7EB',
+          borderRadius: 8,
           paddingHorizontal: 12,
           backgroundColor: '#FFFFFF',
         }}
       >
         {leftIcon && <Icon name={leftIcon} size={18} color="#9CA3AF" style={{ marginRight: 8 }} />}
         <TextInput
-          style={[{ flex: 1, paddingVertical: 12, fontSize: 14, color: '#111827' }, style]}
+          style={[{ flex: 1, paddingVertical: 12, fontFamily: fonts.regular, fontSize: 14, color: '#0F172A' }, style]}
           placeholderTextColor="#9CA3AF"
           {...props}
         />

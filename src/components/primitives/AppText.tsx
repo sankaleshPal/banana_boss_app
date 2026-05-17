@@ -1,6 +1,6 @@
 import React from 'react';
 import { Text, type TextProps } from 'react-native';
-import { typography } from '@/theme';
+import { typography, ubuntuFontForWeight } from '@/theme';
 
 type Variant = 'h1' | 'h2' | 'h3' | 'body' | 'caption' | 'label' | 'number';
 type Color = 'primary' | 'secondary' | 'muted' | 'error' | 'success' | 'white';
@@ -45,6 +45,7 @@ export const AppText = React.memo(function AppText({
       style={[
         {
           fontSize: t.fontSize,
+          fontFamily: ubuntuFontForWeight(w),
           fontWeight: w as any,
           letterSpacing: 'letterSpacing' in t ? t.letterSpacing : undefined,
           color: colorMap[color],

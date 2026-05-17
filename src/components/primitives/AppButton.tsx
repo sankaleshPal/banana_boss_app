@@ -1,5 +1,6 @@
 import React from 'react';
 import { TouchableOpacity, Text, ActivityIndicator, type TouchableOpacityProps } from 'react-native';
+import { fonts } from '@/theme';
 
 interface AppButtonProps extends TouchableOpacityProps {
   label: string;
@@ -42,7 +43,7 @@ export const AppButton = React.memo(function AppButton({
           backgroundColor: v.bg,
           paddingVertical: s.py,
           paddingHorizontal: s.px,
-          borderRadius: 10,
+          borderRadius: 8,
           alignItems: 'center',
           justifyContent: 'center',
           opacity: disabled ? 0.5 : 1,
@@ -54,7 +55,7 @@ export const AppButton = React.memo(function AppButton({
       {loading ? (
         <ActivityIndicator color={v.text} />
       ) : (
-        <Text style={{ color: v.text, fontSize: s.font, fontWeight: '700' }}>
+        <Text style={{ fontFamily: fonts.bold, color: v.text, fontSize: s.font, fontWeight: '700' }}>
           {label}
         </Text>
       )}

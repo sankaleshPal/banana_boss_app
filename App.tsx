@@ -1,10 +1,17 @@
 import React, { useEffect, useState } from "react";
-import { Platform } from "react-native";
+import { Platform, Text as RNText } from "react-native";
 import { StatusBar } from "expo-status-bar";
+import {
+  useFonts,
+  Ubuntu_400Regular,
+  Ubuntu_500Medium,
+  Ubuntu_700Bold,
+} from "@expo-google-fonts/ubuntu";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "@/queries/queryClient";
 import { RootNavigator } from "@/navigation/RootNavigator";
+import { fonts } from "@/theme";
 
 // Inject Feather icon font on web so icons render correctly
 function injectIconFont(family: string, url: string) {
@@ -25,8 +32,25 @@ async function loadIconFonts() {
   }
 }
 
+function configureDefaultTextFont() {
+  const textComponent = RNText as any;
+  if (textComponent.__ubuntuConfigured) return;
+
+  const defaultProps = textComponent.defaultProps || {};
+  textComponent.defaultProps = {
+    ...defaultProps,
+    style: [defaultProps.style, { fontFamily: fonts.regular }],
+  };
+  textComponent.__ubuntuConfigured = true;
+}
+
 export default function App() {
   const [fontsReady, setFontsReady] = useState(Platform.OS !== "web");
+  const [ubuntuReady] = useFonts({
+    Ubuntu_400Regular,
+    Ubuntu_500Medium,
+    Ubuntu_700Bold,
+  });
 
   useEffect(() => {
     if (Platform.OS === "web") {
@@ -34,7 +58,11 @@ export default function App() {
     }
   }, []);
 
-  if (!fontsReady) return null;
+  if (ubuntuReady) {
+    configureDefaultTextFont();
+  }
+
+  if (!fontsReady || !ubuntuReady) return null;
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
