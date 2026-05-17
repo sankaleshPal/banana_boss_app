@@ -1,5 +1,9 @@
 import { apiClient } from '@/api/client';
 import type { ReportPagination } from '@/types/common';
+import { API_BASE_URL, SERVER_SECRET, API_SERVER_SECRET } from '@/config/env';
+import { Platform } from 'react-native';
+import * as FileSystem from 'expo-file-system/legacy';
+import * as Sharing from 'expo-sharing';
 
 function reportQuery(
   outletId: string,
@@ -16,6 +20,118 @@ function reportQuery(
   if (page !== undefined) params.append('page', String(page));
   if (limit !== undefined) params.append('limit', String(limit));
   return params.toString();
+}
+
+export const REPORT_XLSX_ENDPOINTS = {
+  category: '/r/reports/category-xlsx',
+  'parent-category': '/r/reports/parent-category-xlsx',
+  item: '/r/reports/item-xlsx',
+  addon: '/r/reports/addon-xlsx',
+  'item-variant': '/r/reports/item-variant-xlsx',
+  discount: '/r/reports/discount-xlsx',
+  'deleted-kot': '/r/reports/deleted-kot-xlsx',
+  'transfer-kot': '/r/reports/transfer-kot-xlsx',
+  'transfer-table': '/r/reports/transfer-table-xlsx',
+  table: '/r/reports/table-xlsx',
+  charge: '/r/reports/charge-xlsx',
+  'item-type': '/r/reports/item-type-xlsx',
+  'service-charge': '/r/reports/service-charge-xlsx',
+  'net-sale': '/r/reports/net-sale-xlsx',
+  'sale-report': '/r/reports/sale-report-xlsx',
+  'bill-list': '/r/reports/sale-report-xlsx',
+  consolidated: '/r/reports/consolidated-xlsx',
+  variant: '/r/reports/variant-xlsx',
+  area: '/r/reports/area-xlsx',
+  'area-item-sale': '/r/reports/area-item-xlsx',
+  'bill-wise': '/r/reports/sale-report-xlsx',
+  'open-item-sale': '/r/reports/open-item-xlsx',
+} as const;
+
+export type ReportXlsxId = keyof typeof REPORT_XLSX_ENDPOINTS;
+
+export const REPORT_XLSX_FILENAMES: Record<ReportXlsxId, string> = {
+  category: 'category-report.xlsx',
+  'parent-category': 'parent-category-report.xlsx',
+  item: 'item-report.xlsx',
+  addon: 'addon-report.xlsx',
+  'item-variant': 'item-variant-report.xlsx',
+  discount: 'discount-report.xlsx',
+  'deleted-kot': 'deleted-kot-report.xlsx',
+  'transfer-kot': 'transfer-kot-report.xlsx',
+  'transfer-table': 'transfer-table-report.xlsx',
+  table: 'table-report.xlsx',
+  charge: 'charge-report.xlsx',
+  'item-type': 'item-type-report.xlsx',
+  'service-charge': 'service-charge-report.xlsx',
+  'net-sale': 'net-sale-report.xlsx',
+  'sale-report': 'sale-report.xlsx',
+  'bill-list': 'bill-list-report.xlsx',
+  consolidated: 'consolidated-report.xlsx',
+  variant: 'variant-report.xlsx',
+  area: 'area-report.xlsx',
+  'area-item-sale': 'area-item-report.xlsx',
+  'bill-wise': 'bill-wise-report.xlsx',
+  'open-item-sale': 'open-item-report.xlsx',
+};
+
+function filenameFromEndpoint(endpoint: string): string {
+  const segment = endpoint.split('/').pop() ?? 'report';
+  const slug = segment.replace(/-xlsx$/i, '').replace(/[^a-z0-9-]/gi, '-');
+  return `${slug}-report.xlsx`;
+}
+
+function filenameFromContentDisposition(header: string | null): string | null {
+  if (!header) return null;
+  const encodedMatch = header.match(/filename\*=UTF-8''([^;]+)/i);
+  if (encodedMatch?.[1]) return decodeURIComponent(encodedMatch[1].replace(/"/g, ''));
+  const plainMatch = header.match(/filename="?([^";]+)"?/i);
+  return plainMatch?.[1] ? plainMatch[1] : null;
+}
+
+function buildXlsxUrl(endpoint: string, outletId: string, from?: number, to?: number) {
+  const params = new URLSearchParams({ outletId });
+  if (from !== undefined) params.append('from', String(from));
+  if (to !== undefined) params.append('to', String(to));
+  return `${API_BASE_URL}${endpoint}?${params.toString()}`;
+}
+
+function apiHeaders() {
+  return {
+    'server-secret': SERVER_SECRET || '',
+    'api-server-secret': API_SERVER_SECRET || '',
+  };
+}
+
+async function downloadWebXlsx(url: string, fallbackName: string) {
+  const response = await fetch(url, { headers: apiHeaders() });
+  if (!response.ok) throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+
+  const blob = await response.blob();
+  const serverFilename = filenameFromContentDisposition(response.headers.get('Content-Disposition'));
+  const downloadUrl = window.URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = downloadUrl;
+  link.download = serverFilename?.trim() || fallbackName;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  window.URL.revokeObjectURL(downloadUrl);
+}
+
+async function downloadNativeXlsx(url: string, filename: string) {
+  const fileUri = `${FileSystem.cacheDirectory}${filename}`;
+  const result = await FileSystem.downloadAsync(url, fileUri, { headers: apiHeaders() });
+  const canShare = await Sharing.isAvailableAsync();
+
+  if (!canShare) {
+    throw new Error('Sharing is not available on this device.');
+  }
+
+  await Sharing.shareAsync(result.uri, {
+    mimeType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    UTI: 'org.openxmlformats.spreadsheetml.sheet',
+    dialogTitle: filename,
+  });
 }
 
 export interface ReportResponse<T = any> {
@@ -147,5 +263,22 @@ export const reportsApi = {
   async getOutstandingDues(outletId: string): Promise<ReportResponse> {
     const raw = await apiClient.get<any[]>(`/r/reports/dues/outstanding?outletId=${outletId}`);
     return extractField(raw, 'outstandingDues');
+  },
+
+  downloadReportXlsx(reportId: ReportXlsxId, outletId: string, from?: number, to?: number) {
+    const endpoint = REPORT_XLSX_ENDPOINTS[reportId];
+    return this.downloadXlsx(endpoint, outletId, from, to, REPORT_XLSX_FILENAMES[reportId]);
+  },
+
+  async downloadXlsx(endpoint: string, outletId: string, from?: number, to?: number, filename?: string) {
+    const finalName = filename?.trim() || filenameFromEndpoint(endpoint);
+    const url = buildXlsxUrl(endpoint, outletId, from, to);
+
+    if (Platform.OS === 'web') {
+      await downloadWebXlsx(url, finalName);
+      return;
+    }
+
+    await downloadNativeXlsx(url, finalName);
   },
 };

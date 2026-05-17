@@ -33,7 +33,7 @@ export function DiscountReportScreen() {
     <ScreenWrapper>
       <TopBar title="Discount Report" showBack onBack={() => navigation.goBack()} />
       <DateRangePicker value={dateRange} onChange={handleDateChange} outletId={outletId} />
-      <ReportTable columns={columns} rows={rows} isLoading={isLoading} isError={isError} onRetry={refetch} />
+      <ReportTable columns={columns} rows={rows} isLoading={isLoading} isError={isError} onRetry={refetch} downloadReportId="discount" outletId={outletId} from={dateRange.from} to={dateRange.to} />
     </ScreenWrapper>
   );
 }

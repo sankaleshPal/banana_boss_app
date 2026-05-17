@@ -1,6 +1,7 @@
-import React, { useMemo, useCallback } from 'react';
-import { View, Text } from 'react-native';
+import React, { useMemo, useCallback, useState } from 'react';
+import { ActivityIndicator, Alert, TouchableOpacity, View, Text } from 'react-native';
 import { MotiView } from 'moti';
+import Icon from 'react-native-vector-icons/Feather';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { ReportsStackParamList } from '@/types/navigation';
@@ -10,12 +11,15 @@ import { useNetSalesReport } from '@/queries/reports';
 import { useCurrency } from '@/hooks/useCurrency';
 import { ScreenWrapper, TopBar } from '@/components/layout';
 import { DateRangePicker, MetricCard, LoadingSkeleton, ErrorState, SectionHeader } from '@/components/shared';
+import { reportsApi } from '@/api/services/reports/reports.api';
+import { fonts } from '@/theme';
 
 export function NetSalesSummaryScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<ReportsStackParamList>>();
   const { outletId } = useOutlet();
   const dateRange = useAppStore((s) => s.reportsDateRange);
   const setDateRange = useAppStore((s) => s.setReportsDateRange);
+  const [isDownloading, setIsDownloading] = useState(false);
   const { data: rawList = [], isLoading, isError, refetch } = useNetSalesReport(
     outletId,
     dateRange.from,
@@ -54,6 +58,21 @@ export function NetSalesSummaryScreen() {
   }, [rawList]);
 
   const handleRefresh = useCallback(() => { refetch(); }, [refetch]);
+  const handleDownload = useCallback(async () => {
+    if (!outletId) return;
+
+    setIsDownloading(true);
+    try {
+      await reportsApi.downloadReportXlsx('net-sale', outletId, dateRange.from, dateRange.to);
+    } catch (error) {
+      Alert.alert(
+        'Download failed',
+        error instanceof Error ? error.message : 'Failed to download Excel report. Please try again.',
+      );
+    } finally {
+      setIsDownloading(false);
+    }
+  }, [outletId, dateRange.from, dateRange.to]);
 
   const metricCards = useMemo(
     () => [
@@ -74,6 +93,34 @@ export function NetSalesSummaryScreen() {
     <ScreenWrapper scrollable refreshControl onRefresh={handleRefresh}>
       <TopBar title="Net Sales Summary" showBack onBack={() => navigation.goBack()} />
       <DateRangePicker value={dateRange} onChange={(r) => { setDateRange(r); }} outletId={outletId} />
+      <View style={{ flexDirection: 'row', justifyContent: 'flex-end', marginTop: 12 }}>
+        <TouchableOpacity
+          activeOpacity={0.75}
+          disabled={!outletId || isLoading || rawList.length === 0 || isDownloading}
+          onPress={handleDownload}
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            gap: 6,
+            minHeight: 36,
+            paddingHorizontal: 12,
+            borderRadius: 8,
+            backgroundColor: '#FDE047',
+            borderWidth: 1,
+            borderColor: '#111827',
+            opacity: !outletId || isLoading || rawList.length === 0 || isDownloading ? 0.45 : 1,
+          }}
+        >
+          {isDownloading ? (
+            <ActivityIndicator size="small" color="#111827" />
+          ) : (
+            <Icon name="download" size={15} color="#111827" />
+          )}
+          <Text style={{ fontFamily: fonts.bold, fontSize: 11, fontWeight: '700', color: '#111827', textTransform: 'uppercase' }}>
+            {isDownloading ? 'Downloading' : 'Excel'}
+          </Text>
+        </TouchableOpacity>
+      </View>
 
       {isLoading && <LoadingSkeleton type="metric-card" count={6} />}
       {isError && !isLoading && <ErrorState onRetry={handleRefresh} />}

@@ -1,10 +1,12 @@
-import React, { useMemo } from 'react';
-import { ScrollView, Text, View } from 'react-native';
+import React, { useMemo, useState } from 'react';
+import { ActivityIndicator, Alert, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import Icon from 'react-native-vector-icons/Feather';
 import { EmptyState } from './EmptyState';
 import { ErrorState } from './ErrorState';
 import { LoadingSkeleton } from './LoadingSkeleton';
 import type { ReportPagination } from '@/types/common';
 import { fonts } from '@/theme';
+import { reportsApi, type ReportXlsxId } from '@/api/services/reports/reports.api';
 
 interface ReportTableProps {
   columns: string[];
@@ -17,6 +19,10 @@ interface ReportTableProps {
   searchable?: boolean;
   pagination?: ReportPagination;
   onPageChange?: (page: number) => void;
+  downloadReportId?: ReportXlsxId;
+  outletId?: string | null;
+  from?: number;
+  to?: number;
 }
 
 export const ReportTable = React.memo(function ReportTable({
@@ -27,7 +33,12 @@ export const ReportTable = React.memo(function ReportTable({
   isError,
   emptyMessage = 'No data for the selected date range.',
   onRetry,
+  downloadReportId,
+  outletId,
+  from,
+  to,
 }: ReportTableProps) {
+  const [isDownloading, setIsDownloading] = useState(false);
   const columnWidths = useMemo(
     () =>
       columns.map((column, index) => {
@@ -42,73 +53,145 @@ export const ReportTable = React.memo(function ReportTable({
 
   if (isLoading) return <LoadingSkeleton type="report-table" count={5} />;
   if (isError) return <ErrorState onRetry={onRetry} />;
+
+  const canDownload = !!downloadReportId && !!outletId && rows.length > 0 && !isLoading && !isDownloading;
+
+  const handleDownload = async () => {
+    if (!downloadReportId || !outletId) return;
+
+    setIsDownloading(true);
+    try {
+      await reportsApi.downloadReportXlsx(downloadReportId, outletId, from, to);
+    } catch (error) {
+      Alert.alert(
+        'Download failed',
+        error instanceof Error ? error.message : 'Failed to download Excel report. Please try again.',
+      );
+    } finally {
+      setIsDownloading(false);
+    }
+  };
+
+  const renderDownloadToolbar = () =>
+    downloadReportId ? (
+      <View style={styles.toolbar}>
+        <TouchableOpacity
+          activeOpacity={0.75}
+          disabled={!canDownload}
+          onPress={handleDownload}
+          style={[styles.downloadButton, !canDownload && styles.downloadButtonDisabled]}
+        >
+          {isDownloading ? (
+            <ActivityIndicator size="small" color="#111827" />
+          ) : (
+            <Icon name="download" size={15} color="#111827" />
+          )}
+          <Text style={styles.downloadButtonText}>{isDownloading ? 'Downloading' : 'Excel'}</Text>
+        </TouchableOpacity>
+      </View>
+    ) : null;
+
   if (rows.length === 0) {
-    return <EmptyState title="No Data" subtitle={emptyMessage} icon="bar-chart-2" />;
+    return (
+      <View>
+        {renderDownloadToolbar()}
+        <EmptyState title="No Data" subtitle={emptyMessage} icon="bar-chart-2" />
+      </View>
+    );
   }
 
   return (
-    <View style={styles.tableShell}>
-      <ScrollView
-        horizontal
-        nestedScrollEnabled
-        showsHorizontalScrollIndicator
-        contentContainerStyle={{ minWidth: tableWidth }}
-      >
-        <View style={{ width: tableWidth }}>
-          <View style={styles.headerRow}>
-            {columns.map((col, index) => (
-              <Text
-                key={`${col}-${index}`}
-                numberOfLines={2}
-                style={[styles.headerCell, { width: columnWidths[index] }]}
+    <View>
+      {renderDownloadToolbar()}
+      <View style={styles.tableShell}>
+        <ScrollView
+          horizontal
+          nestedScrollEnabled
+          showsHorizontalScrollIndicator
+          contentContainerStyle={{ minWidth: tableWidth }}
+        >
+          <View style={{ width: tableWidth }}>
+            <View style={styles.headerRow}>
+              {columns.map((col, index) => (
+                <Text
+                  key={`${col}-${index}`}
+                  numberOfLines={2}
+                  style={[styles.headerCell, { width: columnWidths[index] }]}
+                >
+                  {col}
+                </Text>
+              ))}
+            </View>
+
+            {rows.map((item, rowIndex) => (
+              <View
+                key={`row-${rowIndex}`}
+                style={[
+                  styles.bodyRow,
+                  { backgroundColor: rowIndex % 2 === 0 ? '#FFFFFF' : '#F8FAFC' },
+                ]}
               >
-                {col}
-              </Text>
+                {columns.map((_, cellIndex) => (
+                  <Text
+                    key={`${rowIndex}-${cellIndex}`}
+                    numberOfLines={2}
+                    style={[styles.bodyCell, { width: columnWidths[cellIndex] }]}
+                  >
+                    {String(item[cellIndex] ?? '')}
+                  </Text>
+                ))}
+              </View>
             ))}
+
+            {totalRow && (
+              <View style={styles.totalRow}>
+                {columns.map((_, index) => (
+                  <Text
+                    key={`total-${index}`}
+                    numberOfLines={2}
+                    style={[styles.totalCell, { width: columnWidths[index] }]}
+                  >
+                    {String(totalRow[index] ?? '')}
+                  </Text>
+                ))}
+              </View>
+            )}
           </View>
-
-          {rows.map((item, rowIndex) => (
-            <View
-              key={`row-${rowIndex}`}
-              style={[
-                styles.bodyRow,
-                { backgroundColor: rowIndex % 2 === 0 ? '#FFFFFF' : '#F8FAFC' },
-              ]}
-            >
-              {columns.map((_, cellIndex) => (
-                <Text
-                  key={`${rowIndex}-${cellIndex}`}
-                  numberOfLines={2}
-                  style={[styles.bodyCell, { width: columnWidths[cellIndex] }]}
-                >
-                  {String(item[cellIndex] ?? '')}
-                </Text>
-              ))}
-            </View>
-          ))}
-
-          {totalRow && (
-            <View style={styles.totalRow}>
-              {columns.map((_, index) => (
-                <Text
-                  key={`total-${index}`}
-                  numberOfLines={2}
-                  style={[styles.totalCell, { width: columnWidths[index] }]}
-                >
-                  {String(totalRow[index] ?? '')}
-                </Text>
-              ))}
-            </View>
-          )}
-        </View>
-      </ScrollView>
+        </ScrollView>
+      </View>
     </View>
   );
 });
 
 const styles = {
-  tableShell: {
+  toolbar: {
+    flexDirection: 'row' as const,
+    justifyContent: 'flex-end' as const,
     marginTop: 12,
+  },
+  downloadButton: {
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
+    gap: 6,
+    minHeight: 36,
+    paddingHorizontal: 12,
+    borderRadius: 8,
+    backgroundColor: '#FDE047',
+    borderWidth: 1,
+    borderColor: '#111827',
+  },
+  downloadButtonDisabled: {
+    opacity: 0.45,
+  },
+  downloadButtonText: {
+    fontFamily: fonts.bold,
+    fontSize: 11,
+    fontWeight: '700' as const,
+    color: '#111827',
+    textTransform: 'uppercase' as const,
+  },
+  tableShell: {
+    marginTop: 10,
     borderRadius: 8,
     backgroundColor: '#FFFFFF',
     borderWidth: 1,

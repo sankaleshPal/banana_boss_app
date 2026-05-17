@@ -42,7 +42,7 @@ export function AreaItemReportScreen() {
     <ScreenWrapper>
       <TopBar title="Area-Item Sales" showBack onBack={() => navigation.goBack()} />
       <DateRangePicker value={dateRange} onChange={handleDateChange} outletId={outletId} />
-      <ReportTable columns={columns} rows={rows} isLoading={isLoading} isError={isError} onRetry={refetch} />
+      <ReportTable columns={columns} rows={rows} isLoading={isLoading} isError={isError} onRetry={refetch} downloadReportId="area-item-sale" outletId={outletId} from={dateRange.from} to={dateRange.to} />
     </ScreenWrapper>
   );
 }

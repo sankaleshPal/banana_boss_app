@@ -40,7 +40,7 @@ export function DeletedKotReportScreen() {
     <ScreenWrapper>
       <TopBar title="Deleted KOT Report" showBack onBack={() => navigation.goBack()} />
       <DateRangePicker value={dateRange} onChange={handleDateChange} outletId={outletId} />
-      <ReportTable columns={columns} rows={rows} isLoading={isLoading} isError={isError} onRetry={refetch} />
+      <ReportTable columns={columns} rows={rows} isLoading={isLoading} isError={isError} onRetry={refetch} downloadReportId="deleted-kot" outletId={outletId} from={dateRange.from} to={dateRange.to} />
       {data?.pagination && <PaginationBar pagination={data.pagination} onPageChange={setPage} />}
     </ScreenWrapper>
   );

@@ -34,7 +34,7 @@ export function AddonSalesReportScreen() {
     <ScreenWrapper>
       <TopBar title="Addon Sales Report" showBack onBack={() => navigation.goBack()} />
       <DateRangePicker value={dateRange} onChange={handleDateChange} outletId={outletId} />
-      <ReportTable columns={columns} rows={rows} isLoading={isLoading} isError={isError} onRetry={refetch} />
+      <ReportTable columns={columns} rows={rows} isLoading={isLoading} isError={isError} onRetry={refetch} downloadReportId="addon" outletId={outletId} from={dateRange.from} to={dateRange.to} />
     </ScreenWrapper>
   );
 }

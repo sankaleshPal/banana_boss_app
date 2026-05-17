@@ -66,6 +66,10 @@ export function BillWiseReportScreen() {
         isLoading={isLoading}
         isError={isError}
         onRetry={refetch}
+        downloadReportId="bill-wise"
+        outletId={outletId}
+        from={dateRange.from}
+        to={dateRange.to}
       />
       {data?.pagination && (
         <PaginationBar pagination={data.pagination} onPageChange={setPage} />

@@ -36,7 +36,7 @@ export function AreaReportScreen() {
     <ScreenWrapper>
       <TopBar title="Area Report" showBack onBack={() => navigation.goBack()} />
       <DateRangePicker value={dateRange} onChange={handleDateChange} outletId={outletId} />
-      <ReportTable columns={columns} rows={rows} isLoading={isLoading} isError={isError} onRetry={refetch} />
+      <ReportTable columns={columns} rows={rows} isLoading={isLoading} isError={isError} onRetry={refetch} downloadReportId="area" outletId={outletId} from={dateRange.from} to={dateRange.to} />
     </ScreenWrapper>
   );
 }

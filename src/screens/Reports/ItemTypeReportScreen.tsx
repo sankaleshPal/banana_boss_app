@@ -35,7 +35,7 @@ export function ItemTypeReportScreen() {
     <ScreenWrapper>
       <TopBar title="Item Type Report" showBack onBack={() => navigation.goBack()} />
       <DateRangePicker value={dateRange} onChange={handleDateChange} outletId={outletId} />
-      <ReportTable columns={columns} rows={rows} isLoading={isLoading} isError={isError} onRetry={refetch} />
+      <ReportTable columns={columns} rows={rows} isLoading={isLoading} isError={isError} onRetry={refetch} downloadReportId="item-type" outletId={outletId} from={dateRange.from} to={dateRange.to} />
     </ScreenWrapper>
   );
 }

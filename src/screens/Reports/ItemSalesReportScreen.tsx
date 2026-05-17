@@ -50,6 +50,10 @@ export function ItemSalesReportScreen() {
         isLoading={isLoading}
         isError={isError}
         onRetry={refetch}
+        downloadReportId="item"
+        outletId={outletId}
+        from={dateRange.from}
+        to={dateRange.to}
       />
       {data?.pagination && (
         <PaginationBar pagination={data.pagination} onPageChange={setPage} />
