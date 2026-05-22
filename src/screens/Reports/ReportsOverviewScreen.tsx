@@ -88,9 +88,11 @@ export function ReportsOverviewScreen() {
                 key={idx}
                 onPress={() => navigation.navigate(item.screen)}
                 style={{
-                  width: '48%',
+                  flex: 1,
+                  minWidth: 140,
+                  maxWidth: '48%',
                   backgroundColor: '#FFFFFF',
-                  padding: 16,
+                  padding: 12,
                 }}
               >
                 <View

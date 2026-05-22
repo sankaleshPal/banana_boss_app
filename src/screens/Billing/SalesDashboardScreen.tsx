@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import { View, Text, ScrollView } from 'react-native';
+import { View, Text, ScrollView, Dimensions } from 'react-native';
 import { MotiView } from 'moti';
 import { useOutlet } from '@/hooks/useOutlet';
 import { useAppStore } from '@/stores/appStore';
@@ -8,6 +8,8 @@ import { useCurrency } from '@/hooks/useCurrency';
 import { ScreenWrapper, TopBar } from '@/components/layout';
 import { DateRangePicker, MetricCard, LoadingSkeleton, ErrorState } from '@/components/shared';
 import { fonts } from '@/theme';
+import { getTodayRange, getYesterdayRange } from '@/utils/date';
+import { BarChart } from 'react-native-chart-kit';
 
 export function SalesDashboardScreen() {
   const { outletId, currentOutlet } = useOutlet();
@@ -21,6 +23,19 @@ export function SalesDashboardScreen() {
   );
   const { format } = useCurrency();
   const handleRefresh = useCallback(() => { refetch(); }, [refetch]);
+
+  // Determine if today is selected
+  const todayRange = getTodayRange();
+  const isToday = dateRange.from === todayRange.from && dateRange.to === todayRange.to;
+  
+  // Yesterday query (only enabled if isToday is true)
+  const yesterdayRange = getYesterdayRange();
+  const { data: yesterdayData, isLoading: isLoadingYest } = useBillsDashboardQuery(
+    outletId,
+    yesterdayRange.from,
+    yesterdayRange.to,
+    isToday,
+  );
 
   // Destructure exactly as banana_boss UnifiedSalesDashboard does
   const paidAll         = (data as any)?.paidAll         ?? { totals: {}, paymentModes: {}, roundOff: {} };
@@ -77,6 +92,49 @@ export function SalesDashboardScreen() {
               </View>
             </ScrollView>
           </MotiView>
+
+          {/* Yesterday vs Today Chart */}
+          {isToday && !isLoadingYest && yesterdayData && (
+            <MotiView
+              from={{ opacity: 0, translateY: 12 }}
+              animate={{ opacity: 1, translateY: 0 }}
+              transition={{ type: 'timing', duration: 400, delay: 200 }}
+              style={{ marginTop: 24 }}
+            >
+              <Text style={[s.sectionLabel, { marginTop: 0 }]}>Today vs Yesterday</Text>
+              <View style={{ backgroundColor: '#FFFFFF', borderRadius: 16, padding: 16, borderWidth: 1, borderColor: '#EAE8E2' }}>
+                <BarChart
+                  data={{
+                    labels: ['Yesterday', 'Today'],
+                    datasets: [
+                      {
+                        data: [
+                          (yesterdayData as any)?.paidAll?.totals?.netAfterDiscountAndCharges || 0,
+                          paidAll?.totals?.netAfterDiscountAndCharges || 0,
+                        ],
+                      },
+                    ],
+                  }}
+                  width={Dimensions.get('window').width - 64}
+                  height={220}
+                  yAxisLabel=""
+                  yAxisSuffix=""
+                  chartConfig={{
+                    backgroundColor: '#FFFFFF',
+                    backgroundGradientFrom: '#FFFFFF',
+                    backgroundGradientTo: '#FFFFFF',
+                    decimalPlaces: 0,
+                    color: (opacity = 1) => `rgba(2, 132, 199, ${opacity})`,
+                    labelColor: (opacity = 1) => `rgba(120, 113, 108, ${opacity})`,
+                    propsForBackgroundLines: { strokeDasharray: '' },
+                    barPercentage: 0.6,
+                  }}
+                  style={{ borderRadius: 16 }}
+                  showValuesOnTopOfBars
+                />
+              </View>
+            </MotiView>
+          )}
 
           {/* Payment Modes */}
           {paymentModeEntries.length > 0 && (

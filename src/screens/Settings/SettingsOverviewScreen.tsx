@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, Alert, ScrollView } from 'react-native';
+import { View, Text, TouchableOpacity, Alert, ScrollView, Platform } from 'react-native';
 import { useAuth } from '@/hooks/useAuth';
 import { useOutlet } from '@/hooks/useOutlet';
 import Icon from 'react-native-vector-icons/Feather';
@@ -12,6 +12,13 @@ export function SettingsOverviewScreen() {
   const me = staff?.[0];
 
   const handleLogout = () => {
+    if (Platform.OS === 'web') {
+      if (window.confirm('Are you sure you want to logout?')) {
+        logout();
+      }
+      return;
+    }
+
     Alert.alert(
       'Logout',
       'Are you sure you want to logout?',

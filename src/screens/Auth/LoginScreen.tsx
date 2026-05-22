@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Image, View, Text, TouchableOpacity, Keyboard, StatusBar } from 'react-native';
+import { Image, View, Text, TouchableOpacity, Keyboard, StatusBar, Platform } from 'react-native';
 import { useAuth } from '@/hooks/useAuth';
 import { AppInput, AppButton, AppLoader } from '@/components/primitives';
 import { KeyboardWrapper } from '@/components/layout';
@@ -42,6 +42,28 @@ export function LoginScreen() {
   const [remember, setRemember] = useState(true);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+
+  React.useEffect(() => {
+    if (Platform.OS === 'web' && typeof window !== 'undefined') {
+      const handler = (e: any) => {
+        e.preventDefault();
+        setDeferredPrompt(e);
+      };
+      window.addEventListener('beforeinstallprompt', handler);
+      return () => window.removeEventListener('beforeinstallprompt', handler);
+    }
+  }, []);
+
+  const handleInstallPWA = async () => {
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      if (outcome === 'accepted') {
+        setDeferredPrompt(null);
+      }
+    }
+  };
 
   const handleLogin = async () => {
     Keyboard.dismiss();
@@ -141,6 +163,32 @@ export function LoginScreen() {
           ) : null}
 
           <AppButton label="Login" onPress={handleLogin} loading={loading} />
+
+          {/* PWA Install Prompt */}
+          {deferredPrompt && (
+            <View style={{ marginTop: 24, paddingTop: 20, borderTopWidth: 1, borderColor: '#F1F5F9', alignItems: 'center' }}>
+              <View style={{ backgroundColor: '#FEF9C3', padding: 10, borderRadius: 12, marginBottom: 10 }}>
+                <Icon name="download" size={20} color="#B45309" />
+              </View>
+              <Text style={{ fontFamily: fonts.bold, fontSize: 14, color: '#1A1A1A', marginBottom: 4 }}>
+                Get the Full App Experience
+              </Text>
+              <Text style={{ fontFamily: fonts.regular, fontSize: 12, color: '#64748B', textAlign: 'center', marginBottom: 14 }}>
+                Install Banana Boss on your home screen for fast, offline-ready access.
+              </Text>
+              <TouchableOpacity
+                onPress={handleInstallPWA}
+                style={{
+                  backgroundColor: '#FDE047',
+                  paddingVertical: 10,
+                  paddingHorizontal: 20,
+                  borderRadius: 10,
+                }}
+              >
+                <Text style={{ fontFamily: fonts.bold, color: '#111827', fontSize: 13 }}>Download App</Text>
+              </TouchableOpacity>
+            </View>
+          )}
         </View>
       </View>
 
