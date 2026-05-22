@@ -5,7 +5,6 @@ import Icon from 'react-native-vector-icons/Feather';
 import type { AppTabsParamList } from '@/types/navigation';
 import { ReportsStack } from './ReportsStack';
 import { BillingStack } from './BillingStack';
-import { SettingsStack } from './SettingsStack';
 import { fonts } from '@/theme';
 
 const Tab = createBottomTabNavigator<AppTabsParamList>();
@@ -22,7 +21,6 @@ export function AppTabs() {
           switch (route.name) {
             case 'ReportsTab':   iconName = 'bar-chart-2'; break;
             case 'BillingTab':   iconName = 'credit-card'; break;
-            case 'SettingsTab':  iconName = 'settings';    break;
             default:             iconName = 'circle';
           }
           return <Icon name={iconName} size={size - 2} color={color} />;
@@ -58,7 +56,6 @@ export function AppTabs() {
     >
       <Tab.Screen name="ReportsTab"  component={ReportsStack}  options={{ tabBarLabel: 'Reports' }} />
       <Tab.Screen name="BillingTab"  component={BillingStack}  options={{ tabBarLabel: 'Billing' }} />
-      <Tab.Screen name="SettingsTab" component={SettingsStack} options={{ tabBarLabel: 'Settings' }} />
     </Tab.Navigator>
   );
 }
