@@ -5,7 +5,7 @@ export const duesUserApi = {
   list(outletId: string): Promise<DuesUser[]> {
     return apiClient.get(`/r/dues-users?outletId=${outletId}`);
   },
-  create(payload: { name: string; phone?: string; status?: boolean }): Promise<DuesUser> {
+  create(payload: { outletId: string; name: string; phone?: string; status?: boolean; currentDuesAmount?: number }): Promise<DuesUser> {
     return apiClient.post('/r/dues-users', payload);
   },
 };

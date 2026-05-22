@@ -17,7 +17,7 @@ export function AppTabs() {
     <Tab.Navigator
       screenOptions={({ route }) => ({
         headerShown: false,
-        tabBarIcon: ({ color, focused }) => {
+        tabBarIcon: ({ color, focused, size }) => {
           let iconName: string;
           switch (route.name) {
             case 'ReportsTab':   iconName = 'bar-chart-2'; break;
@@ -25,28 +25,34 @@ export function AppTabs() {
             case 'SettingsTab':  iconName = 'settings';    break;
             default:             iconName = 'circle';
           }
-          return <Icon name={iconName} size={22} color={color} />;
+          return <Icon name={iconName} size={size - 2} color={color} />;
         },
-        tabBarActiveTintColor: '#111827',
-        tabBarInactiveTintColor: INACTIVE,
-        tabBarStyle: {
-          backgroundColor: '#FFFFFF',
-          borderTopWidth: 1,
-          borderTopColor: 'rgba(0,0,0,0.07)',
-          height: Platform.OS === 'ios' ? 84 : 62,
-          paddingTop: 8,
-          paddingBottom: Platform.OS === 'ios' ? 28 : 10,
-          elevation: 0,
-          shadowOpacity: 0,
-        },
+        tabBarActiveTintColor: '#1A1A1A',
+        tabBarInactiveTintColor: '#A8A29E',
         tabBarLabelStyle: {
           fontSize: 11,
           fontFamily: fonts.medium,
           fontWeight: '600',
-          marginTop: 2,
+          marginTop: -2,
         },
-        tabBarItemStyle: {
-          gap: 2,
+        tabBarStyle: {
+          position: 'absolute',
+          bottom: 20,
+          left: 20,
+          right: 20,
+          backgroundColor: '#FFFFFF',
+          borderRadius: 24,
+          height: 68,
+          paddingBottom: Platform.OS === 'ios' ? 4 : 8,
+          paddingTop: 8,
+          borderTopWidth: 0,
+          borderWidth: 1,
+          borderColor: '#EAE8E2',
+          shadowColor: '#1A1A1A',
+          shadowOffset: { width: 0, height: 6 },
+          shadowOpacity: 0.06,
+          shadowRadius: 16,
+          elevation: 6,
         },
       })}
     >
@@ -56,3 +62,4 @@ export function AppTabs() {
     </Tab.Navigator>
   );
 }
+

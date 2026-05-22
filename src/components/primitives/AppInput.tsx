@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, TextInput, Text, TouchableOpacity, type TextInputProps } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
 import { fonts } from '@/theme';
@@ -18,12 +18,17 @@ export const AppInput = React.memo(function AppInput({
   rightIcon,
   onRightIconPress,
   style,
+  onFocus,
+  onBlur,
   ...props
 }: AppInputProps) {
+  const [isFocused, setIsFocused] = useState(false);
+
   return (
-    <View style={{ marginBottom: 12 }}>
+    <View style={{ marginBottom: 16 }}>
       {label && (
-        <Text style={{ fontFamily: fonts.medium, fontSize: 12, fontWeight: '500', color: '#334155', marginBottom: 6 }}>
+      {label && (
+        <Text style={{ fontFamily: fonts.medium, fontSize: 13, fontWeight: '600', color: '#44403C', marginBottom: 6, letterSpacing: 0.1 }}>
           {label}
         </Text>
       )}
@@ -31,26 +36,53 @@ export const AppInput = React.memo(function AppInput({
         style={{
           flexDirection: 'row',
           alignItems: 'center',
-          borderWidth: 1,
-          borderColor: error ? '#EF4444' : '#E5E7EB',
-          borderRadius: 8,
-          paddingHorizontal: 12,
+          borderWidth: 1.5,
+          borderColor: error
+            ? '#E05252'
+            : isFocused
+            ? '#1A1A1A'
+            : '#EAE8E2',
+          borderRadius: 14,
+          paddingHorizontal: 16,
           backgroundColor: '#FFFFFF',
+          shadowColor: '#1A1A1A',
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: isFocused ? 0.02 : 0,
+          shadowRadius: 4,
+          elevation: isFocused ? 1 : 0,
         }}
       >
-        {leftIcon && <Icon name={leftIcon} size={18} color="#9CA3AF" style={{ marginRight: 8 }} />}
+        {leftIcon && <Icon name={leftIcon} size={18} color="#A8A29E" style={{ marginRight: 10 }} />}
         <TextInput
-          style={[{ flex: 1, paddingVertical: 12, fontFamily: fonts.regular, fontSize: 14, color: '#0F172A' }, style]}
-          placeholderTextColor="#9CA3AF"
+          style={[
+            {
+              flex: 1,
+              paddingVertical: 14,
+              fontFamily: fonts.regular,
+              fontSize: 14,
+              color: '#1A1A1A',
+              fontWeight: '500',
+            },
+            style,
+          ]}
+          placeholderTextColor="#A8A29E"
+          onFocus={(e) => {
+            setIsFocused(true);
+            if (onFocus) onFocus(e);
+          }}
+          onBlur={(e) => {
+            setIsFocused(false);
+            if (onBlur) onBlur(e);
+          }}
           {...props}
         />
         {rightIcon && (
-          <TouchableOpacity onPress={onRightIconPress}>
-            <Icon name={rightIcon} size={18} color="#9CA3AF" style={{ marginLeft: 8 }} />
+          <TouchableOpacity onPress={onRightIconPress} activeOpacity={0.7}>
+            <Icon name={rightIcon} size={18} color="#A8A29E" style={{ marginLeft: 10 }} />
           </TouchableOpacity>
         )}
       </View>
-      {error && <Text style={{ color: '#EF4444', fontSize: 12, marginTop: 4 }}>{error}</Text>}
+      {error && <Text style={{ color: '#E05252', fontSize: 12, marginTop: 4, fontWeight: '500' }}>{error}</Text>}
     </View>
   );
 });

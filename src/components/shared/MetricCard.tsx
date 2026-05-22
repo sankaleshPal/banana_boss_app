@@ -20,10 +20,10 @@ interface MetricCardProps {
 }
 
 const toneMap: Record<string, { bg: string; icon: string; text: string }> = {
-  default: { bg: '#EEF2FF', icon: '#3730A3', text: '#0F172A' },
-  success: { bg: '#DCFCE7', icon: '#047857', text: '#065F46' },
-  danger: { bg: '#FFE4E6', icon: '#BE123C', text: '#9F1239' },
-  muted: { bg: '#F1F5F9', icon: '#475569', text: '#334155' },
+  default: { bg: '#F5F3EF', icon: '#78716C', text: '#1A1A1A' },
+  success: { bg: '#DCFCE7', icon: '#16A34A', text: '#16A34A' },
+  danger: { bg: '#FFE4E6', icon: '#E11D48', text: '#E11D48' },
+  muted: { bg: '#F5F3EF', icon: '#78716C', text: '#78716C' },
 };
 
 export const MetricCard = React.memo(function MetricCard({
@@ -38,38 +38,43 @@ export const MetricCard = React.memo(function MetricCard({
 
   return (
     <TouchableOpacity
-      activeOpacity={0.85}
+      activeOpacity={0.8}
       onPress={onPress}
       style={{
         backgroundColor: '#FFFFFF',
-        borderRadius: 8,
-        padding: 16,
+        borderRadius: 20,
+        padding: 18,
         flex: 1,
-        minWidth: 140,
+        minWidth: 146,
         borderWidth: 1,
-        borderColor: '#E5E7EB',
+        borderColor: '#EAE8E2',
+        shadowColor: '#1A1A1A',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.02,
+        shadowRadius: 8,
+        elevation: 1,
       }}
     >
-      <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 10 }}>
+      <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12 }}>
         <View
           style={{
-            width: 32,
-            height: 32,
-            borderRadius: 8,
+            width: 36,
+            height: 36,
+            borderRadius: 11,
             backgroundColor: t.bg,
             alignItems: 'center',
             justifyContent: 'center',
-            marginRight: 8,
+            marginRight: 10,
           }}
         >
-          <Icon name={icon} size={16} color={t.icon} />
+          <Icon name={icon} size={18} color={t.icon} />
         </View>
-        <Text style={{ fontFamily: fonts.bold, fontSize: 11, fontWeight: '700', color: '#64748B', textTransform: 'uppercase' }}>
+        <Text style={{ fontFamily: fonts.bold, fontSize: 11, fontWeight: '700', color: '#78716C', textTransform: 'uppercase', letterSpacing: 0.5 }}>
           {title}
         </Text>
       </View>
-      <Text style={{ fontFamily: fonts.bold, fontSize: 22, fontWeight: '700', color: t.text }}>{value}</Text>
-      {subtitle && <Text style={{ fontFamily: fonts.regular, fontSize: 11, color: '#64748B', marginTop: 4 }}>{subtitle}</Text>}
+      <Text style={{ fontFamily: fonts.bold, fontSize: 22, fontWeight: '900', color: '#1A1A1A' }}>{value}</Text>
+      {subtitle && <Text style={{ fontFamily: fonts.regular, fontSize: 11, color: '#78716C', marginTop: 6, fontWeight: '500' }}>{subtitle}</Text>}
     </TouchableOpacity>
   );
 });

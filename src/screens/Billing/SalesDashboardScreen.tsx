@@ -86,7 +86,7 @@ export function SalesDashboardScreen() {
             >
               <Text style={s.sectionLabel}>Payment Modes</Text>
               <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                <View style={{ flexDirection: 'row', gap: 8 }}>
+                <View style={{ flexDirection: 'row', gap: 10 }}>
                   {paymentModeEntries.map(([mode, amount], i) => (
                     <MotiView
                       key={mode}
@@ -174,7 +174,7 @@ export function SalesDashboardScreen() {
                 Running Tables ({tables.length}) — {format(runningTables?.totalActiveTableValue || 0)}
               </Text>
               <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                <View style={{ flexDirection: 'row', gap: 8 }}>
+                <View style={{ flexDirection: 'row', gap: 10 }}>
                   {tables.map((t, i) => (
                     <MotiView
                       key={`${t.name}-${i}`}
@@ -194,62 +194,71 @@ export function SalesDashboardScreen() {
           )}
         </>
       )}
+      <View style={{ height: 120 }} />
     </ScreenWrapper>
   );
 }
 
 const s = {
   sectionLabel: {
+    fontFamily: fonts.bold,
     fontSize: 11,
     fontWeight: '800' as const,
-    color: '#9CA3AF',
+    color: '#78716C',
     letterSpacing: 1,
     textTransform: 'uppercase' as const,
-    marginTop: 20,
-    marginBottom: 10,
+    marginTop: 24,
+    marginBottom: 12,
   },
   modeChip: {
     backgroundColor: '#FFFFFF',
-    borderRadius: 12,
-    paddingHorizontal: 14,
-    paddingVertical: 12,
-    alignItems: 'center' as const,
-    minWidth: 100,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 3,
+    borderRadius: 16,
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    minWidth: 126,
+    borderWidth: 1,
+    borderColor: '#EAE8E2',
+    shadowColor: '#1A1A1A',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.02,
+    shadowRadius: 8,
     elevation: 1,
   },
   modeChipLabel: {
-    fontSize: 11,
-    color: '#6B7280',
-    fontWeight: '600' as const,
-    textTransform: 'capitalize' as const,
-    marginBottom: 4,
+    fontFamily: fonts.bold,
+    fontSize: 10,
+    color: '#78716C',
+    fontWeight: '800' as const,
+    textTransform: 'uppercase' as const,
+    marginBottom: 6,
+    letterSpacing: 0.8,
   },
   modeChipValue: {
-    fontSize: 16,
-    fontWeight: '800' as const,
-    color: '#111827',
+    fontFamily: fonts.bold,
+    fontSize: 18,
+    fontWeight: '900' as const,
+    color: '#1A1A1A',
   },
   tableChip: {
-    backgroundColor: '#FEF9C3',
-    borderRadius: 10,
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-    alignItems: 'center' as const,
-    minWidth: 80,
+    backgroundColor: '#FEF3C7',
+    borderRadius: 16,
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    minWidth: 110,
+    borderWidth: 1,
+    borderColor: '#FDE68A',
   },
   tableChipName: {
+    fontFamily: fonts.bold,
     fontSize: 11,
-    color: '#92400E',
-    fontWeight: '700' as const,
-    marginBottom: 3,
+    color: '#B45309',
+    fontWeight: '800' as const,
+    marginBottom: 4,
   },
   tableChipValue: {
-    fontSize: 14,
-    fontWeight: '800' as const,
-    color: '#78350F',
+    fontFamily: fonts.bold,
+    fontSize: 16,
+    fontWeight: '900' as const,
+    color: '#B45309',
   },
 };

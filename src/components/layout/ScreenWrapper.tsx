@@ -5,6 +5,7 @@ import {
   RefreshControl,
   type ViewProps,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 interface ScreenWrapperProps extends ViewProps {
   children: React.ReactNode;
@@ -12,6 +13,7 @@ interface ScreenWrapperProps extends ViewProps {
   refreshControl?: boolean;
   onRefresh?: () => void;
   padding?: boolean;
+  hasTabBar?: boolean;
   bg?: string;
 }
 
@@ -21,19 +23,32 @@ export const ScreenWrapper = React.memo(function ScreenWrapper({
   refreshControl,
   onRefresh,
   padding = true,
-  bg = '#F8FAFC',
+  hasTabBar = true,
+  bg = '#FAF9F6', // Default to premium light cream background
   style,
   ...props
 }: ScreenWrapperProps) {
-  const outerStyle = { flex: 1, backgroundColor: bg };
-  const contentStyle = { flex: 1, paddingHorizontal: padding ? 16 : 0 };
+  const insets = useSafeAreaInsets();
+
+  const containerStyle = {
+    flex: 1,
+    backgroundColor: bg,
+    paddingTop: insets.top,
+  };
+
+  const contentStyle = {
+    flex: 1,
+    paddingHorizontal: padding ? 16 : 0,
+  };
+
+  const bottomOffset = hasTabBar ? (insets.bottom + 96) : (insets.bottom + 16);
 
   if (scrollable) {
     return (
-      <View style={outerStyle}>
+      <View style={containerStyle}>
         <ScrollView
-          style={{ flex: 1 }}
-          contentContainerStyle={{ paddingHorizontal: padding ? 16 : 0, paddingBottom: 32 }}
+          style={contentStyle}
+          contentContainerStyle={{ paddingBottom: bottomOffset }}
           refreshControl={
             refreshControl && onRefresh ? (
               <RefreshControl refreshing={false} onRefresh={onRefresh} tintColor="#111827" />
@@ -49,8 +64,8 @@ export const ScreenWrapper = React.memo(function ScreenWrapper({
   }
 
   return (
-    <View style={outerStyle}>
-      <View style={[contentStyle, style]} {...props}>
+    <View style={containerStyle}>
+      <View style={[contentStyle, { paddingBottom: bottomOffset }, style]} {...props}>
         {children}
       </View>
     </View>

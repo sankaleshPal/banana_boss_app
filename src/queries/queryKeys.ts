@@ -16,6 +16,9 @@ export const queryKeys = {
   duesUsers: {
     list: (outletId: string | null) => ['dues-users', outletId] as const,
   },
+  npcUsers: {
+    list: (outletId: string | null) => ['npc-users', outletId] as const,
+  },
   areas: {
     dineIn: (outletId: string | null) => ['areas', 'dine-in', outletId] as const,
   },

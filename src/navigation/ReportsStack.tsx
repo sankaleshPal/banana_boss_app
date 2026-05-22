@@ -25,32 +25,32 @@ const Stack = createNativeStackNavigator<ReportsStackParamList>();
 
 const screenOptions = {
   headerShown: false,
-  contentStyle: { backgroundColor: '#F3F4F6' },
+  contentStyle: { backgroundColor: '#FAF9F6' },
   animation: 'slide_from_right' as const,
 };
 
 export function ReportsStack() {
   return (
     <Stack.Navigator screenOptions={screenOptions}>
-      <Stack.Screen name="ReportsOverview" component={ReportsOverviewScreen} />
-      <Stack.Screen name="NetSalesSummary" component={NetSalesSummaryScreen} />
-      <Stack.Screen name="BillWiseReport" component={BillWiseReportScreen} />
-      <Stack.Screen name="ItemSalesReport" component={ItemSalesReportScreen} />
-      <Stack.Screen name="CategorySalesReport" component={CategorySalesReportScreen} />
-      <Stack.Screen name="ParentCategoryReport" component={ParentCategorySalesScreen} />
-      <Stack.Screen name="AddonSalesReport" component={AddonSalesReportScreen} />
-      <Stack.Screen name="ItemTypeReport" component={ItemTypeReportScreen} />
-      <Stack.Screen name="ItemVariantReport" component={ItemVariantReportScreen} />
-      <Stack.Screen name="AreaReport" component={AreaReportScreen} />
-      <Stack.Screen name="AreaItemReport" component={AreaItemReportScreen} />
-      <Stack.Screen name="DiscountReport" component={DiscountReportScreen} />
-      <Stack.Screen name="ServiceChargeReport" component={ServiceChargeReportScreen} />
-      <Stack.Screen name="TableReport" component={TableReportScreen} />
-      <Stack.Screen name="DeletedKotReport" component={DeletedKotReportScreen} />
-      <Stack.Screen name="TransferKotReport" component={TransferKotReportScreen} />
-      <Stack.Screen name="TransferTableReport" component={TransferTableReportScreen} />
-      <Stack.Screen name="OutstandingDues" component={OutstandingDuesScreen} />
-      <Stack.Screen name="OpenItemSales" component={OpenItemSalesScreen} />
+      <Stack.Screen name="ReportsOverview" component={ReportsOverviewScreen} options={{ title: 'Reports' }} />
+      <Stack.Screen name="NetSalesSummary" component={NetSalesSummaryScreen} options={{ title: 'Net Sales Summary' }} />
+      <Stack.Screen name="BillWiseReport" component={BillWiseReportScreen} options={{ title: 'Bill-wise Report' }} />
+      <Stack.Screen name="ItemSalesReport" component={ItemSalesReportScreen} options={{ title: 'Item Sales' }} />
+      <Stack.Screen name="CategorySalesReport" component={CategorySalesReportScreen} options={{ title: 'Category Sales' }} />
+      <Stack.Screen name="ParentCategoryReport" component={ParentCategorySalesScreen} options={{ title: 'Parent Category' }} />
+      <Stack.Screen name="AddonSalesReport" component={AddonSalesReportScreen} options={{ title: 'Addon Sales' }} />
+      <Stack.Screen name="ItemTypeReport" component={ItemTypeReportScreen} options={{ title: 'Item Type' }} />
+      <Stack.Screen name="ItemVariantReport" component={ItemVariantReportScreen} options={{ title: 'Item Variant' }} />
+      <Stack.Screen name="AreaReport" component={AreaReportScreen} options={{ title: 'Area Report' }} />
+      <Stack.Screen name="AreaItemReport" component={AreaItemReportScreen} options={{ title: 'Area-Item Sales' }} />
+      <Stack.Screen name="DiscountReport" component={DiscountReportScreen} options={{ title: 'Discount Report' }} />
+      <Stack.Screen name="ServiceChargeReport" component={ServiceChargeReportScreen} options={{ title: 'Service Charge' }} />
+      <Stack.Screen name="TableReport" component={TableReportScreen} options={{ title: 'Table Report' }} />
+      <Stack.Screen name="DeletedKotReport" component={DeletedKotReportScreen} options={{ title: 'Deleted KOT' }} />
+      <Stack.Screen name="TransferKotReport" component={TransferKotReportScreen} options={{ title: 'Transfer KOT' }} />
+      <Stack.Screen name="TransferTableReport" component={TransferTableReportScreen} options={{ title: 'Transfer Table' }} />
+      <Stack.Screen name="OutstandingDues" component={OutstandingDuesScreen} options={{ title: 'Outstanding Dues' }} />
+      <Stack.Screen name="OpenItemSales" component={OpenItemSalesScreen} options={{ title: 'Open Item Sales' }} />
     </Stack.Navigator>
   );
 }

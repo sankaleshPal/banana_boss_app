@@ -13,20 +13,20 @@ const Stack = createNativeStackNavigator<BillingStackParamList>();
 
 const screenOptions = {
   headerShown: false,
-  contentStyle: { backgroundColor: '#F3F4F6' },
+  contentStyle: { backgroundColor: '#FAF9F6' },
   animation: 'slide_from_right' as const,
 };
 
 export function BillingStack() {
   return (
     <Stack.Navigator screenOptions={screenOptions}>
-      <Stack.Screen name="BillingOverview" component={BillingOverviewScreen} />
-      <Stack.Screen name="SalesDashboard" component={SalesDashboardScreen} />
-      <Stack.Screen name="BillsList" component={BillsListScreen} />
-      <Stack.Screen name="BillDetail" component={BillDetailScreen} />
-      <Stack.Screen name="PaymentModes" component={PaymentModesScreen} />
-      <Stack.Screen name="Dues" component={DuesScreen} />
-      <Stack.Screen name="Npc" component={NpcScreen} />
+      <Stack.Screen name="BillingOverview" component={BillingOverviewScreen} options={{ title: 'Billing' }} />
+      <Stack.Screen name="SalesDashboard" component={SalesDashboardScreen} options={{ title: 'Sales Dashboard' }} />
+      <Stack.Screen name="BillsList" component={BillsListScreen} options={{ title: 'Bills' }} />
+      <Stack.Screen name="BillDetail" component={BillDetailScreen} options={{ title: 'Bill Detail' }} />
+      <Stack.Screen name="PaymentModes" component={PaymentModesScreen} options={{ title: 'Payment Modes' }} />
+      <Stack.Screen name="Dues" component={DuesScreen} options={{ title: 'Dues' }} />
+      <Stack.Screen name="Npc" component={NpcScreen} options={{ title: 'NPC' }} />
     </Stack.Navigator>
   );
 }
