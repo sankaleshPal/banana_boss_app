@@ -1,15 +1,57 @@
 import { apiClient } from '@/api/client';
 import type { BillsDashboardData, BillsListPage, BillsListFilters, BillListItem } from './bills.types';
 
+function mapBillItem(b: any): BillListItem {
+  if (!b) return b;
+
+  const getDefinedNumber = (...vals: any[]): number => {
+    for (const val of vals) {
+      if (val !== undefined && val !== null) {
+        const num = Number(val);
+        if (!isNaN(num)) return num;
+      }
+    }
+    return 0;
+  };
+
+  const mappedItems = Array.isArray(b.items)
+    ? b.items.map((item: any) => {
+        const itemPrice = getDefinedNumber(item.price, item.itemPrice);
+        const qty = getDefinedNumber(item.quantity);
+        return {
+          ...item,
+          total: getDefinedNumber(item.total, itemPrice * qty),
+          price: itemPrice,
+          quantity: qty,
+        };
+      })
+    : [];
+
+  return {
+    ...b,
+    total: getDefinedNumber(b.total, b.payable, b.grandTotal, b.totalAmount),
+    discount: getDefinedNumber(b.discount, b.discountTotal, b.discountAmount),
+    tax: getDefinedNumber(b.tax, b.totalTax, b.taxAmount),
+    serviceCharge: getDefinedNumber(b.serviceCharge),
+    subtotal: getDefinedNumber(b.subtotal),
+    items: mappedItems,
+  };
+}
+
 export const billsApi = {
   async getDashboard(
     outletId: string,
     from: number,
     to: number,
   ): Promise<BillsDashboardData> {
-    const data: any = await apiClient.get(
+    const rawData: any = await apiClient.get(
       `/r/dine-in/bills/dashboard?outletId=${outletId}&from=${from}&to=${to}`,
     );
+
+    if (!rawData) return rawData;
+
+    // Deep/shallow clone the frozen object before mutating
+    const data = { ...rawData };
 
     // Synthesise legacy `overall` and `paymentMethods` fields so any
     // older read paths still work if the backend returns the new nested shape.
@@ -55,10 +97,18 @@ export const billsApi = {
     if (filters?.totalMax) params.set('totalMax', filters.totalMax);
     if (filters?.areaId && filters.areaId !== 'ALL') params.set('areaId', filters.areaId);
 
-    return apiClient.get(`/r/dine-in/bills?${params.toString()}`);
+    const res = await apiClient.get<BillsListPage>(`/r/dine-in/bills?${params.toString()}`);
+    if (res && Array.isArray(res.data)) {
+      return {
+        ...res,
+        data: res.data.map(mapBillItem),
+      };
+    }
+    return res;
   },
 
   async getDetail(billId: string): Promise<BillListItem> {
-    return apiClient.get(`/r/dine-in/bills/${billId}`);
+    const res = await apiClient.get<any>(`/r/dine-in/bills/${billId}`);
+    return mapBillItem(res);
   },
 };
