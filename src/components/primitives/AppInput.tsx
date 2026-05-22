@@ -27,7 +27,6 @@ export const AppInput = React.memo(function AppInput({
   return (
     <View style={{ marginBottom: 16 }}>
       {label && (
-      {label && (
         <Text style={{ fontFamily: fonts.medium, fontSize: 13, fontWeight: '600', color: '#44403C', marginBottom: 6, letterSpacing: 0.1 }}>
           {label}
         </Text>

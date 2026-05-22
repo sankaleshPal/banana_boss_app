@@ -12,6 +12,7 @@ import { DateRangePicker, StatusBadge, SearchBar, LoadingSkeleton, EmptyState, E
 import { formatDateTime } from '@/utils/date';
 import { AppCard } from '@/components/primitives/AppCard';
 import Icon from 'react-native-vector-icons/Feather';
+import { fonts } from '@/theme';
 
 // Enable layout animations for Android
 if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {

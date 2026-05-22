@@ -7,6 +7,7 @@ import { useBillsDashboardQuery } from '@/queries/bills';
 import { useCurrency } from '@/hooks/useCurrency';
 import { ScreenWrapper, TopBar } from '@/components/layout';
 import { DateRangePicker, MetricCard, LoadingSkeleton, ErrorState } from '@/components/shared';
+import { fonts } from '@/theme';
 
 export function SalesDashboardScreen() {
   const { outletId, currentOutlet } = useOutlet();
