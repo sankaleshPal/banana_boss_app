@@ -6,7 +6,7 @@ import { useOutlet } from '@/hooks/useOutlet';
 import { useAppStore } from '@/stores/appStore';
 import { useOpenItemReport } from '@/queries/reports';
 import { ScreenWrapper, TopBar } from '@/components/layout';
-import { DateRangePicker, ReportTable, PaginationBar } from '@/components/shared';
+import { DateRangePicker, ReportTable, ReportSummary, PaginationBar } from '@/components/shared';
 
 export function OpenItemSalesScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<ReportsStackParamList>>();
@@ -37,9 +37,24 @@ export function OpenItemSalesScreen() {
   );
 
   return (
-    <ScreenWrapper>
+    <ScreenWrapper scrollable refreshControl onRefresh={refetch}>
       <TopBar title="Open Item Sales" showBack onBack={() => navigation.goBack()} />
       <DateRangePicker value={dateRange} onChange={handleDateChange} outletId={outletId} />
+      <ReportSummary
+        data={data?.data}
+        isLoading={isLoading}
+        totals={data?.totals}
+        totalCount={data?.pagination?.total}
+        metrics={[
+          { label: 'Open Items', count: true, icon: 'unlock' },
+          { label: 'Qty', fields: ['quantity'], totalsKey: 'quantity', format: 'number', icon: 'package' },
+          { label: 'Gross', fields: ['gross', 'grossAmount'], totalsKey: 'gross', format: 'currency', icon: 'dollar-sign', tone: 'success' },
+          { label: 'Discount', fields: ['discount'], totalsKey: 'discount', format: 'currency', icon: 'percent', tone: 'danger' },
+          { label: 'Tax', fields: ['tax', 'gst'], totalsKey: 'tax', format: 'currency', icon: 'briefcase' },
+          { label: 'Net Total', fields: ['total'], totalsKey: 'total', format: 'currency', icon: 'trending-up', tone: 'success' },
+        ]}
+        chart={{ title: 'Top open items (this page)', labelFields: ['itemName'], valueFields: ['total'], format: 'currency' }}
+      />
       <ReportTable columns={columns} rows={rows} isLoading={isLoading} isError={isError} onRetry={refetch} downloadReportId="open-item-sale" outletId={outletId} from={dateRange.from} to={dateRange.to} />
       {data?.pagination && <PaginationBar pagination={data.pagination} onPageChange={setPage} />}
     </ScreenWrapper>

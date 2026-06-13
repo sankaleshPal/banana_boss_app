@@ -38,6 +38,7 @@ export type SettingsStackParamList = {
 export type AppTabsParamList = {
   ReportsTab: undefined;
   BillingTab: undefined;
+  SettingsTab: undefined;
 };
 
 export type AuthStackParamList = {

@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo } from 'react';
-import { View, Text, Dimensions, ActivityIndicator } from 'react-native';
+import { View, Text, Dimensions, ActivityIndicator, StyleSheet } from 'react-native';
 import { MotiView } from 'moti';
 import { useOutlet } from '@/hooks/useOutlet';
 import { useAppStore } from '@/stores/appStore';
@@ -547,7 +547,7 @@ export function SalesDashboardScreen() {
   );
 }
 
-const s = {
+const s = StyleSheet.create({
   sectionLabel: {
     fontFamily: fonts.bold,
     fontSize: 12,
@@ -594,4 +594,4 @@ const s = {
     fontWeight: '900' as const,
     color: '#0F172A',
   },
-};
+});

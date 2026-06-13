@@ -6,7 +6,7 @@ import { useOutlet } from '@/hooks/useOutlet';
 import { useAppStore } from '@/stores/appStore';
 import { useServiceChargeReport } from '@/queries/reports';
 import { ScreenWrapper, TopBar } from '@/components/layout';
-import { DateRangePicker, ReportTable, PaginationBar } from '@/components/shared';
+import { DateRangePicker, ReportTable, ReportSummary, PaginationBar } from '@/components/shared';
 
 export function ServiceChargeReportScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<ReportsStackParamList>>();
@@ -39,9 +39,22 @@ export function ServiceChargeReportScreen() {
   );
 
   return (
-    <ScreenWrapper>
+    <ScreenWrapper scrollable refreshControl onRefresh={refetch}>
       <TopBar title="Service Charge Report" showBack onBack={() => navigation.goBack()} />
       <DateRangePicker value={dateRange} onChange={handleDateChange} outletId={outletId} />
+      <ReportSummary
+        data={data?.data}
+        isLoading={isLoading}
+        totals={data?.totals}
+        totalCount={data?.pagination?.total}
+        metrics={[
+          { label: 'Bills', count: true, icon: 'file-text' },
+          { label: 'Service Charge', fields: ['serviceCharge'], totalsKey: 'serviceCharge', format: 'currency', icon: 'briefcase', tone: 'success' },
+          { label: 'Container', fields: ['containerCharge'], totalsKey: 'containerCharge', format: 'currency', icon: 'box' },
+          { label: 'Delivery', fields: ['deliveryCharge'], totalsKey: 'deliveryCharge', format: 'currency', icon: 'truck' },
+          { label: 'Total Charges', fields: ['total'], totalsKey: 'total', format: 'currency', icon: 'trending-up', tone: 'success' },
+        ]}
+      />
       <ReportTable columns={columns} rows={rows} isLoading={isLoading} isError={isError} onRetry={refetch} downloadReportId="service-charge" outletId={outletId} from={dateRange.from} to={dateRange.to} />
       {data?.pagination && <PaginationBar pagination={data.pagination} onPageChange={setPage} />}
     </ScreenWrapper>

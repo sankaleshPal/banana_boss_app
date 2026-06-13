@@ -6,7 +6,7 @@ import { useOutlet } from '@/hooks/useOutlet';
 import { useOutstandingDuesReport } from '@/queries/reports';
 import { useCurrency } from '@/hooks/useCurrency';
 import { ScreenWrapper, TopBar } from '@/components/layout';
-import { ReportTable } from '@/components/shared';
+import { ReportTable, ReportSummary } from '@/components/shared';
 
 export function OutstandingDuesScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<ReportsStackParamList>>();
@@ -28,8 +28,17 @@ export function OutstandingDuesScreen() {
   );
 
   return (
-    <ScreenWrapper>
+    <ScreenWrapper scrollable refreshControl onRefresh={refetch}>
       <TopBar title="Outstanding Dues" showBack onBack={() => navigation.goBack()} />
+      <ReportSummary
+        data={data?.data}
+        isLoading={isLoading}
+        metrics={[
+          { label: 'Customers', count: true, icon: 'users' },
+          { label: 'Total Outstanding', fields: ['amount'], format: 'currency', icon: 'alert-circle', tone: 'danger' },
+        ]}
+        chart={{ title: 'Top outstanding', labelFields: ['customerName', 'phone'], valueFields: ['amount'], format: 'currency' }}
+      />
       <ReportTable columns={columns} rows={rows} isLoading={isLoading} isError={isError} onRetry={refetch} />
     </ScreenWrapper>
   );

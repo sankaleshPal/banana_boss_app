@@ -6,7 +6,7 @@ import { useOutlet } from '@/hooks/useOutlet';
 import { useAppStore } from '@/stores/appStore';
 import { useDiscountReport } from '@/queries/reports';
 import { ScreenWrapper, TopBar } from '@/components/layout';
-import { DateRangePicker, ReportTable } from '@/components/shared';
+import { DateRangePicker, ReportTable, ReportSummary } from '@/components/shared';
 
 export function DiscountReportScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<ReportsStackParamList>>();
@@ -30,9 +30,19 @@ export function DiscountReportScreen() {
   const handleDateChange = useCallback((r: any) => setDateRange(r), [setDateRange]);
 
   return (
-    <ScreenWrapper>
+    <ScreenWrapper scrollable refreshControl onRefresh={refetch}>
       <TopBar title="Discount Report" showBack onBack={() => navigation.goBack()} />
       <DateRangePicker value={dateRange} onChange={handleDateChange} outletId={outletId} />
+      <ReportSummary
+        data={data?.data}
+        isLoading={isLoading}
+        metrics={[
+          { label: 'Discount Types', count: true, icon: 'percent' },
+          { label: 'Times Applied', fields: ['count'], format: 'number', icon: 'hash' },
+          { label: 'Total Given', fields: ['amount'], format: 'currency', icon: 'trending-down', tone: 'danger' },
+        ]}
+        chart={{ title: 'Top discounts', labelFields: ['discountName'], valueFields: ['amount'], format: 'currency' }}
+      />
       <ReportTable columns={columns} rows={rows} isLoading={isLoading} isError={isError} onRetry={refetch} downloadReportId="discount" outletId={outletId} from={dateRange.from} to={dateRange.to} />
     </ScreenWrapper>
   );

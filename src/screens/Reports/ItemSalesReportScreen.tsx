@@ -6,7 +6,7 @@ import { useOutlet } from '@/hooks/useOutlet';
 import { useAppStore } from '@/stores/appStore';
 import { useItemReport } from '@/queries/reports';
 import { ScreenWrapper, TopBar } from '@/components/layout';
-import { DateRangePicker, ReportTable, PaginationBar } from '@/components/shared';
+import { DateRangePicker, ReportTable, ReportSummary, PaginationBar } from '@/components/shared';
 
 export function ItemSalesReportScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<ReportsStackParamList>>();
@@ -41,9 +41,24 @@ export function ItemSalesReportScreen() {
   );
 
   return (
-    <ScreenWrapper>
+    <ScreenWrapper scrollable refreshControl onRefresh={refetch}>
       <TopBar title="Item Sales Report" showBack onBack={() => navigation.goBack()} />
       <DateRangePicker value={dateRange} onChange={handleDateChange} outletId={outletId} />
+      <ReportSummary
+        data={data?.data}
+        isLoading={isLoading}
+        totals={data?.totals}
+        totalCount={data?.pagination?.total}
+        metrics={[
+          { label: 'Items Sold', count: true, icon: 'shopping-bag' },
+          { label: 'Qty', fields: ['quantity', 'itemCount'], totalsKey: 'quantity', format: 'number', icon: 'package' },
+          { label: 'Gross', fields: ['grossAmount', 'gross'], totalsKey: 'gross', format: 'currency', icon: 'dollar-sign', tone: 'success' },
+          { label: 'Discount', fields: ['discount'], totalsKey: 'discount', format: 'currency', icon: 'percent', tone: 'danger' },
+          { label: 'Tax', fields: ['gst', 'tax'], totalsKey: 'tax', format: 'currency', icon: 'briefcase' },
+          { label: 'Net Sales', fields: ['totalSales', 'amount', 'total'], totalsKey: 'totalSales', format: 'currency', icon: 'trending-up', tone: 'success' },
+        ]}
+        chart={{ title: 'Top items (this page)', labelFields: ['itemName'], valueFields: ['totalSales', 'total', 'amount'], format: 'currency' }}
+      />
       <ReportTable
         columns={columns}
         rows={rows}

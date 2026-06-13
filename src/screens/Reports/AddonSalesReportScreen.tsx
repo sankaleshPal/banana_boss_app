@@ -6,7 +6,7 @@ import { useOutlet } from '@/hooks/useOutlet';
 import { useAppStore } from '@/stores/appStore';
 import { useAddonReport } from '@/queries/reports';
 import { ScreenWrapper, TopBar } from '@/components/layout';
-import { DateRangePicker, ReportTable } from '@/components/shared';
+import { DateRangePicker, ReportTable, ReportSummary } from '@/components/shared';
 
 export function AddonSalesReportScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<ReportsStackParamList>>();
@@ -31,9 +31,20 @@ export function AddonSalesReportScreen() {
   const handleDateChange = useCallback((r: any) => setDateRange(r), [setDateRange]);
 
   return (
-    <ScreenWrapper>
+    <ScreenWrapper scrollable refreshControl onRefresh={refetch}>
       <TopBar title="Addon Sales Report" showBack onBack={() => navigation.goBack()} />
       <DateRangePicker value={dateRange} onChange={handleDateChange} outletId={outletId} />
+      <ReportSummary
+        data={data?.data}
+        isLoading={isLoading}
+        metrics={[
+          { label: 'Addons', count: true, icon: 'plus-circle' },
+          { label: 'Qty Sold', fields: ['quantity'], format: 'number', icon: 'package' },
+          { label: 'Amount', fields: ['amount'], format: 'currency', icon: 'dollar-sign' },
+          { label: 'Total Sales', fields: ['totalSales', 'total'], format: 'currency', icon: 'trending-up', tone: 'success' },
+        ]}
+        chart={{ title: 'Top add-ons', labelFields: ['addonName'], valueFields: ['totalSales', 'total', 'amount'], format: 'currency' }}
+      />
       <ReportTable columns={columns} rows={rows} isLoading={isLoading} isError={isError} onRetry={refetch} downloadReportId="addon" outletId={outletId} from={dateRange.from} to={dateRange.to} />
     </ScreenWrapper>
   );
