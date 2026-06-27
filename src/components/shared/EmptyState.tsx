@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
 import { AppButton } from '@/components/primitives';
+import { colors, fonts } from '@/theme';
 
 interface EmptyStateProps {
   title: string;
@@ -18,10 +19,10 @@ export const EmptyState = React.memo(function EmptyState({
 }: EmptyStateProps) {
   return (
     <View style={{ alignItems: 'center', justifyContent: 'center', paddingVertical: 40 }}>
-      <Icon name={icon} size={48} color="#D1D5DB" />
-      <Text style={{ fontSize: 16, fontWeight: '700', color: '#374151', marginTop: 16 }}>{title}</Text>
+      <Icon name={icon} size={48} color={colors.text.faint} />
+      <Text style={{ fontSize: 16, fontFamily: fonts.bold, color: colors.text.secondary, marginTop: 16 }}>{title}</Text>
       {subtitle && (
-        <Text style={{ fontSize: 13, color: '#9CA3AF', marginTop: 6, textAlign: 'center' }}>{subtitle}</Text>
+        <Text style={{ fontSize: 13, fontFamily: fonts.regular, color: colors.text.muted, marginTop: 6, textAlign: 'center' }}>{subtitle}</Text>
       )}
       {action && (
         <View style={{ marginTop: 20 }}>

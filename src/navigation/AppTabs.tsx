@@ -6,11 +6,9 @@ import type { AppTabsParamList } from '@/types/navigation';
 import { ReportsStack } from './ReportsStack';
 import { BillingStack } from './BillingStack';
 import { SettingsStack } from './SettingsStack';
-import { fonts } from '@/theme';
+import { colors, fonts, radii, shadows } from '@/theme';
 
 const Tab = createBottomTabNavigator<AppTabsParamList>();
-
-const INACTIVE = '#9CA3AF';
 
 export function AppTabs() {
   return (
@@ -27,12 +25,11 @@ export function AppTabs() {
           }
           return <Icon name={iconName} size={size - 2} color={color} />;
         },
-        tabBarActiveTintColor: '#1A1A1A',
-        tabBarInactiveTintColor: '#A8A29E',
+        tabBarActiveTintColor: colors.primaryDark,
+        tabBarInactiveTintColor: colors.text.faint,
         tabBarLabelStyle: {
           fontSize: 11,
-          fontFamily: fonts.medium,
-          fontWeight: '600',
+          fontFamily: fonts.semibold,
           marginTop: -2,
         },
         tabBarStyle: {
@@ -40,19 +37,15 @@ export function AppTabs() {
           bottom: 20,
           left: 20,
           right: 20,
-          backgroundColor: '#FFFFFF',
-          borderRadius: 24,
+          backgroundColor: colors.surface.card,
+          borderRadius: radii.hero,
           height: 68,
           paddingBottom: Platform.OS === 'ios' ? 4 : 8,
           paddingTop: 8,
           borderTopWidth: 0,
           borderWidth: 1,
-          borderColor: '#EAE8E2',
-          shadowColor: '#1A1A1A',
-          shadowOffset: { width: 0, height: 6 },
-          shadowOpacity: 0.06,
-          shadowRadius: 16,
-          elevation: 6,
+          borderColor: colors.surface.border,
+          ...shadows.soft,
         },
       })}
     >

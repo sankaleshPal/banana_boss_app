@@ -6,7 +6,7 @@ import { useOutlet } from '@/hooks/useOutlet';
 import { useAppStore } from '@/stores/appStore';
 import { useTransferKotReport } from '@/queries/reports';
 import { ScreenWrapper, TopBar } from '@/components/layout';
-import { DateRangePicker, ReportTable, PaginationBar } from '@/components/shared';
+import { DateRangePicker, ReportTable, ReportSummary, PaginationBar } from '@/components/shared';
 
 export function TransferKotReportScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<ReportsStackParamList>>();
@@ -36,9 +36,17 @@ export function TransferKotReportScreen() {
   );
 
   return (
-    <ScreenWrapper>
+    <ScreenWrapper scrollable refreshControl onRefresh={refetch}>
       <TopBar title="Transfer KOT Report" showBack onBack={() => navigation.goBack()} />
       <DateRangePicker value={dateRange} onChange={handleDateChange} outletId={outletId} />
+      <ReportSummary
+        data={data?.data}
+        isLoading={isLoading}
+        totalCount={data?.pagination?.total}
+        metrics={[
+          { label: 'KOT Transfers', count: true, icon: 'shuffle', tone: 'muted' },
+        ]}
+      />
       <ReportTable columns={columns} rows={rows} isLoading={isLoading} isError={isError} onRetry={refetch} downloadReportId="transfer-kot" outletId={outletId} from={dateRange.from} to={dateRange.to} />
       {data?.pagination && <PaginationBar pagination={data.pagination} onPageChange={setPage} />}
     </ScreenWrapper>

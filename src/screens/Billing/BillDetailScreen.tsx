@@ -10,6 +10,7 @@ import { ScreenWrapper, TopBar } from '@/components/layout';
 import { AppCard, AppDivider, AppBadge } from '@/components/primitives';
 import { LoadingSkeleton, ErrorState } from '@/components/shared';
 import { formatDateTime } from '@/utils/date';
+import { colors, fonts } from '@/theme';
 
 export function BillDetailScreen() {
   const route = useRoute<RouteProp<BillingStackParamList, 'BillDetail'>>();
@@ -28,37 +29,37 @@ export function BillDetailScreen() {
       {data && (
         <View style={{ marginTop: 8 }}>
           <AppCard>
-            <Text style={{ fontSize: 13, color: '#6B7280' }}>Table / Area</Text>
-            <Text style={{ fontSize: 15, fontWeight: '700', color: '#111827', marginTop: 2 }}>
+            <Text style={lbl}>Table / Area</Text>
+            <Text style={val}>
               {data.tableName || '-'} {data.areaName ? `(${data.areaName})` : ''}
             </Text>
             <AppDivider />
-            <Text style={{ fontSize: 13, color: '#6B7280' }}>Date & Time</Text>
-            <Text style={{ fontSize: 15, fontWeight: '700', color: '#111827', marginTop: 2 }}>
+            <Text style={lbl}>Date & Time</Text>
+            <Text style={val}>
               {formatDateTime(data.createdAt)}
             </Text>
             <AppDivider />
-            <Text style={{ fontSize: 13, color: '#6B7280' }}>Customer</Text>
-            <Text style={{ fontSize: 15, fontWeight: '700', color: '#111827', marginTop: 2 }}>
+            <Text style={lbl}>Customer</Text>
+            <Text style={val}>
               {data.userName || 'Walk-in'}
             </Text>
             <AppDivider />
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
               <AppBadge label={data.status} variant={data.status === 'PAID' ? 'success' : 'warning'} />
-              {data.paymentMethod && <Text style={{ fontSize: 13, color: '#6B7280' }}>{data.paymentMethod}</Text>}
+              {data.paymentMethod && <Text style={lbl}>{data.paymentMethod}</Text>}
             </View>
           </AppCard>
 
-          <Text style={{ fontSize: 16, fontWeight: '800', color: '#111827', marginTop: 20, marginBottom: 8 }}>
+          <Text style={{ fontSize: 16, fontFamily: fonts.extrabold, color: colors.text.base, marginTop: 20, marginBottom: 8 }}>
             Items
           </Text>
           {data.items?.map((item: any) => (
             <AppCard key={item._id} style={{ marginBottom: 8 }}>
               <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                <Text style={{ fontSize: 14, fontWeight: '700', color: '#111827', flex: 1 }}>{item.itemName}</Text>
-                <Text style={{ fontSize: 14, fontWeight: '700', color: '#111827' }}>{format(item.total)}</Text>
+                <Text style={{ fontSize: 14, fontFamily: fonts.bold, color: colors.text.base, flex: 1 }}>{item.itemName}</Text>
+                <Text style={{ fontSize: 14, fontFamily: fonts.bold, color: colors.text.base }}>{format(item.total)}</Text>
               </View>
-              <Text style={{ fontSize: 12, color: '#9CA3AF', marginTop: 2 }}>
+              <Text style={{ fontSize: 12, fontFamily: fonts.regular, color: colors.text.faint, marginTop: 2 }}>
                 {item.quantity} x {format(item.price)}
               </Text>
             </AppCard>
@@ -66,25 +67,25 @@ export function BillDetailScreen() {
 
           <AppCard style={{ marginTop: 16 }}>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 6 }}>
-              <Text style={{ fontSize: 13, color: '#6B7280' }}>Subtotal</Text>
-              <Text style={{ fontSize: 14, fontWeight: '700', color: '#111827' }}>{format(data.subtotal)}</Text>
+              <Text style={lbl}>Subtotal</Text>
+              <Text style={sumVal}>{format(data.subtotal)}</Text>
             </View>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 6 }}>
-              <Text style={{ fontSize: 13, color: '#6B7280' }}>Discount</Text>
-              <Text style={{ fontSize: 14, fontWeight: '700', color: '#EF4444' }}>{format(data.discount)}</Text>
+              <Text style={lbl}>Discount</Text>
+              <Text style={[sumVal, { color: colors.danger }]}>{format(data.discount)}</Text>
             </View>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 6 }}>
-              <Text style={{ fontSize: 13, color: '#6B7280' }}>Tax</Text>
-              <Text style={{ fontSize: 14, fontWeight: '700', color: '#111827' }}>{format(data.tax)}</Text>
+              <Text style={lbl}>Tax</Text>
+              <Text style={sumVal}>{format(data.tax)}</Text>
             </View>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 6 }}>
-              <Text style={{ fontSize: 13, color: '#6B7280' }}>Service Charge</Text>
-              <Text style={{ fontSize: 14, fontWeight: '700', color: '#111827' }}>{format(data.serviceCharge)}</Text>
+              <Text style={lbl}>Service Charge</Text>
+              <Text style={sumVal}>{format(data.serviceCharge)}</Text>
             </View>
             <AppDivider />
             <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-              <Text style={{ fontSize: 18, fontWeight: '900', color: '#111827' }}>Grand Total</Text>
-              <Text style={{ fontSize: 18, fontWeight: '900', color: '#111827' }}>{format(data.total)}</Text>
+              <Text style={{ fontSize: 18, fontFamily: fonts.extrabold, color: colors.text.base }}>Grand Total</Text>
+              <Text style={{ fontSize: 18, fontFamily: fonts.extrabold, color: colors.text.base }}>{format(data.total)}</Text>
             </View>
           </AppCard>
         </View>
@@ -92,3 +93,22 @@ export function BillDetailScreen() {
     </ScreenWrapper>
   );
 }
+
+const lbl: import('react-native').TextStyle = {
+  fontSize: 13,
+  fontFamily: fonts.regular,
+  color: colors.text.muted,
+};
+
+const val: import('react-native').TextStyle = {
+  fontSize: 15,
+  fontFamily: fonts.bold,
+  color: colors.text.base,
+  marginTop: 2,
+};
+
+const sumVal: import('react-native').TextStyle = {
+  fontSize: 14,
+  fontFamily: fonts.bold,
+  color: colors.text.base,
+};

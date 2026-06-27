@@ -1,6 +1,6 @@
 import React from 'react';
 import { Text, type TextProps } from 'react-native';
-import { typography, ubuntuFontForWeight } from '@/theme';
+import { typography, fontForWeight, colors } from '@/theme';
 
 type Variant = 'h1' | 'h2' | 'h3' | 'body' | 'caption' | 'label' | 'number';
 type Color = 'primary' | 'secondary' | 'muted' | 'error' | 'success' | 'white';
@@ -13,12 +13,12 @@ interface AppTextProps extends TextProps {
 }
 
 const colorMap: Record<Color, string> = {
-  primary: '#111827',
-  secondary: '#374151',
-  muted: '#9CA3AF',
-  error: '#EF4444',
-  success: '#10B981',
-  white: '#FFFFFF',
+  primary: colors.text.base,
+  secondary: colors.text.secondary,
+  muted: colors.text.muted,
+  error: colors.danger,
+  success: colors.success,
+  white: colors.text.white,
 };
 
 const weightMap: Record<Weight, string> = {
@@ -26,7 +26,7 @@ const weightMap: Record<Weight, string> = {
   medium: '500',
   semibold: '600',
   bold: '700',
-  black: '900',
+  black: '800',
 };
 
 export const AppText = React.memo(function AppText({
@@ -45,8 +45,7 @@ export const AppText = React.memo(function AppText({
       style={[
         {
           fontSize: t.fontSize,
-          fontFamily: ubuntuFontForWeight(w),
-          fontWeight: w as any,
+          fontFamily: fontForWeight(w),
           letterSpacing: 'letterSpacing' in t ? t.letterSpacing : undefined,
           color: colorMap[color],
         },

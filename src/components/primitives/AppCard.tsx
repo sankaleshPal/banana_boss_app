@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, type ViewProps, TouchableOpacity } from 'react-native';
+import { colors, radii, shadows } from '@/theme';
 
 interface AppCardProps extends ViewProps {
   variant?: 'default' | 'elevated' | 'outlined' | 'filled';
@@ -14,32 +15,24 @@ export const AppCard = React.memo(function AppCard({
   ...props
 }: AppCardProps) {
   const baseStyle: any = {
-    borderRadius: 24,
+    borderRadius: radii.card,
     padding: 18,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.surface.card,
     borderWidth: 1,
-    borderColor: '#EAE8E2',
+    borderColor: colors.surface.border,
   };
 
   if (variant === 'elevated') {
-    baseStyle.shadowColor = '#1A1A1A';
-    baseStyle.shadowOffset = { width: 0, height: 8 };
-    baseStyle.shadowOpacity = 0.05;
-    baseStyle.shadowRadius = 16;
-    baseStyle.elevation = 4;
+    Object.assign(baseStyle, shadows.soft);
   } else if (variant === 'outlined') {
     baseStyle.borderWidth = 1.5;
-    baseStyle.borderColor = '#D6D3D1';
+    baseStyle.borderColor = colors.surface.border;
   } else if (variant === 'filled') {
-    baseStyle.backgroundColor = '#F5F3EF';
+    baseStyle.backgroundColor = colors.surface.raised;
     baseStyle.borderWidth = 0;
   } else {
-    // Default variant has a fine border and a light micro shadow
-    baseStyle.shadowColor = '#1A1A1A';
-    baseStyle.shadowOffset = { width: 0, height: 4 };
-    baseStyle.shadowOpacity = 0.03;
-    baseStyle.shadowRadius = 8;
-    baseStyle.elevation = 2;
+    // Default — fine border + a light micro shadow
+    Object.assign(baseStyle, shadows.card);
   }
 
   const content = (

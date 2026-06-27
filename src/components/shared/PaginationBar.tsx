@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import type { ReportPagination } from '@/types/common';
+import { colors, fonts, radii } from '@/theme';
 
 interface PaginationBarProps {
   pagination: ReportPagination;
@@ -22,15 +23,15 @@ export const PaginationBar = React.memo(function PaginationBar({
         style={{
           paddingHorizontal: 14,
           paddingVertical: 8,
-          backgroundColor: page <= 1 ? '#F3F4F6' : '#111827',
-          borderRadius: 8,
-          opacity: page <= 1 ? 0.5 : 1,
+          backgroundColor: page <= 1 ? colors.surface.raised : colors.primaryDark,
+          borderRadius: radii.chip,
+          opacity: page <= 1 ? 0.6 : 1,
         }}
       >
-        <Text style={{ color: page <= 1 ? '#9CA3AF' : '#FFFFFF', fontWeight: '700', fontSize: 12 }}>Previous</Text>
+        <Text style={{ color: page <= 1 ? colors.text.faint : colors.text.white, fontFamily: fonts.bold, fontSize: 12 }}>Previous</Text>
       </TouchableOpacity>
 
-      <Text style={{ marginHorizontal: 16, fontSize: 13, fontWeight: '700', color: '#374151' }}>
+      <Text style={{ marginHorizontal: 16, fontSize: 13, fontFamily: fonts.bold, color: colors.text.secondary }}>
         Page {page} of {totalPages}
       </Text>
 
@@ -40,12 +41,12 @@ export const PaginationBar = React.memo(function PaginationBar({
         style={{
           paddingHorizontal: 14,
           paddingVertical: 8,
-          backgroundColor: page >= totalPages ? '#F3F4F6' : '#111827',
-          borderRadius: 8,
-          opacity: page >= totalPages ? 0.5 : 1,
+          backgroundColor: page >= totalPages ? colors.surface.raised : colors.primaryDark,
+          borderRadius: radii.chip,
+          opacity: page >= totalPages ? 0.6 : 1,
         }}
       >
-        <Text style={{ color: page >= totalPages ? '#9CA3AF' : '#FFFFFF', fontWeight: '700', fontSize: 12 }}>Next</Text>
+        <Text style={{ color: page >= totalPages ? colors.text.faint : colors.text.white, fontFamily: fonts.bold, fontSize: 12 }}>Next</Text>
       </TouchableOpacity>
     </View>
   );

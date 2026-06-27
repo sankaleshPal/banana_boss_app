@@ -177,7 +177,7 @@ export const ReportSummary = React.memo(function ReportSummary({
                       width: `${Math.max(b.pct, 4)}%`,
                       height: '100%',
                       borderRadius: 999,
-                      backgroundColor: colors.primary,
+                      backgroundColor: colors.gold,
                     }}
                   />
                 </View>

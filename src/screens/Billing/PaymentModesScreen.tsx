@@ -9,6 +9,7 @@ import { ScreenWrapper, TopBar } from '@/components/layout';
 import { AppCard, AppInput, AppButton } from '@/components/primitives';
 import { LoadingSkeleton, EmptyState, ErrorState } from '@/components/shared';
 import Icon from 'react-native-vector-icons/Feather';
+import { colors, fonts, radii, shadows } from '@/theme';
 
 export function PaymentModesScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<BillingStackParamList>>();
@@ -35,14 +36,14 @@ export function PaymentModesScreen() {
         renderItem={({ item }) => (
           <AppCard style={{ marginBottom: 8, flexDirection: 'row', alignItems: 'center' }}>
             <View style={{ flex: 1 }}>
-              <Text style={{ fontSize: 15, fontWeight: '700', color: '#111827' }}>{item.name}</Text>
-              <Text style={{ fontSize: 12, color: '#9CA3AF' }}>{item.status ? 'Active' : 'Inactive'}</Text>
+              <Text style={{ fontSize: 15, fontFamily: fonts.bold, color: colors.text.base }}>{item.name}</Text>
+              <Text style={{ fontSize: 12, fontFamily: fonts.regular, color: colors.text.faint }}>{item.status ? 'Active' : 'Inactive'}</Text>
             </View>
             <Switch
               value={item.status}
               onValueChange={() => toggleStatus(item._id, item.status)}
-              trackColor={{ false: '#E5E7EB', true: '#FDE047' }}
-              thumbColor={item.status ? '#111827' : '#9CA3AF'}
+              trackColor={{ false: colors.surface.border, true: colors.primary }}
+              thumbColor={item.status ? colors.primaryDark : colors.text.faint}
             />
           </AppCard>
         )}
@@ -51,7 +52,7 @@ export function PaymentModesScreen() {
       />
 
       {showAdd && (
-        <View style={{ position: 'absolute', bottom: 0, left: 0, right: 0, backgroundColor: '#FFFFFF', padding: 16, borderTopWidth: 1, borderTopColor: 'rgba(0,0,0,0.06)' }}>
+        <View style={{ position: 'absolute', bottom: 0, left: 0, right: 0, backgroundColor: colors.surface.card, padding: 16, borderTopWidth: 1, borderTopColor: colors.surface.borderSoft }}>
           <AppInput label="Mode Name" placeholder="e.g. UPI" value={newName} onChangeText={setNewName} />
           <View style={{ flexDirection: 'row', gap: 8 }}>
             <AppButton label="Cancel" onPress={() => setShowAdd(false)} variant="ghost" style={{ flex: 1 }} />
@@ -68,18 +69,14 @@ export function PaymentModesScreen() {
           right: 24,
           width: 56,
           height: 56,
-          borderRadius: 28,
-          backgroundColor: '#111827',
+          borderRadius: radii.full,
+          backgroundColor: colors.primaryDark,
           alignItems: 'center',
           justifyContent: 'center',
-          shadowColor: '#000',
-          shadowOffset: { width: 0, height: 4 },
-          shadowOpacity: 0.15,
-          shadowRadius: 8,
-          elevation: 4,
+          ...shadows.button,
         }}
       >
-        <Icon name="plus" size={24} color="#FFFFFF" />
+        <Icon name="plus" size={24} color={colors.text.white} />
       </TouchableOpacity>
     </ScreenWrapper>
   );

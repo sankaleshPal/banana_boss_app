@@ -10,6 +10,7 @@
 import React from 'react';
 import { View, ScrollView } from 'react-native';
 import { MotiView } from 'moti';
+import { colors } from '@/theme';
 
 // ─── Shared pulse wrapper ─────────────────────────────────────────────────────
 
@@ -51,11 +52,11 @@ function CardBlock({
         style={{
           height,
           width: width as any,
-          backgroundColor: '#FFFFFF',
+          backgroundColor: colors.surface.card,
           borderRadius: radius,
           borderWidth: 1,
-          borderColor: 'rgba(0,0,0,0.06)',
-          shadowColor: '#000',
+          borderColor: colors.surface.borderSoft,
+          shadowColor: colors.primaryDark,
           shadowOffset: { width: 0, height: 1 },
           shadowOpacity: 0.04,
           shadowRadius: 3,
@@ -81,7 +82,7 @@ function BarBlock({
       <View
         style={{
           height,
-          backgroundColor: 'rgba(0,0,0,0.04)',
+          backgroundColor: 'rgba(26,22,18,0.05)',
           borderRadius: radius,
         }}
       />
@@ -122,12 +123,12 @@ export const LoadingSkeleton = React.memo(function LoadingSkeleton({
           <View
             style={{
               height: 80,
-              backgroundColor: '#FFFFFF',
+              backgroundColor: colors.surface.card,
               borderRadius: 20,
               borderWidth: 1,
-              borderColor: 'rgba(0,0,0,0.05)',
+              borderColor: colors.surface.borderSoft,
               marginBottom: 24,
-              shadowColor: '#000',
+              shadowColor: colors.primaryDark,
               shadowOffset: { width: 0, height: 1 },
               shadowOpacity: 0.04,
               shadowRadius: 4,
@@ -142,7 +143,7 @@ export const LoadingSkeleton = React.memo(function LoadingSkeleton({
             style={{
               height: 10,
               width: 120,
-              backgroundColor: 'rgba(0,0,0,0.06)',
+              backgroundColor: colors.surface.borderSoft,
               borderRadius: 6,
               marginBottom: 14,
             }}
@@ -170,7 +171,7 @@ export const LoadingSkeleton = React.memo(function LoadingSkeleton({
             style={{
               height: 10,
               width: 140,
-              backgroundColor: 'rgba(0,0,0,0.06)',
+              backgroundColor: colors.surface.borderSoft,
               borderRadius: 6,
               marginTop: 24,
               marginBottom: 14,
@@ -205,7 +206,7 @@ export const LoadingSkeleton = React.memo(function LoadingSkeleton({
             <View
               style={{
                 height: 64,
-                backgroundColor: 'rgba(0,0,0,0.04)',
+                backgroundColor: 'rgba(26,22,18,0.05)',
                 borderRadius: 14,
                 flexDirection: 'row',
                 alignItems: 'center',
@@ -215,11 +216,11 @@ export const LoadingSkeleton = React.memo(function LoadingSkeleton({
             >
               {/* Left content block */}
               <View style={{ flex: 1, gap: 6 }}>
-                <View style={{ height: 10, width: '55%', backgroundColor: 'rgba(0,0,0,0.07)', borderRadius: 5 }} />
-                <View style={{ height: 8,  width: '35%', backgroundColor: 'rgba(0,0,0,0.04)', borderRadius: 4 }} />
+                <View style={{ height: 10, width: '55%', backgroundColor: 'rgba(26,22,18,0.08)', borderRadius: 5 }} />
+                <View style={{ height: 8,  width: '35%', backgroundColor: 'rgba(26,22,18,0.05)', borderRadius: 4 }} />
               </View>
               {/* Right amount block */}
-              <View style={{ height: 14, width: 64, backgroundColor: 'rgba(0,0,0,0.07)', borderRadius: 6 }} />
+              <View style={{ height: 14, width: 64, backgroundColor: 'rgba(26,22,18,0.08)', borderRadius: 6 }} />
             </View>
           </Pulse>
         ))}

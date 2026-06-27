@@ -1,6 +1,6 @@
 import React from 'react';
 import { TouchableOpacity, Text, ActivityIndicator, type TouchableOpacityProps } from 'react-native';
-import { fonts } from '@/theme';
+import { colors, fonts, radii } from '@/theme';
 
 interface AppButtonProps extends TouchableOpacityProps {
   label: string;
@@ -10,10 +10,10 @@ interface AppButtonProps extends TouchableOpacityProps {
 }
 
 const variantMap = {
-  primary: { bg: '#1A1A1A', text: '#FFFFFF' },
-  secondary: { bg: '#F5F3EF', text: '#1A1A1A' },
-  ghost: { bg: 'transparent', text: '#1A1A1A' },
-  danger: { bg: '#E05252', text: '#FFFFFF' },
+  primary: { bg: colors.primaryDark, text: colors.text.white, border: 'transparent' },
+  secondary: { bg: colors.surface.raised, text: colors.text.base, border: colors.surface.border },
+  ghost: { bg: 'transparent', text: colors.text.base, border: 'transparent' },
+  danger: { bg: colors.danger, text: colors.text.white, border: 'transparent' },
 };
 
 const sizeMap = {
@@ -43,12 +43,12 @@ export const AppButton = React.memo(function AppButton({
           backgroundColor: v.bg,
           paddingVertical: s.py,
           paddingHorizontal: s.px,
-          borderRadius: 14,
+          borderRadius: radii.tile,
           alignItems: 'center',
           justifyContent: 'center',
           opacity: disabled ? 0.45 : 1,
           borderWidth: variant === 'secondary' ? 1 : 0,
-          borderColor: '#EAE8E2',
+          borderColor: v.border,
         },
         style,
       ]}
@@ -57,11 +57,10 @@ export const AppButton = React.memo(function AppButton({
       {loading ? (
         <ActivityIndicator color={v.text} size="small" />
       ) : (
-        <Text style={{ fontFamily: fonts.bold, color: v.text, fontSize: s.font, fontWeight: '600', letterSpacing: 0.1 }}>
+        <Text style={{ fontFamily: fonts.bold, color: v.text, fontSize: s.font, letterSpacing: 0.1 }}>
           {label}
         </Text>
       )}
     </TouchableOpacity>
   );
 });
-

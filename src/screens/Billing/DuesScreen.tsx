@@ -12,6 +12,7 @@ import { AppButton } from '@/components/primitives/AppButton';
 import { AppInput } from '@/components/primitives/AppInput';
 import { LoadingSkeleton, EmptyState, ErrorState } from '@/components/shared';
 import Icon from 'react-native-vector-icons/Feather';
+import { colors, fonts, radii } from '@/theme';
 
 export function DuesScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<BillingStackParamList>>();
@@ -60,24 +61,24 @@ export function DuesScreen() {
           <TouchableOpacity 
             onPress={() => setModalVisible(true)}
             style={{
-              backgroundColor: '#1A1A1A',
+              backgroundColor: colors.primaryDark,
               paddingHorizontal: 12,
               paddingVertical: 8,
-              borderRadius: 12,
+              borderRadius: radii.chip,
               flexDirection: 'row',
               alignItems: 'center',
               gap: 4,
             }}
             activeOpacity={0.8}
           >
-            <Icon name="plus" size={14} color="#FFFFFF" />
-            <Text style={{ fontSize: 12, fontWeight: '700', color: '#FFFFFF' }}>Add User</Text>
+            <Icon name="plus" size={14} color={colors.text.white} />
+            <Text style={{ fontSize: 12, fontFamily: fonts.bold, color: colors.text.white }}>Add User</Text>
           </TouchableOpacity>
         }
       />
 
       <View style={{ marginVertical: 8, paddingHorizontal: 4 }}>
-        <Text style={{ fontSize: 13, fontWeight: '600', color: '#78716C' }}>
+        <Text style={{ fontSize: 13, fontFamily: fonts.semibold, color: colors.text.muted }}>
           Outstanding Balances
         </Text>
       </View>
@@ -90,38 +91,38 @@ export function DuesScreen() {
         keyExtractor={(item) => item._id}
         renderItem={({ item }) => (
           <AppCard style={{ marginBottom: 10, flexDirection: 'row', alignItems: 'center', backgroundColor: '#FFFFFF' }}>
-            <View style={{ 
-              width: 44, 
-              height: 44, 
-              borderRadius: 14, 
-              backgroundColor: '#F5F3EF', 
-              alignItems: 'center', 
+            <View style={{
+              width: 44,
+              height: 44,
+              borderRadius: radii.tile,
+              backgroundColor: colors.surface.raised,
+              alignItems: 'center',
               justifyContent: 'center',
               borderWidth: 1,
-              borderColor: '#EAE8E2',
+              borderColor: colors.surface.border,
             }}>
-              <Text style={{ fontSize: 14, fontWeight: '800', color: '#44403C' }}>
+              <Text style={{ fontSize: 14, fontFamily: fonts.extrabold, color: colors.text.secondary }}>
                 {item.name?.substring(0, 2)?.toUpperCase()}
               </Text>
             </View>
             <View style={{ flex: 1, marginLeft: 14 }}>
-              <Text style={{ fontSize: 15, fontWeight: '700', color: '#1A1A1A' }}>{item.name}</Text>
-              <Text style={{ fontSize: 12, color: '#78716C', marginTop: 3, fontWeight: '500' }}>{item.phone || 'No Phone'}</Text>
+              <Text style={{ fontSize: 15, fontFamily: fonts.bold, color: colors.text.base }}>{item.name}</Text>
+              <Text style={{ fontSize: 12, fontFamily: fonts.medium, color: colors.text.muted, marginTop: 3 }}>{item.phone || 'No Phone'}</Text>
             </View>
             <View style={{ alignItems: 'flex-end' }}>
-              <Text style={{ fontSize: 16, fontWeight: '800', color: item.currentDuesAmount > 0 ? '#E05252' : '#16A34A' }}>
+              <Text style={{ fontSize: 16, fontFamily: fonts.extrabold, color: item.currentDuesAmount > 0 ? colors.danger : colors.success }}>
                 {format(item.currentDuesAmount)}
               </Text>
               <View style={{
                 marginTop: 4,
-                backgroundColor: item.status ? '#DCFCE7' : '#F5F3EF',
+                backgroundColor: item.status ? colors.tint.green.bg : colors.surface.raised,
                 paddingHorizontal: 8,
                 paddingVertical: 2,
-                borderRadius: 8,
+                borderRadius: radii.chip,
                 borderWidth: 1,
-                borderColor: item.status ? '#BBF7D0' : '#EAE8E2',
+                borderColor: item.status ? '#BBF7D0' : colors.surface.border,
               }}>
-                <Text style={{ fontSize: 9, fontWeight: '700', color: item.status ? '#16A34A' : '#78716C' }}>
+                <Text style={{ fontSize: 9, fontFamily: fonts.bold, color: item.status ? colors.success : colors.text.muted }}>
                   {item.status ? 'ACTIVE' : 'INACTIVE'}
                 </Text>
               </View>
@@ -143,23 +144,23 @@ export function DuesScreen() {
         <View style={{
           flex: 1,
           justifyContent: 'flex-end',
-          backgroundColor: 'rgba(0,0,0,0.4)',
+          backgroundColor: colors.surface.overlay,
         }}>
           <View style={{
-            backgroundColor: '#FAF9F6',
-            borderTopLeftRadius: 28,
-            borderTopRightRadius: 28,
+            backgroundColor: colors.surface.canvas,
+            borderTopLeftRadius: radii.hero,
+            borderTopRightRadius: radii.hero,
             padding: 24,
             maxHeight: '80%',
             borderTopWidth: 1,
-            borderColor: '#EAE8E2',
+            borderColor: colors.surface.border,
           }}>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
-              <Text style={{ fontSize: 20, fontWeight: '900', color: '#1A1A1A' }}>
+              <Text style={{ fontSize: 20, fontFamily: fonts.extrabold, color: colors.text.base }}>
                 Add Dues Profile
               </Text>
               <TouchableOpacity onPress={() => setModalVisible(false)} style={{ padding: 4 }}>
-                <Icon name="x" size={22} color="#1A1A1A" />
+                <Icon name="x" size={22} color={colors.text.base} />
               </TouchableOpacity>
             </View>
 
@@ -181,7 +182,7 @@ export function DuesScreen() {
               />
 
               {error ? (
-                <Text style={{ color: '#E05252', fontSize: 13, fontWeight: '600', marginBottom: 16 }}>
+                <Text style={{ color: colors.danger, fontSize: 13, fontFamily: fonts.semibold, marginBottom: 16 }}>
                   {error}
                 </Text>
               ) : null}

@@ -12,7 +12,7 @@ import { DateRangePicker, StatusBadge, SearchBar, LoadingSkeleton, EmptyState, E
 import { formatDateTime } from '@/utils/date';
 import { AppCard } from '@/components/primitives/AppCard';
 import Icon from 'react-native-vector-icons/Feather';
-import { fonts } from '@/theme';
+import { colors, fonts, radii } from '@/theme';
 
 // Enable layout animations for Android
 if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
@@ -127,13 +127,13 @@ export function BillsListScreen() {
           onPress={() => navigation.navigate('BillDetail', { billId: item._id })}
           activeOpacity={0.7}
           style={{
-            backgroundColor: isChild ? '#F5F3EF' : '#FFFFFF',
-            borderRadius: isChild ? 16 : 20,
+            backgroundColor: isChild ? colors.surface.raised : colors.surface.card,
+            borderRadius: isChild ? radii.tile : radii.card,
             padding: 16,
             marginBottom: isChild ? 6 : 10,
             borderWidth: 1,
-            borderColor: isDues ? '#EAE8E2' : isChild ? 'rgba(0,0,0,0.02)' : '#EAE8E2',
-            shadowColor: '#1A1A1A',
+            borderColor: isChild && !isDues ? colors.surface.borderSoft : colors.surface.border,
+            shadowColor: colors.primaryDark,
             shadowOffset: { width: 0, height: 4 },
             shadowOpacity: isChild ? 0 : 0.02,
             shadowRadius: 8,
@@ -144,77 +144,77 @@ export function BillsListScreen() {
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' }}>
             <View style={{ flex: 1 }}>
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
-                <Text style={{ fontSize: 14, fontWeight: '700', color: '#1A1A1A' }}>
+                <Text style={{ fontSize: 14, fontFamily: fonts.bold, color: colors.text.base }}>
                   {item.invoiceNumber}
                 </Text>
                 {isDues && (
                   <View style={{
-                    backgroundColor: '#F5F3EF',
+                    backgroundColor: colors.surface.raised,
                     paddingHorizontal: 8,
                     paddingVertical: 2,
-                    borderRadius: 8,
+                    borderRadius: radii.chip,
                     borderWidth: 1,
-                    borderColor: '#EAE8E2',
+                    borderColor: colors.surface.border,
                   }}>
-                    <Text style={{ fontSize: 10, fontWeight: '700', color: '#78716C' }}>
+                    <Text style={{ fontSize: 10, fontFamily: fonts.bold, color: colors.text.muted }}>
                       DUES ADJUSTMENT
                     </Text>
                   </View>
                 )}
                 {item.isSplit && !isChild && (
                   <View style={{
-                    backgroundColor: '#FEF3C7',
+                    backgroundColor: colors.tint.amber.bg,
                     paddingHorizontal: 8,
                     paddingVertical: 2,
-                    borderRadius: 8,
+                    borderRadius: radii.chip,
                     borderWidth: 1,
-                    borderColor: '#FDE68A',
+                    borderColor: colors.primary,
                   }}>
-                    <Text style={{ fontSize: 10, fontWeight: '700', color: '#B45309' }}>
+                    <Text style={{ fontSize: 10, fontFamily: fonts.bold, color: colors.tint.accent.fg }}>
                       SPLIT GROUP
                     </Text>
                   </View>
                 )}
               </View>
-              <Text style={{ fontSize: 11, color: '#A8A29E', marginTop: 4 }}>
+              <Text style={{ fontSize: 11, fontFamily: fonts.regular, color: colors.text.faint, marginTop: 4 }}>
                 {formatDateTime(item.createdAt)}
               </Text>
             </View>
             <View style={{ alignItems: 'flex-end' }}>
-              <Text style={{ fontSize: 16, fontWeight: '800', color: isDues ? '#78716C' : '#1A1A1A' }}>
+              <Text style={{ fontSize: 16, fontFamily: fonts.extrabold, color: isDues ? colors.text.muted : colors.text.base }}>
                 {format(item.total)}
               </Text>
               {isDues && (
-                <Text style={{ fontSize: 10, color: '#A8A29E', marginTop: 2, fontWeight: '500' }}>
+                <Text style={{ fontSize: 10, fontFamily: fonts.medium, color: colors.text.faint, marginTop: 2 }}>
                   Excluded from Revenue
                 </Text>
               )}
             </View>
           </View>
-          
+
           <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 12 }}>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
               <StatusBadge status={item.status} />
               {item.paymentMethod && !isDues && (
-                <Text style={{ fontSize: 11, color: '#78716C', fontWeight: '500' }}>{item.paymentMethod}</Text>
+                <Text style={{ fontSize: 11, fontFamily: fonts.medium, color: colors.text.muted }}>{item.paymentMethod}</Text>
               )}
               {item.tableName && (
-                <Text style={{ fontSize: 11, color: '#78716C', fontWeight: '500' }}>Table {item.tableName}</Text>
+                <Text style={{ fontSize: 11, fontFamily: fonts.medium, color: colors.text.muted }}>Table {item.tableName}</Text>
               )}
             </View>
 
             {item.isParent && (
-              <TouchableOpacity 
+              <TouchableOpacity
                 onPress={() => toggleGroup(item._id)}
                 style={{ flexDirection: 'row', alignItems: 'center', gap: 4, paddingVertical: 4, paddingHorizontal: 8 }}
               >
-                <Text style={{ fontSize: 12, fontWeight: '600', color: '#D97706' }}>
+                <Text style={{ fontSize: 12, fontFamily: fonts.semibold, color: colors.warning }}>
                   {item.children.length} Splits
                 </Text>
-                <Icon 
-                  name={expandedGroups[item._id] ? 'chevron-up' : 'chevron-down'} 
-                  size={14} 
-                  color="#D97706" 
+                <Icon
+                  name={expandedGroups[item._id] ? 'chevron-up' : 'chevron-down'}
+                  size={14}
+                  color={colors.warning}
                 />
               </TouchableOpacity>
             )}
@@ -257,21 +257,21 @@ export function BillsListScreen() {
 
       {/* Sales metrics summary card */}
       {!isLoading && !isError && filtered.length > 0 && (
-        <AppCard style={{ marginBottom: 16, backgroundColor: '#FFFFFF', padding: 16 }}>
+        <AppCard style={{ marginBottom: 16, padding: 16 }}>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
             <View>
-              <Text style={{ fontFamily: fonts.bold, fontSize: 11, fontWeight: '800', color: '#A8A29E', letterSpacing: 0.5, textTransform: 'uppercase' }}>
+              <Text style={{ fontFamily: fonts.extrabold, fontSize: 11, color: colors.text.faint, letterSpacing: 0.5, textTransform: 'uppercase' }}>
                 Total Revenue
               </Text>
-              <Text style={{ fontFamily: fonts.bold, fontSize: 20, fontWeight: '900', color: '#1A1A1A', marginTop: 4 }}>
+              <Text style={{ fontFamily: fonts.extrabold, fontSize: 20, color: colors.text.base, marginTop: 4 }}>
                 {format(metrics.salesTotal)}
               </Text>
             </View>
             <View style={{ alignItems: 'flex-end' }}>
-              <Text style={{ fontFamily: fonts.bold, fontSize: 11, fontWeight: '800', color: '#A8A29E', letterSpacing: 0.5, textTransform: 'uppercase' }}>
+              <Text style={{ fontFamily: fonts.extrabold, fontSize: 11, color: colors.text.faint, letterSpacing: 0.5, textTransform: 'uppercase' }}>
                 Bills / Dues
               </Text>
-              <Text style={{ fontFamily: fonts.medium, fontSize: 14, fontWeight: '700', color: '#44403C', marginTop: 4 }}>
+              <Text style={{ fontFamily: fonts.semibold, fontSize: 14, color: colors.text.secondary, marginTop: 4 }}>
                 {metrics.regularBillsCount} bills | Dues {format(metrics.duesTotal)}
               </Text>
             </View>
@@ -298,9 +298,9 @@ export function BillsListScreen() {
             disabled={page <= 1}
             style={{ padding: 8, opacity: page <= 1 ? 0.4 : 1 }}
           >
-            <Icon name="chevron-left" size={20} color="#1A1A1A" />
+            <Icon name="chevron-left" size={20} color={colors.text.base} />
           </TouchableOpacity>
-          <Text style={{ fontFamily: fonts.bold, marginHorizontal: 12, fontSize: 13, fontWeight: '700', color: '#1A1A1A' }}>
+          <Text style={{ fontFamily: fonts.bold, marginHorizontal: 12, fontSize: 13, color: colors.text.base }}>
             Page {page} of {Math.ceil((data.total || 0) / (data.limit || 20))}
           </Text>
           <TouchableOpacity
@@ -308,7 +308,7 @@ export function BillsListScreen() {
             disabled={page >= Math.ceil((data.total || 0) / (data.limit || 20))}
             style={{ padding: 8, opacity: page >= Math.ceil((data.total || 0) / (data.limit || 20)) ? 0.4 : 1 }}
           >
-            <Icon name="chevron-right" size={20} color="#1A1A1A" />
+            <Icon name="chevron-right" size={20} color={colors.text.base} />
           </TouchableOpacity>
         </View>
       )}

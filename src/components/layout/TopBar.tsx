@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity, Platform, Modal, Alert } from 'react-nati
 import { useNavigation } from '@react-navigation/native';
 import { useAuth } from '@/hooks/useAuth';
 import Icon from 'react-native-vector-icons/Feather';
-import { fonts } from '@/theme';
+import { colors, fonts, radii } from '@/theme';
 
 interface TopBarProps {
   title: string;
@@ -94,23 +94,23 @@ export const TopBar = React.memo(function TopBar({
             marginRight: 10,
             width: 36,
             height: 36,
-            borderRadius: 8,
-            backgroundColor: '#FFFFFF',
+            borderRadius: radii.chip,
+            backgroundColor: colors.surface.card,
             borderWidth: 1,
-            borderColor: '#E5E7EB',
+            borderColor: colors.surface.border,
             alignItems: 'center',
             justifyContent: 'center',
           }}
         >
-          <Icon name="arrow-left" size={18} color="#111827" />
+          <Icon name="arrow-left" size={18} color={colors.text.base} />
         </TouchableOpacity>
       )}
       <View style={{ flex: 1 }}>
-        <Text style={{ fontFamily: fonts.bold, fontSize: 18, fontWeight: '700', color: '#0F172A' }}>
+        <Text style={{ fontFamily: fonts.bold, fontSize: 18, color: colors.text.base }}>
           {title}
         </Text>
         {subtitle ? (
-          <Text style={{ fontFamily: fonts.regular, fontSize: 12, color: '#64748B', marginTop: 2 }}>{subtitle}</Text>
+          <Text style={{ fontFamily: fonts.regular, fontSize: 12, color: colors.text.muted, marginTop: 2 }}>{subtitle}</Text>
         ) : null}
       </View>
       
@@ -124,13 +124,13 @@ export const TopBar = React.memo(function TopBar({
               style={{
                 width: 36,
                 height: 36,
-                borderRadius: 8,
-                backgroundColor: '#FDE047',
+                borderRadius: radii.chip,
+                backgroundColor: colors.primary,
                 alignItems: 'center',
                 justifyContent: 'center',
               }}
             >
-              <Text style={{ fontFamily: fonts.bold, fontSize: 16, color: '#111827' }}>
+              <Text style={{ fontFamily: fonts.bold, fontSize: 16, color: colors.text.onAccent }}>
                 {(me?.name || me?.nickName || 'U')[0].toUpperCase()}
               </Text>
             </TouchableOpacity>
@@ -142,16 +142,16 @@ export const TopBar = React.memo(function TopBar({
               onRequestClose={() => setModalVisible(false)}
             >
               <TouchableOpacity
-                style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'center', alignItems: 'center' }}
+                style={{ flex: 1, backgroundColor: colors.surface.overlay, justifyContent: 'center', alignItems: 'center' }}
                 activeOpacity={1}
                 onPress={() => setModalVisible(false)}
               >
                 <TouchableOpacity
                   activeOpacity={1}
                   style={{
-                    backgroundColor: '#FFFFFF',
+                    backgroundColor: colors.surface.card,
                     width: 300,
-                    borderRadius: 16,
+                    borderRadius: radii.sheet,
                     padding: 24,
                     alignItems: 'center',
                   }}
@@ -160,25 +160,25 @@ export const TopBar = React.memo(function TopBar({
                     style={{
                       width: 64,
                       height: 64,
-                      borderRadius: 16,
-                      backgroundColor: '#FDE047',
+                      borderRadius: radii.tile,
+                      backgroundColor: colors.primary,
                       alignItems: 'center',
                       justifyContent: 'center',
                       marginBottom: 16,
                     }}
                   >
-                    <Text style={{ fontFamily: fonts.bold, fontSize: 28, color: '#111827' }}>
+                    <Text style={{ fontFamily: fonts.bold, fontSize: 28, color: colors.text.onAccent }}>
                       {(me?.name || me?.nickName || 'U')[0].toUpperCase()}
                     </Text>
                   </View>
-                  <Text style={{ fontFamily: fonts.bold, fontSize: 20, color: '#0F172A', marginBottom: 4 }}>
+                  <Text style={{ fontFamily: fonts.bold, fontSize: 20, color: colors.text.base, marginBottom: 4 }}>
                     {me?.name || me?.nickName || 'Staff'}
                   </Text>
-                  <Text style={{ fontFamily: fonts.medium, fontSize: 14, color: '#64748B', marginBottom: 2 }}>
+                  <Text style={{ fontFamily: fonts.medium, fontSize: 14, color: colors.text.muted, marginBottom: 2 }}>
                     {me?.phone}
                   </Text>
                   {me?.roleName && (
-                    <Text style={{ fontFamily: fonts.regular, fontSize: 12, color: '#9CA3AF', marginBottom: 24 }}>
+                    <Text style={{ fontFamily: fonts.regular, fontSize: 12, color: colors.text.faint, marginBottom: 24 }}>
                       {me.roleName}
                     </Text>
                   )}
@@ -192,17 +192,17 @@ export const TopBar = React.memo(function TopBar({
                       style={{
                         flexDirection: 'row',
                         alignItems: 'center',
-                        backgroundColor: '#FEF9C3',
+                        backgroundColor: colors.tint.accent.bg,
                         paddingVertical: 12,
                         paddingHorizontal: 24,
-                        borderRadius: 12,
+                        borderRadius: radii.tile,
                         width: '100%',
                         justifyContent: 'center',
                         marginBottom: 12,
                       }}
                     >
-                      <Icon name="download" size={18} color="#B45309" style={{ marginRight: 8 }} />
-                      <Text style={{ fontFamily: fonts.bold, fontSize: 15, color: '#B45309' }}>Download App</Text>
+                      <Icon name="download" size={18} color={colors.tint.accent.fg} style={{ marginRight: 8 }} />
+                      <Text style={{ fontFamily: fonts.bold, fontSize: 15, color: colors.tint.accent.fg }}>Download App</Text>
                     </TouchableOpacity>
                   )}
 
@@ -214,16 +214,16 @@ export const TopBar = React.memo(function TopBar({
                     style={{
                       flexDirection: 'row',
                       alignItems: 'center',
-                      backgroundColor: '#FEE2E2',
+                      backgroundColor: colors.tint.rose.bg,
                       paddingVertical: 12,
                       paddingHorizontal: 24,
-                      borderRadius: 12,
+                      borderRadius: radii.tile,
                       width: '100%',
                       justifyContent: 'center',
                     }}
                   >
-                    <Icon name="log-out" size={18} color="#EF4444" style={{ marginRight: 8 }} />
-                    <Text style={{ fontFamily: fonts.bold, fontSize: 15, color: '#EF4444' }}>Logout</Text>
+                    <Icon name="log-out" size={18} color={colors.danger} style={{ marginRight: 8 }} />
+                    <Text style={{ fontFamily: fonts.bold, fontSize: 15, color: colors.danger }}>Logout</Text>
                   </TouchableOpacity>
                 </TouchableOpacity>
               </TouchableOpacity>

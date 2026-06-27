@@ -6,7 +6,7 @@ import { useOutlet } from '@/hooks/useOutlet';
 import { useAppStore } from '@/stores/appStore';
 import { useBillWiseReport } from '@/queries/reports';
 import { ScreenWrapper, TopBar } from '@/components/layout';
-import { DateRangePicker, ReportTable, PaginationBar } from '@/components/shared';
+import { DateRangePicker, ReportTable, ReportSummary, PaginationBar } from '@/components/shared';
 
 export function BillWiseReportScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<ReportsStackParamList>>();
@@ -21,25 +21,41 @@ export function BillWiseReportScreen() {
     [],
   );
 
-  const rows = useMemo(
+  const flatData = useMemo(
     () =>
       (data?.data ?? []).map((row: any) => {
-        // Backend shape: { bill: { invoiceNumber, payable, paymentMethod, subtotal, discountTotal, totalTax, createdAt }, userName, tableName, waiterName }
         const bill = row.bill ?? row;
-        return [
-          bill.invoiceNumber ?? '-',
-          bill.createdAt ? new Date(bill.createdAt).toLocaleDateString() : '-',
-          row.userName ?? bill.customerName ?? '-',
-          row.tableName ?? '-',
-          row.waiterName ?? '-',
-          bill.paymentMethod ?? '-',
-          bill.subtotal ?? 0,
-          bill.discountTotal ?? bill.discount ?? 0,
-          bill.totalTax ?? bill.tax ?? 0,
-          bill.payable ?? bill.total ?? 0,
-        ];
+        return {
+          invoiceNumber: bill.invoiceNumber,
+          paymentMethod: bill.paymentMethod,
+          subtotal: bill.subtotal ?? 0,
+          discount: bill.discountTotal ?? bill.discount ?? 0,
+          tax: bill.totalTax ?? bill.tax ?? 0,
+          payable: bill.payable ?? bill.total ?? 0,
+          userName: row.userName ?? bill.customerName,
+          tableName: row.tableName,
+          waiterName: row.waiterName,
+          createdAt: bill.createdAt,
+        };
       }),
     [data],
+  );
+
+  const rows = useMemo(
+    () =>
+      flatData.map((r) => [
+        r.invoiceNumber ?? '-',
+        r.createdAt ? new Date(r.createdAt).toLocaleDateString() : '-',
+        r.userName ?? '-',
+        r.tableName ?? '-',
+        r.waiterName ?? '-',
+        r.paymentMethod ?? '-',
+        r.subtotal,
+        r.discount,
+        r.tax,
+        r.payable,
+      ]),
+    [flatData],
   );
 
   const totalRow = useMemo(
@@ -56,9 +72,23 @@ export function BillWiseReportScreen() {
   );
 
   return (
-    <ScreenWrapper>
+    <ScreenWrapper scrollable refreshControl onRefresh={refetch}>
       <TopBar title="Bill-wise Report" showBack onBack={() => navigation.goBack()} />
       <DateRangePicker value={dateRange} onChange={handleDateChange} outletId={outletId} />
+      <ReportSummary
+        data={flatData}
+        isLoading={isLoading}
+        totals={data?.totals}
+        totalCount={data?.pagination?.total}
+        metrics={[
+          { label: 'Bills', count: true, icon: 'file-text' },
+          { label: 'Subtotal', fields: ['subtotal'], totalsKey: 'subtotal', format: 'currency', icon: 'dollar-sign' },
+          { label: 'Discount', fields: ['discount'], totalsKey: 'discount', format: 'currency', icon: 'percent', tone: 'danger' },
+          { label: 'Tax', fields: ['tax'], totalsKey: 'tax', format: 'currency', icon: 'briefcase' },
+          { label: 'Net Revenue', fields: ['payable'], totalsKey: 'total', format: 'currency', icon: 'trending-up', tone: 'success' },
+        ]}
+        chart={{ title: 'Top tables by revenue', labelFields: ['tableName'], valueFields: ['payable'], format: 'currency' }}
+      />
       <ReportTable
         columns={columns}
         rows={rows}

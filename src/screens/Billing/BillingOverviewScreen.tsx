@@ -11,7 +11,7 @@ import { SectionHeader } from '@/components/shared';
 import { AppCard } from '@/components/primitives/AppCard';
 import Icon from 'react-native-vector-icons/Feather';
 import { formatINR } from '@/utils/currency';
-import { fonts } from '@/theme';
+import { colors, fonts } from '@/theme';
 
 type Nav = NativeStackNavigationProp<BillingStackParamList>;
 
@@ -36,10 +36,10 @@ export function BillingOverviewScreen() {
       <TopBar title={currentOutlet?.name || 'Billing Overview'} subtitle="Restaurant Back-Office" />
       
       <View style={{ marginVertical: 8 }}>
-        <Text style={{ fontFamily: fonts.medium, fontSize: 13, fontWeight: '600', color: '#78716C', marginBottom: 2 }}>
+        <Text style={{ fontFamily: fonts.semibold, fontSize: 13, color: colors.text.muted, marginBottom: 2 }}>
           {new Date().toLocaleDateString('en-US', { weekday: 'long', day: 'numeric', month: 'long' })}
         </Text>
-        <Text style={{ fontFamily: fonts.bold, fontSize: 24, fontWeight: '900', color: '#1A1A1A' }}>
+        <Text style={{ fontFamily: fonts.extrabold, fontSize: 24, color: colors.text.base }}>
           Overview
         </Text>
       </View>
@@ -81,15 +81,15 @@ export function BillingOverviewScreen() {
               </View>
               
               <View style={{ flex: 1 }}>
-                <Text style={{ fontFamily: fonts.bold, fontSize: 15, fontWeight: '700', color: '#1A1A1A' }}>
+                <Text style={{ fontFamily: fonts.bold, fontSize: 15, color: colors.text.base }}>
                   {item.title}
                 </Text>
-                <Text style={{ fontFamily: fonts.regular, fontSize: 12, color: '#78716C', marginTop: 3, fontWeight: '500' }}>
+                <Text style={{ fontFamily: fonts.medium, fontSize: 12, color: colors.text.muted, marginTop: 3 }}>
                   {subtitle}
                 </Text>
               </View>
 
-              <Icon name="arrow-right" size={18} color="#A8A29E" />
+              <Icon name="arrow-right" size={18} color={colors.text.faint} />
             </AppCard>
           );
         })}

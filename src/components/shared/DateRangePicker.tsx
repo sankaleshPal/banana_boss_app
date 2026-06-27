@@ -14,7 +14,7 @@ import Icon from 'react-native-vector-icons/Feather';
 import { useOutletDetails } from '@/queries/outlets';
 import { formatDateShort, getBusinessDayRange } from '@/utils/date';
 import type { DateRangeValue, DateRangePreset } from '@/stores/appStore';
-import { fonts } from '@/theme';
+import { colors, fonts, radii } from '@/theme';
 
 // Preset raw-range helpers (calendar-only, no billing offset)
 function getTodayRaw(): { from: number; to: number } {
@@ -120,10 +120,10 @@ export const DateRangePicker = React.memo(function DateRangePicker({
   const hasBilling = billingStart > 0 || billingEnd > 0;
 
   // Trigger button styling
-  const triggerBg     = dark ? 'rgba(255,255,255,0.12)' : '#FFFFFF';
-  const triggerText   = dark ? '#FFFFFF' : '#111827';
-  const triggerBorder = dark ? 'transparent' : 'rgba(0,0,0,0.08)';
-  const iconColor     = dark ? '#FFFFFF' : '#6B7280';
+  const triggerBg     = dark ? 'rgba(255,255,255,0.12)' : colors.surface.card;
+  const triggerText   = dark ? colors.text.white : colors.text.base;
+  const triggerBorder = dark ? 'transparent' : colors.surface.border;
+  const iconColor     = dark ? colors.text.white : colors.text.muted;
 
   return (
     <>
@@ -135,7 +135,7 @@ export const DateRangePicker = React.memo(function DateRangePicker({
           flexDirection: 'row',
           alignItems: 'center',
           backgroundColor: triggerBg,
-          borderRadius: 8,
+          borderRadius: radii.chip,
           paddingHorizontal: 12,
           paddingVertical: 8,
           borderWidth: 1,
@@ -158,15 +158,15 @@ export const DateRangePicker = React.memo(function DateRangePicker({
         onRequestClose={() => setOpen(false)}
       >
         <Pressable
-          style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.45)', justifyContent: 'flex-end' }}
+          style={{ flex: 1, backgroundColor: colors.surface.overlay, justifyContent: 'flex-end' }}
           onPress={() => setOpen(false)}
         >
           <Pressable onPress={() => {}}>
             <View
               style={{
-                backgroundColor: '#FFFFFF',
-                borderTopLeftRadius: 20,
-                borderTopRightRadius: 20,
+                backgroundColor: colors.surface.card,
+                borderTopLeftRadius: radii.hero,
+                borderTopRightRadius: radii.hero,
                 paddingTop: 8,
                 paddingBottom: 40,
               }}
@@ -177,7 +177,7 @@ export const DateRangePicker = React.memo(function DateRangePicker({
                   width: 36,
                   height: 4,
                   borderRadius: 2,
-                  backgroundColor: '#E5E7EB',
+                  backgroundColor: colors.surface.border,
                   alignSelf: 'center',
                   marginBottom: 16,
                 }}
@@ -187,8 +187,7 @@ export const DateRangePicker = React.memo(function DateRangePicker({
                 style={{
                   fontSize: 16,
                   fontFamily: fonts.bold,
-                  fontWeight: '700',
-                  color: '#111827',
+                  color: colors.text.base,
                   paddingHorizontal: 20,
                   marginBottom: 16,
                   letterSpacing: -0.3,
@@ -209,7 +208,7 @@ export const DateRangePicker = React.memo(function DateRangePicker({
                       alignItems: 'center',
                       paddingHorizontal: 20,
                       paddingVertical: 15,
-                      backgroundColor: active ? '#F9FAFB' : 'transparent',
+                      backgroundColor: active ? colors.surface.raised : 'transparent',
                     }}
                   >
                     <View
@@ -218,7 +217,7 @@ export const DateRangePicker = React.memo(function DateRangePicker({
                         height: 20,
                         borderRadius: 10,
                         borderWidth: 2,
-                        borderColor: active ? '#111827' : '#D1D5DB',
+                        borderColor: active ? colors.primaryDark : colors.surface.border,
                         alignItems: 'center',
                         justifyContent: 'center',
                         marginRight: 14,
@@ -230,7 +229,7 @@ export const DateRangePicker = React.memo(function DateRangePicker({
                             width: 10,
                             height: 10,
                             borderRadius: 5,
-                            backgroundColor: '#111827',
+                            backgroundColor: colors.primaryDark,
                           }}
                         />
                       )}
@@ -239,15 +238,14 @@ export const DateRangePicker = React.memo(function DateRangePicker({
                       style={{
                         fontSize: 15,
                         fontFamily: active ? fonts.bold : fonts.medium,
-                        fontWeight: active ? '700' : '500',
-                        color: active ? '#111827' : '#374151',
+                        color: active ? colors.text.base : colors.text.secondary,
                         flex: 1,
                       }}
                     >
                       {p.label}
                     </Text>
                     {active && (
-                      <Icon name="check" size={16} color="#111827" />
+                      <Icon name="check" size={16} color={colors.primaryDark} />
                     )}
                   </TouchableOpacity>
                 );
@@ -258,16 +256,16 @@ export const DateRangePicker = React.memo(function DateRangePicker({
                   style={{
                     marginHorizontal: 20,
                     marginTop: 16,
-                    backgroundColor: '#FEF9C3',
-                    borderRadius: 10,
+                    backgroundColor: colors.tint.accent.bg,
+                    borderRadius: radii.chip,
                     padding: 12,
                     flexDirection: 'row',
                     alignItems: 'flex-start',
                     gap: 8,
                   }}
                 >
-                  <Icon name="clock" size={13} color="#92400E" style={{ marginTop: 1 }} />
-                  <Text style={{ fontSize: 12, color: '#78350F', flex: 1, lineHeight: 18 }}>
+                  <Icon name="clock" size={13} color={colors.tint.accent.fg} style={{ marginTop: 1 }} />
+                  <Text style={{ fontSize: 12, fontFamily: fonts.medium, color: colors.tint.accent.fg, flex: 1, lineHeight: 18 }}>
                     Billing shift applied — dates use your outlet's configured start &amp; end times.
                   </Text>
                 </View>

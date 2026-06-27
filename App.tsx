@@ -3,10 +3,12 @@ import { Platform, Text as RNText } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import {
   useFonts,
-  Ubuntu_400Regular,
-  Ubuntu_500Medium,
-  Ubuntu_700Bold,
-} from "@expo-google-fonts/ubuntu";
+  Poppins_400Regular,
+  Poppins_500Medium,
+  Poppins_600SemiBold,
+  Poppins_700Bold,
+  Poppins_800ExtraBold,
+} from "@expo-google-fonts/poppins";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { QueryClientProvider } from "@tanstack/react-query";
@@ -35,22 +37,24 @@ async function loadIconFonts() {
 
 function configureDefaultTextFont() {
   const textComponent = RNText as any;
-  if (textComponent.__ubuntuConfigured) return;
+  if (textComponent.__poppinsConfigured) return;
 
   const defaultProps = textComponent.defaultProps || {};
   textComponent.defaultProps = {
     ...defaultProps,
     style: [defaultProps.style, { fontFamily: fonts.regular }],
   };
-  textComponent.__ubuntuConfigured = true;
+  textComponent.__poppinsConfigured = true;
 }
 
 export default function App() {
   const [fontsReady, setFontsReady] = useState(Platform.OS !== "web");
-  const [ubuntuReady] = useFonts({
-    Ubuntu_400Regular,
-    Ubuntu_500Medium,
-    Ubuntu_700Bold,
+  const [poppinsReady] = useFonts({
+    Poppins_400Regular,
+    Poppins_500Medium,
+    Poppins_600SemiBold,
+    Poppins_700Bold,
+    Poppins_800ExtraBold,
   });
 
   useEffect(() => {
@@ -59,11 +63,11 @@ export default function App() {
     }
   }, []);
 
-  if (ubuntuReady) {
+  if (poppinsReady) {
     configureDefaultTextFont();
   }
 
-  if (!fontsReady || !ubuntuReady) return null;
+  if (!fontsReady || !poppinsReady) return null;
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>

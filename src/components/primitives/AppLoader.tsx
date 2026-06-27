@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, ActivityIndicator, Text } from 'react-native';
+import { View, ActivityIndicator, Text, StyleSheet } from 'react-native';
+import { colors, fonts } from '@/theme';
 
 interface AppLoaderProps {
   visible: boolean;
@@ -16,9 +17,11 @@ export const AppLoader = React.memo(function AppLoader({
 
   const content = (
     <View style={{ alignItems: 'center' }}>
-      <ActivityIndicator size="large" color="#111827" />
+      <ActivityIndicator size="large" color={colors.primaryDark} />
       {message && (
-        <Text style={{ marginTop: 12, fontSize: 14, color: '#374151' }}>{message}</Text>
+        <Text style={{ marginTop: 12, fontSize: 14, fontFamily: fonts.medium, color: colors.text.secondary }}>
+          {message}
+        </Text>
       )}
     </View>
   );
@@ -28,7 +31,7 @@ export const AppLoader = React.memo(function AppLoader({
       <View
         style={{
           ...StyleSheet.absoluteFillObject,
-          backgroundColor: 'rgba(255,255,255,0.9)',
+          backgroundColor: 'rgba(250,249,246,0.9)',
           justifyContent: 'center',
           alignItems: 'center',
           zIndex: 50,
@@ -41,5 +44,3 @@ export const AppLoader = React.memo(function AppLoader({
 
   return content;
 });
-
-import { StyleSheet } from 'react-native';

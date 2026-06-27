@@ -6,6 +6,7 @@ import {
   type ViewProps,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { colors } from '@/theme';
 
 interface ScreenWrapperProps extends ViewProps {
   children: React.ReactNode;
@@ -24,7 +25,7 @@ export const ScreenWrapper = React.memo(function ScreenWrapper({
   onRefresh,
   padding = true,
   hasTabBar = true,
-  bg = '#FAF9F6', // Default to premium light cream background
+  bg = colors.surface.canvas, // premium light cream background
   style,
   ...props
 }: ScreenWrapperProps) {
@@ -51,7 +52,7 @@ export const ScreenWrapper = React.memo(function ScreenWrapper({
           contentContainerStyle={{ paddingBottom: bottomOffset }}
           refreshControl={
             refreshControl && onRefresh ? (
-              <RefreshControl refreshing={false} onRefresh={onRefresh} tintColor="#111827" />
+              <RefreshControl refreshing={false} onRefresh={onRefresh} tintColor={colors.primaryDark} />
             ) : undefined
           }
           showsVerticalScrollIndicator={false}

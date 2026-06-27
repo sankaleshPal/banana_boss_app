@@ -12,7 +12,7 @@ import { useCurrency } from '@/hooks/useCurrency';
 import { ScreenWrapper, TopBar } from '@/components/layout';
 import { DateRangePicker, MetricCard, LoadingSkeleton, ErrorState, SectionHeader } from '@/components/shared';
 import { reportsApi } from '@/api/services/reports/reports.api';
-import { fonts } from '@/theme';
+import { colors, fonts, radii } from '@/theme';
 
 export function NetSalesSummaryScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<ReportsStackParamList>>();
@@ -104,19 +104,19 @@ export function NetSalesSummaryScreen() {
             gap: 6,
             minHeight: 36,
             paddingHorizontal: 12,
-            borderRadius: 8,
-            backgroundColor: '#FDE047',
+            borderRadius: radii.chip,
+            backgroundColor: colors.primary,
             borderWidth: 1,
-            borderColor: '#111827',
+            borderColor: colors.primaryDark,
             opacity: !outletId || isLoading || rawList.length === 0 || isDownloading ? 0.45 : 1,
           }}
         >
           {isDownloading ? (
-            <ActivityIndicator size="small" color="#111827" />
+            <ActivityIndicator size="small" color={colors.text.onAccent} />
           ) : (
-            <Icon name="download" size={15} color="#111827" />
+            <Icon name="download" size={15} color={colors.text.onAccent} />
           )}
-          <Text style={{ fontFamily: fonts.bold, fontSize: 11, fontWeight: '700', color: '#111827', textTransform: 'uppercase' }}>
+          <Text style={{ fontFamily: fonts.bold, fontSize: 11, color: colors.text.onAccent, textTransform: 'uppercase' }}>
             {isDownloading ? 'Downloading' : 'Excel'}
           </Text>
         </TouchableOpacity>
@@ -160,19 +160,19 @@ export function NetSalesSummaryScreen() {
             >
               <SectionHeader title="Dues" />
               <View style={{ flexDirection: 'row', gap: 10 }}>
-                <View style={{ flex: 1, backgroundColor: '#FEF3C7', borderRadius: 14, padding: 16 }}>
-                  <Text style={{ fontSize: 11, fontWeight: '800', color: '#92400E', textTransform: 'uppercase', letterSpacing: 0.8 }}>
+                <View style={{ flex: 1, backgroundColor: colors.tint.amber.bg, borderRadius: radii.tile, padding: 16 }}>
+                  <Text style={{ fontSize: 11, fontFamily: fonts.extrabold, color: colors.tint.amber.fg, textTransform: 'uppercase', letterSpacing: 0.8 }}>
                     Total Dues
                   </Text>
-                  <Text style={{ fontSize: 22, fontWeight: '900', color: '#92400E', marginTop: 6 }}>
+                  <Text style={{ fontSize: 22, fontFamily: fonts.extrabold, color: colors.tint.amber.fg, marginTop: 6 }}>
                     {format(totals.duesTotal)}
                   </Text>
                 </View>
-                <View style={{ flex: 1, backgroundColor: '#F3F4F6', borderRadius: 14, padding: 16 }}>
-                  <Text style={{ fontSize: 11, fontWeight: '800', color: '#374151', textTransform: 'uppercase', letterSpacing: 0.8 }}>
+                <View style={{ flex: 1, backgroundColor: colors.surface.raised, borderRadius: radii.tile, padding: 16 }}>
+                  <Text style={{ fontSize: 11, fontFamily: fonts.extrabold, color: colors.text.secondary, textTransform: 'uppercase', letterSpacing: 0.8 }}>
                     Dues Count
                   </Text>
-                  <Text style={{ fontSize: 22, fontWeight: '900', color: '#111827', marginTop: 6 }}>
+                  <Text style={{ fontSize: 22, fontFamily: fonts.extrabold, color: colors.text.base, marginTop: 6 }}>
                     {totals.duesCount}
                   </Text>
                 </View>
@@ -189,7 +189,7 @@ export function NetSalesSummaryScreen() {
           transition={{ type: 'spring', damping: 20 }}
           style={{ marginTop: 40, alignItems: 'center' }}
         >
-          <Text style={{ fontSize: 14, color: '#9CA3AF' }}>No data for the selected date range.</Text>
+          <Text style={{ fontSize: 14, fontFamily: fonts.medium, color: colors.text.faint }}>No data for the selected date range.</Text>
         </MotiView>
       )}
 

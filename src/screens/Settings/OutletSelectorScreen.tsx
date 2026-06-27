@@ -9,6 +9,7 @@ import { queryClient } from '@/queries/queryClient';
 import { ScreenWrapper, TopBar } from '@/components/layout';
 import { AppCard } from '@/components/primitives';
 import Icon from 'react-native-vector-icons/Feather';
+import { colors, fonts } from '@/theme';
 
 export function OutletSelectorScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<SettingsStackParamList>>();
@@ -40,17 +41,17 @@ export function OutletSelectorScreen() {
                   marginBottom: 10,
                   flexDirection: 'row',
                   alignItems: 'center',
-                  borderColor: isSelected ? '#FDE047' : 'rgba(0,0,0,0.06)',
+                  borderColor: isSelected ? colors.primary : colors.surface.border,
                   borderWidth: isSelected ? 2 : 1,
                 }}
               >
                 <View style={{ flex: 1 }}>
-                  <Text style={{ fontSize: 15, fontWeight: '700', color: '#111827' }}>{item.name}</Text>
-                  <Text style={{ fontSize: 12, color: '#9CA3AF', marginTop: 2 }}>
+                  <Text style={{ fontSize: 15, fontFamily: fonts.bold, color: colors.text.base }}>{item.name}</Text>
+                  <Text style={{ fontSize: 12, fontFamily: fonts.regular, color: colors.text.faint, marginTop: 2 }}>
                     {item.registerName || item.name}
                   </Text>
                 </View>
-                {isSelected && <Icon name="check-circle" size={22} color="#111827" />}
+                {isSelected && <Icon name="check-circle" size={22} color={colors.primaryDark} />}
               </AppCard>
             </TouchableOpacity>
           );

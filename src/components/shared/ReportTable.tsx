@@ -5,7 +5,7 @@ import { EmptyState } from './EmptyState';
 import { ErrorState } from './ErrorState';
 import { LoadingSkeleton } from './LoadingSkeleton';
 import type { ReportPagination } from '@/types/common';
-import { fonts } from '@/theme';
+import { colors, fonts, radii } from '@/theme';
 import { reportsApi, type ReportXlsxId } from '@/api/services/reports/reports.api';
 
 interface ReportTableProps {
@@ -82,9 +82,9 @@ export const ReportTable = React.memo(function ReportTable({
           style={[styles.downloadButton, !canDownload && styles.downloadButtonDisabled]}
         >
           {isDownloading ? (
-            <ActivityIndicator size="small" color="#111827" />
+            <ActivityIndicator size="small" color={colors.text.onAccent} />
           ) : (
-            <Icon name="download" size={15} color="#111827" />
+            <Icon name="download" size={15} color={colors.text.onAccent} />
           )}
           <Text style={styles.downloadButtonText}>{isDownloading ? 'Downloading' : 'Excel'}</Text>
         </TouchableOpacity>
@@ -128,7 +128,7 @@ export const ReportTable = React.memo(function ReportTable({
                 key={`row-${rowIndex}`}
                 style={[
                   styles.bodyRow,
-                  { backgroundColor: rowIndex % 2 === 0 ? '#FFFFFF' : '#F8FAFC' },
+                  { backgroundColor: rowIndex % 2 === 0 ? colors.surface.card : colors.surface.raised },
                 ]}
               >
                 {columns.map((_, cellIndex) => (
@@ -175,10 +175,10 @@ const styles = {
     gap: 6,
     minHeight: 36,
     paddingHorizontal: 12,
-    borderRadius: 8,
-    backgroundColor: '#FDE047',
+    borderRadius: radii.chip,
+    backgroundColor: colors.primary,
     borderWidth: 1,
-    borderColor: '#111827',
+    borderColor: colors.primaryDark,
   },
   downloadButtonDisabled: {
     opacity: 0.45,
@@ -186,37 +186,35 @@ const styles = {
   downloadButtonText: {
     fontFamily: fonts.bold,
     fontSize: 11,
-    fontWeight: '700' as const,
-    color: '#111827',
+    color: colors.text.onAccent,
     textTransform: 'uppercase' as const,
   },
   tableShell: {
     marginTop: 10,
-    borderRadius: 8,
-    backgroundColor: '#FFFFFF',
+    borderRadius: radii.tile,
+    backgroundColor: colors.surface.card,
     borderWidth: 1,
-    borderColor: '#E5E7EB',
+    borderColor: colors.surface.border,
     overflow: 'hidden' as const,
   },
   headerRow: {
     flexDirection: 'row' as const,
-    backgroundColor: '#F8FAFC',
+    backgroundColor: colors.surface.raised,
     borderBottomWidth: 1,
-    borderBottomColor: '#E5E7EB',
+    borderBottomColor: colors.surface.border,
   },
   headerCell: {
     paddingVertical: 12,
     paddingHorizontal: 12,
     fontFamily: fonts.bold,
     fontSize: 11,
-    fontWeight: '700' as const,
-    color: '#475569',
+    color: colors.text.muted,
     textTransform: 'uppercase' as const,
   },
   bodyRow: {
     flexDirection: 'row' as const,
     borderBottomWidth: 1,
-    borderBottomColor: '#EEF2F7',
+    borderBottomColor: colors.surface.borderSoft,
   },
   bodyCell: {
     paddingVertical: 12,
@@ -224,20 +222,19 @@ const styles = {
     fontFamily: fonts.regular,
     fontSize: 13,
     lineHeight: 18,
-    color: '#334155',
+    color: colors.text.secondary,
   },
   totalRow: {
     flexDirection: 'row' as const,
-    backgroundColor: '#FEF9C3',
+    backgroundColor: colors.tint.accent.bg,
     borderTopWidth: 1,
-    borderTopColor: '#FDE68A',
+    borderTopColor: colors.primary,
   },
   totalCell: {
     paddingVertical: 12,
     paddingHorizontal: 12,
     fontFamily: fonts.bold,
     fontSize: 13,
-    fontWeight: '700' as const,
-    color: '#111827',
+    color: colors.text.base,
   },
 };

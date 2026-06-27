@@ -8,7 +8,7 @@ import { useOutletDetails } from '@/queries/outlets';
 import { useCurrency } from '@/hooks/useCurrency';
 import { ScreenWrapper, TopBar } from '@/components/layout';
 import { DateRangePicker, LoadingSkeleton, ErrorState } from '@/components/shared';
-import { fonts } from '@/theme';
+import { colors, fonts, radii, shadows } from '@/theme';
 import { getTodayRange, getBusinessDayRange } from '@/utils/date';
 import { BarChart } from 'react-native-chart-kit';
 import Icon from 'react-native-vector-icons/Feather';
@@ -104,22 +104,18 @@ export function SalesDashboardScreen() {
           >
             {/* Premium Gold/Dark Hero Card for Net Sales */}
             <View style={{
-              backgroundColor: '#0F172A', // Deep Slate
-              borderRadius: 24,
+              backgroundColor: colors.surface.ink, // warm espresso
+              borderRadius: radii.hero,
               padding: 22,
               borderLeftWidth: 6,
-              borderLeftColor: '#FDE047', // Glowing Gold
-              shadowColor: '#000000',
-              shadowOffset: { width: 0, height: 8 },
-              shadowOpacity: 0.15,
-              shadowRadius: 16,
-              elevation: 4,
+              borderLeftColor: colors.primary, // banana gold
+              ...shadows.soft,
               marginBottom: 16,
               borderWidth: 1,
-              borderColor: '#1E293B',
+              borderColor: colors.surface.inkBorder,
             }}>
               <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-                <Text style={{ fontFamily: fonts.bold, fontSize: 11, fontWeight: '800', color: '#94A3B8', letterSpacing: 1.2, textTransform: 'uppercase' }}>
+                <Text style={{ fontFamily: fonts.bold, fontSize: 11, color: colors.text.onInkMuted, letterSpacing: 1.2, textTransform: 'uppercase' }}>
                   Net Sales
                 </Text>
                 
@@ -146,7 +142,7 @@ export function SalesDashboardScreen() {
                 </View>
               </View>
 
-              <Text style={{ fontFamily: fonts.bold, fontSize: 34, fontWeight: '900', color: '#FDE047', letterSpacing: -0.5 }}>
+              <Text style={{ fontFamily: fonts.extrabold, fontSize: 34, color: colors.primary, letterSpacing: -0.5 }}>
                 {format(todaySales)}
               </Text>
 
@@ -163,17 +159,17 @@ export function SalesDashboardScreen() {
                     gap: 3
                   }}>
                     <Icon name={salesChange >= 0 ? 'trending-up' : 'trending-down'} size={11} color={salesChange >= 0 ? '#10B981' : '#EF4444'} />
-                    <Text style={{ fontFamily: fonts.bold, fontSize: 11, fontWeight: '800', color: salesChange >= 0 ? '#10B981' : '#EF4444' }}>
+                    <Text style={{ fontFamily: fonts.bold, fontSize: 11, color: salesChange >= 0 ? '#10B981' : '#EF4444' }}>
                       {salesChange >= 0 ? '+' : ''}{salesChange.toFixed(1)}%
                     </Text>
                   </View>
-                  <Text style={{ fontFamily: fonts.medium, fontSize: 11, color: '#94A3B8' }}>vs yesterday same time</Text>
+                  <Text style={{ fontFamily: fonts.medium, fontSize: 11, color: colors.text.onInkMuted }}>vs yesterday same time</Text>
                 </View>
               )}
 
-              <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 14, gap: 6, borderTopWidth: 1, borderTopColor: '#1E293B', paddingTop: 12 }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 14, gap: 6, borderTopWidth: 1, borderTopColor: colors.surface.inkBorder, paddingTop: 12 }}>
                 <Icon name="check-circle" size={13} color="#10B981" />
-                <Text style={{ fontFamily: fonts.regular, fontSize: 11, color: '#94A3B8', fontWeight: '500' }}>
+                <Text style={{ fontFamily: fonts.regular, fontSize: 11, color: colors.text.onInkMuted }}>
                   Includes normal sales & settled dues
                 </Text>
               </View>
@@ -226,21 +222,17 @@ export function SalesDashboardScreen() {
             >
               <Text style={s.sectionLabel}>Sales Comparison</Text>
               <View style={{
-                backgroundColor: '#FFFFFF',
-                borderRadius: 24,
+                backgroundColor: colors.surface.card,
+                borderRadius: radii.hero,
                 padding: 18,
                 borderWidth: 1,
-                borderColor: '#E2E8F0',
-                shadowColor: '#0F172A',
-                shadowOffset: { width: 0, height: 6 },
-                shadowOpacity: 0.04,
-                shadowRadius: 12,
-                elevation: 2
+                borderColor: colors.surface.border,
+                ...shadows.card,
               }}>
                 <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
                   <View>
-                    <Text style={{ fontFamily: fonts.bold, fontSize: 15, fontWeight: '800', color: '#0F172A' }}>Performance vs Yesterday</Text>
-                    <Text style={{ fontFamily: fonts.medium, fontSize: 11, color: '#64748B', marginTop: 2 }}>
+                    <Text style={{ fontFamily: fonts.extrabold, fontSize: 15, color: colors.text.base }}>Performance vs Yesterday</Text>
+                    <Text style={{ fontFamily: fonts.medium, fontSize: 11, color: colors.text.muted, marginTop: 2 }}>
                       Comparing matching billing shift windows
                     </Text>
                   </View>
@@ -268,7 +260,7 @@ export function SalesDashboardScreen() {
                 {isLoadingYest ? (
                   <View style={{ height: 200, justifyContent: 'center', alignItems: 'center' }}>
                     <ActivityIndicator size="small" color="#EAB308" />
-                    <Text style={{ fontFamily: fonts.medium, fontSize: 12, color: '#64748B', marginTop: 10 }}>
+                    <Text style={{ fontFamily: fonts.medium, fontSize: 12, color: colors.text.muted, marginTop: 10 }}>
                       Loading yesterday's shift data...
                     </Text>
                   </View>
@@ -294,15 +286,15 @@ export function SalesDashboardScreen() {
                     yAxisLabel="₹"
                     yAxisSuffix=""
                     chartConfig={{
-                      backgroundColor: '#FFFFFF',
-                      backgroundGradientFrom: '#FFFFFF',
-                      backgroundGradientTo: '#FFFFFF',
+                      backgroundColor: colors.surface.card,
+                      backgroundGradientFrom: colors.surface.card,
+                      backgroundGradientTo: colors.surface.card,
                       decimalPlaces: 0,
-                      color: (opacity = 1) => `rgba(234, 179, 8, ${opacity})`,
-                      labelColor: (opacity = 1) => `#64748B`,
-                      propsForBackgroundLines: { strokeDasharray: '4', stroke: '#E2E8F0' },
+                      color: (opacity = 1) => `rgba(184, 147, 90, ${opacity})`,
+                      labelColor: () => colors.text.muted,
+                      propsForBackgroundLines: { strokeDasharray: '4', stroke: colors.surface.border },
                       barPercentage: 0.65,
-                      fillShadowGradient: '#EAB308',
+                      fillShadowGradient: colors.gold,
                       fillShadowGradientOpacity: 1,
                     }}
                     style={{ borderRadius: 16, alignSelf: 'center', marginRight: 10 }}
@@ -323,23 +315,19 @@ export function SalesDashboardScreen() {
             >
               <Text style={s.sectionLabel}>Payment Modes Share</Text>
               <View style={{
-                backgroundColor: '#FFFFFF',
-                borderRadius: 24,
+                backgroundColor: colors.surface.card,
+                borderRadius: radii.hero,
                 padding: 20,
                 borderWidth: 1,
-                borderColor: '#E2E8F0',
-                shadowColor: '#0F172A',
-                shadowOffset: { width: 0, height: 6 },
-                shadowOpacity: 0.04,
-                shadowRadius: 12,
-                elevation: 2
+                borderColor: colors.surface.border,
+                ...shadows.card,
               }}>
                 {paymentModeEntries.map(([mode, amount], i) => {
                   const share = netSales > 0 ? (amount / netSales) * 100 : 0;
                   
                   // Color codes for badges
-                  let badgeBg = '#F1F5F9';
-                  let badgeText = '#475569';
+                  let badgeBg: string = colors.surface.raised;
+                  let badgeText: string = colors.text.muted;
                   const formattedMode = mode.toUpperCase();
                   
                   if (formattedMode.includes('UPI')) {
@@ -367,15 +355,15 @@ export function SalesDashboardScreen() {
                           </View>
                         </View>
                         <View style={{ alignItems: 'flex-end' }}>
-                          <Text style={{ fontFamily: fonts.bold, fontSize: 14, fontWeight: '800', color: '#0F172A' }}>
+                          <Text style={{ fontFamily: fonts.extrabold, fontSize: 14, color: colors.text.base }}>
                             {format(Number(amount))}
                           </Text>
-                          <Text style={{ fontFamily: fonts.medium, fontSize: 10, color: '#64748B', fontWeight: '600', marginTop: 1 }}>
+                          <Text style={{ fontFamily: fonts.medium, fontSize: 10, color: colors.text.muted, marginTop: 1 }}>
                             {share.toFixed(1)}% share
                           </Text>
                         </View>
                       </View>
-                      <View style={{ height: 6, width: '100%', backgroundColor: '#F1F5F9', borderRadius: 3, marginTop: 8 }}>
+                      <View style={{ height: 6, width: '100%', backgroundColor: colors.surface.raised, borderRadius: 3, marginTop: 8 }}>
                         <View style={{ height: 6, width: `${Math.min(100, share)}%`, backgroundColor: badgeText, borderRadius: 3 }} />
                       </View>
                     </View>
@@ -467,9 +455,9 @@ export function SalesDashboardScreen() {
               </View>
 
               <View style={{ flexDirection: 'row', gap: 12 }}>
-                <View style={[s.gridCard, { borderLeftColor: '#64748B', borderLeftWidth: 4 }]}>
-                  <View style={[s.iconBg, { backgroundColor: '#F8FAFC' }]}>
-                    <Icon name="clock" size={15} color="#64748B" />
+                <View style={[s.gridCard, { borderLeftColor: colors.text.muted, borderLeftWidth: 4 }]}>
+                  <View style={[s.iconBg, { backgroundColor: colors.surface.raised }]}>
+                    <Icon name="clock" size={15} color={colors.text.muted} />
                   </View>
                   <Text style={s.cardLabel}>Pending Orders</Text>
                   <Text style={s.cardValue}>
@@ -551,30 +539,25 @@ const s = StyleSheet.create({
   sectionLabel: {
     fontFamily: fonts.bold,
     fontSize: 12,
-    fontWeight: '800' as const,
-    color: '#64748B',
+    color: colors.text.muted,
     letterSpacing: 1.2,
     textTransform: 'uppercase' as const,
     marginTop: 12,
     marginBottom: 10,
   },
   gridCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 20,
+    backgroundColor: colors.surface.card,
+    borderRadius: radii.card,
     padding: 16,
     flex: 1,
     borderWidth: 1,
-    borderColor: '#E2E8F0',
-    shadowColor: '#0F172A',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.03,
-    shadowRadius: 8,
-    elevation: 2,
+    borderColor: colors.surface.border,
+    ...shadows.card,
   },
   iconBg: {
     width: 32,
     height: 32,
-    borderRadius: 10,
+    borderRadius: radii.chip,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 10,
@@ -582,16 +565,14 @@ const s = StyleSheet.create({
   cardLabel: {
     fontFamily: fonts.bold,
     fontSize: 10,
-    fontWeight: '700' as const,
-    color: '#64748B',
+    color: colors.text.muted,
     textTransform: 'uppercase' as const,
     letterSpacing: 0.5,
     marginBottom: 4,
   },
   cardValue: {
-    fontFamily: fonts.bold,
+    fontFamily: fonts.extrabold,
     fontSize: 17,
-    fontWeight: '900' as const,
-    color: '#0F172A',
+    color: colors.text.base,
   },
 });

@@ -12,6 +12,7 @@ import { AppInput } from '@/components/primitives/AppInput';
 import { LoadingSkeleton, EmptyState, ErrorState } from '@/components/shared';
 import Icon from 'react-native-vector-icons/Feather';
 import { formatDateTime } from '@/utils/date';
+import { colors, fonts, radii } from '@/theme';
 
 export function NpcScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<BillingStackParamList>>();
@@ -58,24 +59,24 @@ export function NpcScreen() {
           <TouchableOpacity 
             onPress={() => setModalVisible(true)}
             style={{
-              backgroundColor: '#1A1A1A',
+              backgroundColor: colors.primaryDark,
               paddingHorizontal: 12,
               paddingVertical: 8,
-              borderRadius: 12,
+              borderRadius: radii.chip,
               flexDirection: 'row',
               alignItems: 'center',
               gap: 4,
             }}
             activeOpacity={0.8}
           >
-            <Icon name="plus" size={14} color="#FFFFFF" />
-            <Text style={{ fontSize: 12, fontWeight: '700', color: '#FFFFFF' }}>Add NPC</Text>
+            <Icon name="plus" size={14} color={colors.text.white} />
+            <Text style={{ fontSize: 12, fontFamily: fonts.bold, color: colors.text.white }}>Add NPC</Text>
           </TouchableOpacity>
         }
       />
 
       <View style={{ marginVertical: 8, paddingHorizontal: 4 }}>
-        <Text style={{ fontSize: 13, fontWeight: '600', color: '#78716C' }}>
+        <Text style={{ fontSize: 13, fontFamily: fonts.semibold, color: colors.text.muted }}>
           Non-Paying Complimentary Registry
         </Text>
       </View>
@@ -88,29 +89,29 @@ export function NpcScreen() {
         keyExtractor={(item) => item._id}
         renderItem={({ item }) => (
           <AppCard style={{ marginBottom: 10, flexDirection: 'row', alignItems: 'center', backgroundColor: '#FFFFFF' }}>
-            <View style={{ 
-              width: 44, 
-              height: 44, 
-              borderRadius: 14, 
-              backgroundColor: '#FFE4E6', 
-              alignItems: 'center', 
+            <View style={{
+              width: 44,
+              height: 44,
+              borderRadius: radii.tile,
+              backgroundColor: colors.tint.rose.bg,
+              alignItems: 'center',
               justifyContent: 'center',
               borderWidth: 1,
-              borderColor: '#FFE4E6',
+              borderColor: colors.tint.rose.bg,
             }}>
-              <Icon name="user-check" size={20} color="#E11D48" />
+              <Icon name="user-check" size={20} color={colors.tint.rose.fg} />
             </View>
             <View style={{ flex: 1, marginLeft: 14 }}>
-              <Text style={{ fontSize: 15, fontWeight: '700', color: '#1A1A1A' }}>{item.name}</Text>
-              <Text style={{ fontSize: 12, color: '#78716C', marginTop: 3, fontWeight: '500' }}>
+              <Text style={{ fontSize: 15, fontFamily: fonts.bold, color: colors.text.base }}>{item.name}</Text>
+              <Text style={{ fontSize: 12, fontFamily: fonts.medium, color: colors.text.muted, marginTop: 3 }}>
                 {item.phone || 'No Phone'}
               </Text>
             </View>
             <View style={{ alignItems: 'flex-end' }}>
-              <Text style={{ fontSize: 11, color: '#A8A29E', fontWeight: '500' }}>
+              <Text style={{ fontSize: 11, fontFamily: fonts.medium, color: colors.text.faint }}>
                 Created
               </Text>
-              <Text style={{ fontSize: 12, fontWeight: '600', color: '#44403C', marginTop: 2 }}>
+              <Text style={{ fontSize: 12, fontFamily: fonts.semibold, color: colors.text.secondary, marginTop: 2 }}>
                 {item.createdAt ? formatDateTime(new Date(item.createdAt).getTime()).split(',')[0] : 'N/A'}
               </Text>
             </View>
@@ -131,23 +132,23 @@ export function NpcScreen() {
         <View style={{
           flex: 1,
           justifyContent: 'flex-end',
-          backgroundColor: 'rgba(0,0,0,0.4)',
+          backgroundColor: colors.surface.overlay,
         }}>
           <View style={{
-            backgroundColor: '#FAF9F6',
-            borderTopLeftRadius: 28,
-            borderTopRightRadius: 28,
+            backgroundColor: colors.surface.canvas,
+            borderTopLeftRadius: radii.hero,
+            borderTopRightRadius: radii.hero,
             padding: 24,
             maxHeight: '80%',
             borderTopWidth: 1,
-            borderColor: '#EAE8E2',
+            borderColor: colors.surface.border,
           }}>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
-              <Text style={{ fontSize: 20, fontWeight: '900', color: '#1A1A1A' }}>
+              <Text style={{ fontSize: 20, fontFamily: fonts.extrabold, color: colors.text.base }}>
                 Add NPC Account
               </Text>
               <TouchableOpacity onPress={() => setModalVisible(false)} style={{ padding: 4 }}>
-                <Icon name="x" size={22} color="#1A1A1A" />
+                <Icon name="x" size={22} color={colors.text.base} />
               </TouchableOpacity>
             </View>
 
@@ -169,7 +170,7 @@ export function NpcScreen() {
               />
 
               {error ? (
-                <Text style={{ color: '#E05252', fontSize: 13, fontWeight: '600', marginBottom: 16 }}>
+                <Text style={{ color: colors.danger, fontSize: 13, fontFamily: fonts.semibold, marginBottom: 16 }}>
                   {error}
                 </Text>
               ) : null}

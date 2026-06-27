@@ -9,7 +9,7 @@ import { ScreenWrapper, TopBar } from '@/components/layout';
 import { DateRangePicker } from '@/components/shared';
 import { AppCard } from '@/components/primitives/AppCard';
 import Icon from 'react-native-vector-icons/Feather';
-import { fonts } from '@/theme';
+import { colors, fonts } from '@/theme';
 
 const reportGroups = [
   {
@@ -58,10 +58,10 @@ export function ReportsOverviewScreen() {
       <TopBar title={currentOutlet?.name || 'Reports'} subtitle="Business Analytics" />
 
       <View style={{ marginVertical: 8 }}>
-        <Text style={{ fontFamily: fonts.medium, fontSize: 13, fontWeight: '600', color: '#78716C', marginBottom: 2 }}>
+        <Text style={{ fontFamily: fonts.semibold, fontSize: 13, color: colors.text.muted, marginBottom: 2 }}>
           Data Insights
         </Text>
-        <Text style={{ fontFamily: fonts.bold, fontSize: 24, fontWeight: '900', color: '#1A1A1A' }}>
+        <Text style={{ fontFamily: fonts.extrabold, fontSize: 24, color: colors.text.base }}>
           Reports Hub
         </Text>
       </View>
@@ -70,15 +70,14 @@ export function ReportsOverviewScreen() {
 
       {reportGroups.map((group) => (
         <View key={group.title} style={{ marginTop: 22 }}>
-          <Text style={{ 
+          <Text style={{
             fontFamily: fonts.bold,
-            fontSize: 11, 
-            fontWeight: '800', 
-            color: '#78716C', 
-            letterSpacing: 0.8, 
-            textTransform: 'uppercase', 
+            fontSize: 11,
+            color: colors.text.muted,
+            letterSpacing: 0.8,
+            textTransform: 'uppercase',
             marginBottom: 12,
-            paddingHorizontal: 4 
+            paddingHorizontal: 4
           }}>
             {group.title}
           </Text>
@@ -108,7 +107,7 @@ export function ReportsOverviewScreen() {
                 >
                   <Icon name={item.icon} size={20} color={item.iconColor} />
                 </View>
-                <Text style={{ fontFamily: fonts.bold, fontSize: 13, fontWeight: '700', color: '#1A1A1A' }}>
+                <Text style={{ fontFamily: fonts.bold, fontSize: 13, color: colors.text.base }}>
                   {item.title}
                 </Text>
               </AppCard>

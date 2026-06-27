@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, TextInput, Text, TouchableOpacity, type TextInputProps } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
-import { fonts } from '@/theme';
+import { colors, fonts, radii } from '@/theme';
 
 interface AppInputProps extends TextInputProps {
   label?: string;
@@ -27,7 +27,7 @@ export const AppInput = React.memo(function AppInput({
   return (
     <View style={{ marginBottom: 16 }}>
       {label && (
-        <Text style={{ fontFamily: fonts.medium, fontSize: 13, fontWeight: '600', color: '#44403C', marginBottom: 6, letterSpacing: 0.1 }}>
+        <Text style={{ fontFamily: fonts.semibold, fontSize: 13, color: colors.text.secondary, marginBottom: 6, letterSpacing: 0.1 }}>
           {label}
         </Text>
       )}
@@ -37,34 +37,33 @@ export const AppInput = React.memo(function AppInput({
           alignItems: 'center',
           borderWidth: 1.5,
           borderColor: error
-            ? '#E05252'
+            ? colors.danger
             : isFocused
-            ? '#1A1A1A'
-            : '#EAE8E2',
-          borderRadius: 14,
+            ? colors.primaryDark
+            : colors.surface.border,
+          borderRadius: radii.tile,
           paddingHorizontal: 16,
-          backgroundColor: '#FFFFFF',
-          shadowColor: '#1A1A1A',
+          backgroundColor: colors.surface.card,
+          shadowColor: colors.primaryDark,
           shadowOffset: { width: 0, height: 2 },
-          shadowOpacity: isFocused ? 0.02 : 0,
+          shadowOpacity: isFocused ? 0.04 : 0,
           shadowRadius: 4,
           elevation: isFocused ? 1 : 0,
         }}
       >
-        {leftIcon && <Icon name={leftIcon} size={18} color="#A8A29E" style={{ marginRight: 10 }} />}
+        {leftIcon && <Icon name={leftIcon} size={18} color={colors.text.faint} style={{ marginRight: 10 }} />}
         <TextInput
           style={[
             {
               flex: 1,
               paddingVertical: 14,
-              fontFamily: fonts.regular,
+              fontFamily: fonts.medium,
               fontSize: 14,
-              color: '#1A1A1A',
-              fontWeight: '500',
+              color: colors.text.base,
             },
             style,
           ]}
-          placeholderTextColor="#A8A29E"
+          placeholderTextColor={colors.text.faint}
           onFocus={(e) => {
             setIsFocused(true);
             if (onFocus) onFocus(e);
@@ -77,11 +76,11 @@ export const AppInput = React.memo(function AppInput({
         />
         {rightIcon && (
           <TouchableOpacity onPress={onRightIconPress} activeOpacity={0.7}>
-            <Icon name={rightIcon} size={18} color="#A8A29E" style={{ marginLeft: 10 }} />
+            <Icon name={rightIcon} size={18} color={colors.text.faint} style={{ marginLeft: 10 }} />
           </TouchableOpacity>
         )}
       </View>
-      {error && <Text style={{ color: '#E05252', fontSize: 12, marginTop: 4, fontWeight: '500' }}>{error}</Text>}
+      {error && <Text style={{ color: colors.danger, fontSize: 12, marginTop: 4, fontFamily: fonts.medium }}>{error}</Text>}
     </View>
   );
 });

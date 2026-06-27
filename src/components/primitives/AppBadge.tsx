@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text } from 'react-native';
+import { colors, fonts, radii } from '@/theme';
 
 interface AppBadgeProps {
   label: string;
@@ -8,11 +9,11 @@ interface AppBadgeProps {
 }
 
 const variantStyles: Record<string, { bg: string; text: string }> = {
-  success: { bg: 'rgba(16,185,129,0.15)', text: '#059669' },
-  warning: { bg: 'rgba(245,158,11,0.15)', text: '#D97706' },
-  error: { bg: 'rgba(239,68,68,0.15)', text: '#DC2626' },
-  info: { bg: 'rgba(59,130,246,0.15)', text: '#2563EB' },
-  neutral: { bg: 'rgba(156,163,175,0.15)', text: '#4B5563' },
+  success: { bg: colors.badge.paid.bg, text: colors.badge.paid.text },
+  warning: { bg: colors.badge.pending.bg, text: colors.badge.pending.text },
+  error: { bg: 'rgba(239,68,68,0.12)', text: '#DC2626' },
+  info: { bg: 'rgba(2,132,199,0.12)', text: '#0284C7' },
+  neutral: { bg: colors.surface.raised, text: colors.text.muted },
 };
 
 export const AppBadge = React.memo(function AppBadge({
@@ -25,9 +26,9 @@ export const AppBadge = React.memo(function AppBadge({
     <View
       style={{
         backgroundColor: s.bg,
-        paddingHorizontal: size === 'sm' ? 6 : 10,
+        paddingHorizontal: size === 'sm' ? 7 : 10,
         paddingVertical: size === 'sm' ? 2 : 4,
-        borderRadius: 999,
+        borderRadius: radii.full,
         alignSelf: 'flex-start',
       }}
     >
@@ -35,7 +36,8 @@ export const AppBadge = React.memo(function AppBadge({
         style={{
           color: s.text,
           fontSize: size === 'sm' ? 10 : 12,
-          fontWeight: '700',
+          fontFamily: fonts.bold,
+          letterSpacing: 0.3,
         }}
       >
         {label}

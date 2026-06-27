@@ -6,7 +6,7 @@ import { useOutlet } from '@/hooks/useOutlet';
 import { useAppStore } from '@/stores/appStore';
 import { useTransferTableReport } from '@/queries/reports';
 import { ScreenWrapper, TopBar } from '@/components/layout';
-import { DateRangePicker, ReportTable, PaginationBar } from '@/components/shared';
+import { DateRangePicker, ReportTable, ReportSummary, PaginationBar } from '@/components/shared';
 
 export function TransferTableReportScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<ReportsStackParamList>>();
@@ -35,9 +35,17 @@ export function TransferTableReportScreen() {
   );
 
   return (
-    <ScreenWrapper>
+    <ScreenWrapper scrollable refreshControl onRefresh={refetch}>
       <TopBar title="Transfer Table Report" showBack onBack={() => navigation.goBack()} />
       <DateRangePicker value={dateRange} onChange={handleDateChange} outletId={outletId} />
+      <ReportSummary
+        data={data?.data}
+        isLoading={isLoading}
+        totalCount={data?.pagination?.total}
+        metrics={[
+          { label: 'Table Transfers', count: true, icon: 'arrow-right-circle', tone: 'muted' },
+        ]}
+      />
       <ReportTable columns={columns} rows={rows} isLoading={isLoading} isError={isError} onRetry={refetch} downloadReportId="transfer-table" outletId={outletId} from={dateRange.from} to={dateRange.to} />
       {data?.pagination && <PaginationBar pagination={data.pagination} onPageChange={setPage} />}
     </ScreenWrapper>
