@@ -6,7 +6,7 @@
  *
  * If the POS is offline or the open order hasn't synced, an empty state shows.
  */
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   View,
   Text,
@@ -42,6 +42,8 @@ interface RunningTablesSheetProps {
   visible: boolean;
   onClose: () => void;
   groups: RunningTablesOutletGroup[];
+  /** When set, the sheet opens straight to this table's KOTs (skips the list). */
+  initialTable?: SelectedTable | null;
 }
 
 interface SelectedTable {
@@ -73,8 +75,15 @@ export function RunningTablesSheet({
   visible,
   onClose,
   groups,
+  initialTable = null,
 }: RunningTablesSheetProps) {
   const [selected, setSelected] = useState<SelectedTable | null>(null);
+
+  // Open directly to a specific table's KOTs when requested (else the list).
+  useEffect(() => {
+    if (visible) setSelected(initialTable ?? null);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [visible, initialTable?.tableId]);
 
   const totalTables = useMemo(
     () => groups.reduce((n, g) => n + g.tables.length, 0),

@@ -3,11 +3,12 @@ import { View, Text, TouchableOpacity, Dimensions, ActivityIndicator, StyleSheet
 import { MotiView } from 'moti';
 import { useOutlet } from '@/hooks/useOutlet';
 import { useAppStore } from '@/stores/appStore';
-import { useBillsDashboardQuery } from '@/queries/bills';
+import { useBillsDashboardQuery, useRunningTablesQuery } from '@/queries/bills';
 import { useOutletDetails } from '@/queries/outlets';
 import { useCurrency } from '@/hooks/useCurrency';
 import { ScreenWrapper, TopBar } from '@/components/layout';
 import { DateRangePicker, LoadingSkeleton, ErrorState, DetailSheet, type DetailRow } from '@/components/shared';
+import { RunningTablesSheet } from '@/components/outletAdmin/RunningTablesSheet';
 import { colors, fonts, radii, shadows } from '@/theme';
 import { getTodayRange, getBusinessDayRange } from '@/utils/date';
 import { BarChart } from 'react-native-chart-kit';
@@ -68,7 +69,6 @@ export function SalesDashboardScreen() {
   const discountSummary = (data as any)?.discountSummary ?? { onPaid: {}, onDues: {} };
   const duesSummary     = (data as any)?.duesSummary     ?? { duesGiven: 0, duesOutstanding: 0, ordersPending: 0, duesGetBack: 0 };
   const taxesSummary    = (data as any)?.taxesSummary    ?? { all: {}, onPaid: {} };
-  const runningTables   = (data as any)?.runningTables   ?? { tables: [], totalActiveTableValue: 0 };
 
   const hasDues =
     (duesSummary?.duesGiven || 0) > 0 ||
@@ -76,7 +76,6 @@ export function SalesDashboardScreen() {
     (duesSummary?.ordersPending || 0) > 0;
 
   const paymentModeEntries = Object.entries(paidAll?.paymentModes ?? {}) as [string, number][];
-  const tables = (runningTables?.tables ?? []) as { name: string; amount: number }[];
 
   const yesterdaySales = (yesterdayData as any)?.paidAll?.totals?.netAfterDiscountAndCharges || 0;
   const todaySales = paidAll?.totals?.netAfterDiscountAndCharges || 0;
@@ -86,6 +85,39 @@ export function SalesDashboardScreen() {
   // Tap-to-expand metric breakdowns (mirrors banana_boss web MetricCard sheets).
   const [detail, setDetail] = useState<{ title: string; total: number; rows: DetailRow[] } | null>(null);
   const num = (v: any) => Number(v || 0);
+
+  // Running tables → KOT drill-down (mirrors banana_boss web). The dashboard's
+  // running-tables only carry name+amount, so we fetch the dedicated endpoint
+  // to get tableId, then tap a table to see its live KOTs.
+  const { data: liveRunning } = useRunningTablesQuery(outletId);
+  const liveTables = liveRunning?.tables ?? [];
+  const [kotSheetOpen, setKotSheetOpen] = useState(false);
+  const [kotTable, setKotTable] = useState<
+    { outletId: string; outletName: string; tableId: string; tableName: string } | null
+  >(null);
+  const runningGroups = useMemo(
+    () => [
+      {
+        outletId: outletId ?? '',
+        outletName: currentOutlet?.name ?? 'Outlet',
+        tables: liveTables.map((t) => ({
+          tableId: t.tableId,
+          tableName: t.tableName,
+          amount: t.tableCurrentAmount,
+        })),
+      },
+    ],
+    [outletId, currentOutlet?.name, liveTables],
+  );
+  const openTableKots = (t: { tableId: string; tableName: string }) => {
+    setKotTable({
+      outletId: outletId ?? '',
+      outletName: currentOutlet?.name ?? 'Outlet',
+      tableId: t.tableId,
+      tableName: t.tableName,
+    });
+    setKotSheetOpen(true);
+  };
 
   const openDiscountDetail = () =>
     setDetail({
@@ -530,8 +562,8 @@ export function SalesDashboardScreen() {
             </MotiView>
           )}
 
-          {/* Running Tables Grid */}
-          {tables.length > 0 && (
+          {/* Running Tables Grid — tap a table to see its live KOTs */}
+          {liveTables.length > 0 && (
             <MotiView
               from={{ opacity: 0, translateY: 12 }}
               animate={{ opacity: 1, translateY: 0 }}
@@ -540,19 +572,18 @@ export function SalesDashboardScreen() {
             >
               <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
                 <Text style={[s.sectionLabel, { marginTop: 0, marginBottom: 0 }]}>
-                  Active Tables ({tables.length})
+                  Active Tables ({liveTables.length})
                 </Text>
                 <Text style={{ fontFamily: fonts.bold, fontSize: 13, fontWeight: '800', color: colors.warning }}>
-                  Total: {format(runningTables?.totalActiveTableValue || 0)}
+                  Total: {format(liveRunning?.totalActiveTableValue || 0)}
                 </Text>
               </View>
               <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 10 }}>
-                {tables.map((t, i) => (
-                  <MotiView
-                    key={`${t.name}-${i}`}
-                    from={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ type: 'timing', duration: 300, delay: 600 + i * 40 }}
+                {liveTables.map((t, i) => (
+                  <TouchableOpacity
+                    key={t.tableId || i}
+                    activeOpacity={0.85}
+                    onPress={() => openTableKots({ tableId: t.tableId, tableName: t.tableName })}
                     style={{
                       backgroundColor: colors.tint.amber.bg,
                       borderRadius: 16,
@@ -563,20 +594,18 @@ export function SalesDashboardScreen() {
                       borderColor: colors.tint.amber.fg,
                       flex: 1,
                       alignItems: 'center',
-                      shadowColor: colors.warning,
-                      shadowOffset: { width: 0, height: 4 },
-                      shadowOpacity: 0.05,
-                      shadowRadius: 6,
-                      elevation: 1,
                     }}
                   >
                     <Text style={{ fontFamily: fonts.bold, fontSize: 11, color: colors.tint.amber.fg, fontWeight: '800', textTransform: 'uppercase', marginBottom: 4 }}>
-                      {t.name}
+                      {t.tableName}
                     </Text>
                     <Text style={{ fontFamily: fonts.bold, fontSize: 15, fontWeight: '900', color: colors.tint.amber.fg }}>
-                      {format(t.amount)}
+                      {format(t.tableCurrentAmount)}
                     </Text>
-                  </MotiView>
+                    <Text style={{ fontFamily: fonts.medium, fontSize: 9, color: colors.text.muted, marginTop: 4 }}>
+                      View KOTs ›
+                    </Text>
+                  </TouchableOpacity>
                 ))}
               </View>
             </MotiView>
@@ -591,6 +620,13 @@ export function SalesDashboardScreen() {
         title={detail?.title ?? ''}
         total={detail?.total}
         rows={detail?.rows ?? []}
+      />
+
+      <RunningTablesSheet
+        visible={kotSheetOpen}
+        onClose={() => setKotSheetOpen(false)}
+        groups={runningGroups}
+        initialTable={kotTable}
       />
     </ScreenWrapper>
   );

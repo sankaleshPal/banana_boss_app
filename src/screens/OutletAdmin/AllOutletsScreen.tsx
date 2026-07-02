@@ -69,20 +69,27 @@ export function AllOutletsScreen() {
   );
 
   const totals = useMemo(
-    () =>
-      results.reduce(
+    () => {
+      const salesTotals = results.reduce(
         (acc, r) => {
           if (r.isSuccess && r.data) {
             acc.collection += r.data.overall?.totalSale ?? 0;
             acc.orders += r.data.overall?.totalOrders ?? 0;
-            acc.activeValue += r.data.runningTables?.totalActiveTableValue ?? 0;
-            acc.activeCount += r.data.runningTables?.tables?.length ?? 0;
           }
           return acc;
         },
         { collection: 0, orders: 0, activeValue: 0, activeCount: 0 },
-      ),
-    [results],
+      );
+
+      return runningResults.reduce((acc, r) => {
+        if (r.isSuccess && r.data) {
+          acc.activeValue += r.data.totalActiveTableValue ?? 0;
+          acc.activeCount += r.data.tables?.length ?? 0;
+        }
+        return acc;
+      }, salesTotals);
+    },
+    [results, runningResults],
   );
 
   const loadedCount = results.filter((r) => r.isSuccess).length;
@@ -164,7 +171,7 @@ export function AllOutletsScreen() {
           title="Active Tables"
           subtitle={
             totals.activeCount > 0
-              ? `${totals.activeCount} running now • tap to view`
+              ? `${totals.activeCount} running now - tap to view`
               : `${totals.activeCount} running now`
           }
           value={format(totals.activeValue)}
@@ -203,8 +210,10 @@ export function AllOutletsScreen() {
       ) : (
         outletList.map((outlet, i) => {
           const r = results[i];
+          const running = runningResults[i];
           const overall = r?.data?.overall;
-          const activeCount = r?.data?.runningTables?.tables?.length ?? 0;
+          const activeCount = running?.data?.tables?.length ?? 0;
+          const activeValue = running?.data?.totalActiveTableValue ?? 0;
           return (
             <TouchableOpacity
               key={outlet._id}
@@ -253,11 +262,15 @@ export function AllOutletsScreen() {
                   style={{
                     fontFamily: fonts.regular,
                     fontSize: 11,
-                    color: colors.text.muted,
+                    color: activeCount > 0 ? colors.success : colors.text.muted,
                     marginTop: 2,
                   }}
                 >
-                  {activeCount} table{activeCount === 1 ? "" : "s"} running
+                  {running?.isPending
+                    ? "Checking live tables..."
+                    : activeCount > 0
+                      ? `${format(activeValue)} active - ${activeCount} table${activeCount === 1 ? "" : "s"} running`
+                      : "0 tables running"}
                 </Text>
               </View>
               <Icon name="chevron-right" size={20} color={colors.text.faint} />
