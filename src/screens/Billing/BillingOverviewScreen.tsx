@@ -16,11 +16,11 @@ import { colors, fonts } from '@/theme';
 type Nav = NativeStackNavigationProp<BillingStackParamList>;
 
 const navItems = [
-  { title: 'Sales Dashboard', subtitle: 'Analytics & metrics', icon: 'bar-chart-2', screen: 'SalesDashboard' as const, color: '#E0F2FE', iconColor: '#0284C7' },
-  { title: 'Billings', subtitle: 'All bills & invoices', icon: 'credit-card', screen: 'BillsList' as const, color: '#FEF3C7', iconColor: '#D97706' },
-  { title: 'Payment Modes', subtitle: 'Manage payments', icon: 'dollar-sign', screen: 'PaymentModes' as const, color: '#DCFCE7', iconColor: '#16A34A' },
-  { title: 'Dues Ledger', subtitle: 'Outstanding amounts', icon: 'users', screen: 'Dues' as const, color: '#F3E8FF', iconColor: '#9333EA' },
-  { title: 'NPC Accounts', subtitle: 'Non-paying registry', icon: 'user-check', screen: 'Npc' as const, color: '#FFE4E6', iconColor: '#E11D48' },
+  { title: 'Sales Dashboard', subtitle: 'Analytics & metrics', icon: 'bar-chart-2', screen: 'SalesDashboard' as const, color: colors.tint.sky.bg, iconColor: colors.tint.sky.fg },
+  { title: 'Billings', subtitle: 'All bills & invoices', icon: 'credit-card', screen: 'BillsList' as const, color: colors.tint.amber.bg, iconColor: colors.tint.amber.fg },
+  { title: 'Payment Modes', subtitle: 'Manage payments', icon: 'dollar-sign', screen: 'PaymentModes' as const, color: colors.tint.green.bg, iconColor: colors.tint.green.fg },
+  { title: 'Dues Ledger', subtitle: 'Outstanding amounts', icon: 'users', screen: 'Dues' as const, color: colors.tint.violet.bg, iconColor: colors.tint.violet.fg },
+  { title: 'NPC Accounts', subtitle: 'Non-paying registry', icon: 'user-check', screen: 'Npc' as const, color: colors.tint.rose.bg, iconColor: colors.tint.rose.fg },
 ];
 
 export function BillingOverviewScreen() {
@@ -33,7 +33,7 @@ export function BillingOverviewScreen() {
 
   return (
     <ScreenWrapper scrollable>
-      <TopBar title={currentOutlet?.name || 'Billing Overview'} subtitle="Restaurant Back-Office" />
+      <TopBar title={currentOutlet?.name || 'Billing Overview'} subtitle="Restaurant Back-Office" showBack={false} />
       
       <View style={{ marginVertical: 8 }}>
         <Text style={{ fontFamily: fonts.semibold, fontSize: 13, color: colors.text.muted, marginBottom: 2 }}>
@@ -63,7 +63,7 @@ export function BillingOverviewScreen() {
                 padding: 18,
                 flexDirection: 'row',
                 alignItems: 'center',
-                backgroundColor: '#FFFFFF',
+                backgroundColor: colors.surface.card,
               }}
             >
               <View

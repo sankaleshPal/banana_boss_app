@@ -9,6 +9,12 @@ export const queryKeys = {
       ['bills', 'list', outletId, from, to, page, limit, filters] as const,
     byId: (billId: string | null) =>
       ['bills', 'detail', billId] as const,
+    runningTables: (outletId: string | null) =>
+      ['bills', 'running-tables', outletId] as const,
+    tableKots: (outletId: string | null, tableId: string | null) =>
+      ['bills', 'table-kots', outletId, tableId] as const,
+    kotItems: (kotId: string | null) =>
+      ['bills', 'kot-items', kotId] as const,
   },
   paymentModes: {
     list: (outletId: string | null) => ['payment-modes', outletId] as const,

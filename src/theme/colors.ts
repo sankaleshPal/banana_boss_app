@@ -1,76 +1,78 @@
 /**
- * Banana Boss — "Cream" design system.
+ * Banana Boss — "Midnight" design system (CRED-inspired dark theme).
  *
- * One source of truth for colour. Screens should import from here instead of
- * hardcoding hex, so the app reads as one calm, consistent surface rather than
- * a mix of warm-cream and cool-slate tones.
+ * One source of truth for colour. Screens import from here instead of
+ * hardcoding hex, so the app reads as one deep, premium dark surface.
  *
- * Palette intent (mirrors the HiPalz user-app "Cream" theme):
- *   - Warm cream backgrounds (not cool slate/white)
- *   - Warm charcoal / espresso text + dark surfaces (not blue-black slate)
- *   - Stone/taupe borders + muted text
- *   - Banana yellow as the single brand accent, gold/brass for premium moments
+ * Palette intent (CRED-style fintech):
+ *   - Near-black canvas, softly elevated charcoal cards
+ *   - Near-white text on dark, muted greys for secondary copy
+ *   - Banana-yellow as the single vivid accent (pops on black)
+ *   - Hairline translucent-white borders; depth from elevation, not lines
+ *   - Semantic colours brightened so they read on dark surfaces
+ *
+ * Token NAMES are kept stable from the previous theme so every screen that
+ * already consumes tokens adopts the dark look automatically.
  */
 export const colors = {
   // Brand / accent
-  primary: '#FDE047', // banana yellow — accent, active states, avatar
-  primaryDark: '#1A1612', // warm espresso/charcoal — text on cream, dark headers
-  onPrimary: '#1A1612', // text/icon placed on top of the yellow accent
-  gold: '#B8935A', // brand gold — premium highlights
-  brass: '#C9A961', // brass — accents on dark surfaces, gold text
+  primary: '#FFE45C', // vivid banana-yellow — accent, active states, avatar
+  primaryDark: '#FFE45C', // drives loaders / active tint on dark (was dark text)
+  onPrimary: '#0B0B0F', // near-black text/icon on top of the yellow accent
+  gold: '#E6C77E', // soft gold — premium highlights on dark
+  brass: '#D9B36A', // brass — gold text on dark surfaces
 
-  // Semantic
-  success: '#16A34A',
-  warning: '#D97706',
-  danger: '#EF4444',
-  info: '#0284C7',
+  // Semantic (brightened for dark)
+  success: '#4ADE80',
+  warning: '#FBBF24',
+  danger: '#F87171',
+  info: '#38BDF8',
 
-  // Surfaces (cream system)
+  // Surfaces (Midnight system)
   surface: {
-    canvas: '#FAF9F6', // app background — the cream
-    card: '#FFFFFF', // cards / rows sit on the cream
-    raised: '#F5F3EF', // subtle raised fill (chips, inputs)
-    border: '#EAE8E2', // warm stone hairline border
-    borderSoft: 'rgba(26,22,18,0.06)',
-    // Dark "ink" surfaces — warm espresso, replaces cool slate
-    ink: '#1A1612', // dark hero cards / dark headers
-    inkRaised: '#272019', // raised block on ink
-    inkBorder: 'rgba(255,255,255,0.08)', // hairline on ink
-    overlay: 'rgba(26,22,18,0.55)', // modal backdrop
-    // Back-compat aliases (older screens referenced these names)
-    white: '#FFFFFF',
-    base: '#FAF9F6',
-    base200: '#F5F3EF',
+    canvas: '#0B0B0F', // app background — near-black
+    card: '#16161C', // elevated cards / rows
+    raised: '#1F1F27', // chips, inputs, subtle raised fill
+    border: 'rgba(255,255,255,0.08)', // hairline border on dark
+    borderSoft: 'rgba(255,255,255,0.05)',
+    // Distinct elevated ("ink") surface — active chips / hero cards
+    ink: '#23232C',
+    inkRaised: '#2E2E38',
+    inkBorder: 'rgba(255,255,255,0.10)',
+    overlay: 'rgba(0,0,0,0.66)', // modal backdrop
+    // Back-compat aliases (older screens used these as backgrounds) → dark now
+    white: '#16161C',
+    base: '#0B0B0F',
+    base200: '#1F1F27',
   },
 
-  // Text (charcoal + stone)
+  // Text (light on dark)
   text: {
-    base: '#1A1612', // primary text
-    secondary: '#44403C', // stone-700 — secondary copy
-    muted: '#78716C', // stone-500 — labels, captions
-    faint: '#A8A29E', // stone-400 — disabled / inactive
+    base: '#F5F5F7', // primary text
+    secondary: '#B4B4C0', // secondary copy
+    muted: '#8A8A96', // labels, captions
+    faint: '#5A5A66', // disabled / inactive
     white: '#FFFFFF',
-    onAccent: '#1A1612', // text on the yellow accent
-    onInk: '#EDE9E3', // primary text on dark ink surfaces
-    onInkMuted: '#A8A29E', // muted text on dark ink surfaces
+    onAccent: '#0B0B0F', // text on the yellow accent
+    onInk: '#F5F5F7', // primary text on elevated ink surfaces
+    onInkMuted: '#8A8A96', // muted text on elevated ink surfaces
   },
 
-  // Soft tinted fills for report/category icon tiles (kept muted, not neon)
+  // Soft tinted fills for report/category icon tiles (translucent on dark)
   tint: {
-    sky: { bg: '#E0F2FE', fg: '#0284C7' },
-    rose: { bg: '#FFE4E6', fg: '#E11D48' },
-    violet: { bg: '#F3E8FF', fg: '#9333EA' },
-    amber: { bg: '#FEF3C7', fg: '#D97706' },
-    green: { bg: '#DCFCE7', fg: '#16A34A' },
-    // Yellow brand tint (soft accent backgrounds)
-    accent: { bg: '#FEF9C3', fg: '#B45309' },
+    sky: { bg: 'rgba(56,189,248,0.14)', fg: '#7DD3FC' },
+    rose: { bg: 'rgba(248,113,113,0.14)', fg: '#FCA5A5' },
+    violet: { bg: 'rgba(167,139,250,0.16)', fg: '#C4B5FD' },
+    amber: { bg: 'rgba(251,191,36,0.15)', fg: '#FCD34D' },
+    green: { bg: 'rgba(74,222,128,0.14)', fg: '#86EFAC' },
+    accent: { bg: 'rgba(255,228,92,0.14)', fg: '#FFE45C' },
   },
 
   badge: {
-    paid: { bg: 'rgba(22,163,74,0.12)', text: '#15803D' },
-    pending: { bg: 'rgba(217,119,6,0.14)', text: '#B45309' },
-    veg: { bg: 'rgba(22,163,74,0.1)', text: '#15803D' },
-    nonVeg: { bg: 'rgba(239,68,68,0.1)', text: '#DC2626' },
-    vegan: { bg: 'rgba(217,119,6,0.1)', text: '#B45309' },
+    paid: { bg: 'rgba(74,222,128,0.16)', text: '#86EFAC' },
+    pending: { bg: 'rgba(251,191,36,0.16)', text: '#FCD34D' },
+    veg: { bg: 'rgba(74,222,128,0.14)', text: '#86EFAC' },
+    nonVeg: { bg: 'rgba(248,113,113,0.14)', text: '#FCA5A5' },
+    vegan: { bg: 'rgba(251,191,36,0.14)', text: '#FCD34D' },
   },
 } as const;

@@ -7,11 +7,14 @@ import type { OutletListItem } from '@/api/services/outlets/outlet.types';
 interface AuthState {
   staff: StaffLoginItem[] | null;
   outlets: OutletListItem[] | null;
+  /** Set when the main admin logs in with email (no staff record). */
+  outletAdminId: string | null;
   rememberedPhone: string | null;
   rememberedPassword: string | null;
 
   setStaff: (staff: StaffLoginItem[] | null) => void;
   setOutlets: (outlets: OutletListItem[] | null) => void;
+  setOutletAdminId: (id: string | null) => void;
   setRememberedPhone: (phone: string | null) => void;
   setRememberedPassword: (password: string | null) => void;
   clearAuth: () => void;
@@ -24,18 +27,20 @@ export const useAuthStore = create<AuthState>()(
     (set, get) => ({
       staff: null,
       outlets: null,
+      outletAdminId: null,
       rememberedPhone: null,
       rememberedPassword: null,
 
       setStaff: (staff) => set({ staff }),
       setOutlets: (outlets) => set({ outlets }),
+      setOutletAdminId: (id) => set({ outletAdminId: id }),
       setRememberedPhone: (phone) => set({ rememberedPhone: phone }),
       setRememberedPassword: (password) => set({ rememberedPassword: password }),
-      clearAuth: () => set({ staff: null, outlets: null }),
+      clearAuth: () => set({ staff: null, outlets: null, outletAdminId: null }),
 
       isAuthenticated: () => {
-        const { staff } = get();
-        return Array.isArray(staff) && staff.length > 0;
+        const { staff, outletAdminId } = get();
+        return (Array.isArray(staff) && staff.length > 0) || !!outletAdminId;
       },
     }),
     {
@@ -44,6 +49,7 @@ export const useAuthStore = create<AuthState>()(
       partialize: (state) => ({
         staff: state.staff,
         outlets: state.outlets,
+        outletAdminId: state.outletAdminId,
         rememberedPhone: state.rememberedPhone,
         rememberedPassword: state.rememberedPassword,
       }),

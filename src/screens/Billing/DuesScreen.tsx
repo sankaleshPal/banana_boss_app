@@ -90,7 +90,7 @@ export function DuesScreen() {
         data={data || []}
         keyExtractor={(item) => item._id}
         renderItem={({ item }) => (
-          <AppCard style={{ marginBottom: 10, flexDirection: 'row', alignItems: 'center', backgroundColor: '#FFFFFF' }}>
+          <AppCard style={{ marginBottom: 10, flexDirection: 'row', alignItems: 'center', backgroundColor: colors.surface.card }}>
             <View style={{
               width: 44,
               height: 44,
@@ -120,7 +120,7 @@ export function DuesScreen() {
                 paddingVertical: 2,
                 borderRadius: radii.chip,
                 borderWidth: 1,
-                borderColor: item.status ? '#BBF7D0' : colors.surface.border,
+                borderColor: item.status ? colors.tint.green.fg : colors.surface.border,
               }}>
                 <Text style={{ fontSize: 9, fontFamily: fonts.bold, color: item.status ? colors.success : colors.text.muted }}>
                   {item.status ? 'ACTIVE' : 'INACTIVE'}

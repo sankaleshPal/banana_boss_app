@@ -38,6 +38,14 @@ interface AppState {
   selectedBusiness: string | null;
   setSelectedBusiness: (id: string | null) => void;
 
+  /**
+   * For the email/admin session only: whether the admin has drilled into a
+   * single outlet (→ full tabbed app) vs. sitting on the all-outlets universal
+   * view. Not persisted, so a fresh launch always lands on All Outlets.
+   */
+  adminInOutlet: boolean;
+  setAdminInOutlet: (value: boolean) => void;
+
   reportsDateRange: DateRangeValue;
   setReportsDateRange: (range: DateRangeValue) => void;
 
@@ -57,6 +65,9 @@ export const useAppStore = create<AppState>()(
     (set) => ({
       selectedBusiness: null,
       setSelectedBusiness: (id) => set({ selectedBusiness: id }),
+
+      adminInOutlet: false,
+      setAdminInOutlet: (value) => set({ adminInOutlet: value }),
 
       reportsDateRange: {
         from: (() => { const d = new Date(); d.setHours(0, 0, 0, 0); return d.getTime(); })(),

@@ -13,6 +13,7 @@ const Tab = createBottomTabNavigator<AppTabsParamList>();
 export function AppTabs() {
   return (
     <Tab.Navigator
+      initialRouteName="BillingTab"
       screenOptions={({ route }) => ({
         headerShown: false,
         tabBarIcon: ({ color, focused, size }) => {

@@ -7,6 +7,8 @@ export { LoadingSkeleton } from './LoadingSkeleton';
 export { SectionHeader } from './SectionHeader';
 export { SearchBar } from './SearchBar';
 export { ReportTable } from './ReportTable';
+export { DetailSheet } from './DetailSheet';
+export type { DetailRow } from './DetailSheet';
 export { ReportSummary } from './ReportSummary';
 export type { SummaryMetric, SummaryChart } from './ReportSummary';
 export { PaginationBar } from './PaginationBar';

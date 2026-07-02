@@ -23,14 +23,14 @@ export function CategorySalesReportScreen() {
   const rows = useMemo(
     () =>
       (data?.data ?? []).map((row: any) => [
-        row.category ?? '-',
-        row.count ?? 0,
+        row.categoryName ?? row.category ?? '-',
+        row.categoryCount ?? row.count ?? 0,
         row.quantity ?? 0,
-        row.gross ?? 0,
+        row.grossAmount ?? row.gross ?? 0,
         row.discount ?? 0,
-        row.tax ?? 0,
-        row.total ?? 0,
-        row.contributionPercent ?? row.contribution ?? 0,
+        row.totalTax ?? row.tax ?? row.gst ?? 0,
+        row.totalSales ?? row.total ?? 0,
+        row.contribution ?? row.contributionPercent ?? 0,
       ]),
     [data],
   );
@@ -38,8 +38,12 @@ export function CategorySalesReportScreen() {
   const handleDateChange = useCallback((r: any) => setDateRange(r), [setDateRange]);
 
   return (
-    <ScreenWrapper scrollable refreshControl onRefresh={refetch}>
-      <TopBar title="Category Sales Report" showBack onBack={() => navigation.goBack()} />
+    <ScreenWrapper
+      scrollable
+      refreshControl
+      onRefresh={refetch}
+      header={<TopBar title="Category Sales Report" showBack onBack={() => navigation.goBack()} />}
+    >
       <DateRangePicker value={dateRange} onChange={handleDateChange} outletId={outletId} />
       <ReportSummary
         data={data?.data}
@@ -47,12 +51,12 @@ export function CategorySalesReportScreen() {
         metrics={[
           { label: 'Categories', count: true, icon: 'grid' },
           { label: 'Qty Sold', fields: ['quantity'], format: 'number', icon: 'package' },
-          { label: 'Gross', fields: ['gross', 'grossAmount'], format: 'currency', icon: 'dollar-sign', tone: 'success' },
+          { label: 'Gross', fields: ['grossAmount', 'gross'], format: 'currency', icon: 'dollar-sign', tone: 'success' },
           { label: 'Discount', fields: ['discount'], format: 'currency', icon: 'percent', tone: 'danger' },
-          { label: 'Tax', fields: ['tax', 'gst'], format: 'currency', icon: 'briefcase' },
-          { label: 'Net Total', fields: ['total'], format: 'currency', icon: 'trending-up', tone: 'success' },
+          { label: 'Tax', fields: ['totalTax', 'gst', 'tax'], format: 'currency', icon: 'briefcase' },
+          { label: 'Net Total', fields: ['totalSales', 'total'], format: 'currency', icon: 'trending-up', tone: 'success' },
         ]}
-        chart={{ title: 'Top categories', labelFields: ['category'], valueFields: ['total'], format: 'currency' }}
+        chart={{ title: 'Top categories', labelFields: ['categoryName', 'category'], valueFields: ['totalSales', 'total'], format: 'currency' }}
       />
       <ReportTable columns={columns} rows={rows} isLoading={isLoading} isError={isError} onRetry={refetch} downloadReportId="category" outletId={outletId} from={dateRange.from} to={dateRange.to} />
     </ScreenWrapper>

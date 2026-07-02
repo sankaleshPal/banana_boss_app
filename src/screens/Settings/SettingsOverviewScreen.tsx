@@ -64,7 +64,7 @@ export function SettingsOverviewScreen() {
         <Text style={{ fontFamily: fonts.bold, fontSize: 20, color: colors.text.white }}>
           {me?.name || me?.nickName || 'Staff'}
         </Text>
-        <Text style={{ fontFamily: fonts.regular, fontSize: 12, color: '#D6D3CE', marginTop: 2 }}>
+        <Text style={{ fontFamily: fonts.regular, fontSize: 12, color: colors.text.faint, marginTop: 2 }}>
           {[me?.roleName, me?.phone].filter(Boolean).join('  ·  ') || 'Account'}
         </Text>
       </View>

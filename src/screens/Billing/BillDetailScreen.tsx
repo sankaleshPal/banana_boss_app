@@ -4,7 +4,7 @@ import { useRoute, useNavigation } from '@react-navigation/native';
 import type { RouteProp } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { BillingStackParamList } from '@/types/navigation';
-import { useBillByIdQuery } from '@/queries/bills';
+import { useBillByIdQuery, useBillJourneyQuery } from '@/queries/bills';
 import { useCurrency } from '@/hooks/useCurrency';
 import { ScreenWrapper, TopBar } from '@/components/layout';
 import { AppCard, AppDivider, AppBadge } from '@/components/primitives';
@@ -17,7 +17,25 @@ export function BillDetailScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<BillingStackParamList>>();
   const { billId } = route.params;
   const { data, isLoading, isError, refetch } = useBillByIdQuery(billId);
+  const { data: journey } = useBillJourneyQuery(billId);
   const { format } = useCurrency();
+
+  // The raw bill has the totals; the journey resolves the table name + line
+  // items (across KOTs). Merge both so the detail screen is fully populated.
+  const tableName = journey?.bill?.tableName || data?.tableName || '';
+  const areaLabel = journey?.bill?.areaType || data?.areaName || '';
+  const customerName =
+    journey?.bill?.customerName || data?.userName || 'Walk-in';
+  const journeyItems = (journey?.kots ?? []).flatMap((k: any, ki: number) =>
+    (k.items ?? []).map((it: any, ii: number) => ({
+      _id: `${k.id ?? ki}-${ii}`,
+      itemName: it.name,
+      quantity: Number(it.quantity || 0),
+      price: Number(it.price || 0),
+      total: Number(it.price || 0) * Number(it.quantity || 0),
+    })),
+  );
+  const items = journeyItems.length ? journeyItems : (data?.items ?? []);
 
   return (
     <ScreenWrapper scrollable>
@@ -31,7 +49,7 @@ export function BillDetailScreen() {
           <AppCard>
             <Text style={lbl}>Table / Area</Text>
             <Text style={val}>
-              {data.tableName || '-'} {data.areaName ? `(${data.areaName})` : ''}
+              {tableName || '-'} {areaLabel ? `(${areaLabel})` : ''}
             </Text>
             <AppDivider />
             <Text style={lbl}>Date & Time</Text>
@@ -41,7 +59,7 @@ export function BillDetailScreen() {
             <AppDivider />
             <Text style={lbl}>Customer</Text>
             <Text style={val}>
-              {data.userName || 'Walk-in'}
+              {customerName}
             </Text>
             <AppDivider />
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
@@ -53,17 +71,23 @@ export function BillDetailScreen() {
           <Text style={{ fontSize: 16, fontFamily: fonts.extrabold, color: colors.text.base, marginTop: 20, marginBottom: 8 }}>
             Items
           </Text>
-          {data.items?.map((item: any) => (
-            <AppCard key={item._id} style={{ marginBottom: 8 }}>
-              <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                <Text style={{ fontSize: 14, fontFamily: fonts.bold, color: colors.text.base, flex: 1 }}>{item.itemName}</Text>
-                <Text style={{ fontSize: 14, fontFamily: fonts.bold, color: colors.text.base }}>{format(item.total)}</Text>
-              </View>
-              <Text style={{ fontSize: 12, fontFamily: fonts.regular, color: colors.text.faint, marginTop: 2 }}>
-                {item.quantity} x {format(item.price)}
-              </Text>
-            </AppCard>
-          ))}
+          {items.length === 0 ? (
+            <Text style={{ fontSize: 13, fontFamily: fonts.regular, color: colors.text.faint, marginBottom: 8 }}>
+              No item details available for this bill.
+            </Text>
+          ) : (
+            items.map((item: any) => (
+              <AppCard key={item._id} style={{ marginBottom: 8 }}>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                  <Text style={{ fontSize: 14, fontFamily: fonts.bold, color: colors.text.base, flex: 1 }}>{item.itemName}</Text>
+                  <Text style={{ fontSize: 14, fontFamily: fonts.bold, color: colors.text.base }}>{format(item.total)}</Text>
+                </View>
+                <Text style={{ fontSize: 12, fontFamily: fonts.regular, color: colors.text.faint, marginTop: 2 }}>
+                  {item.quantity} x {format(item.price)}
+                </Text>
+              </AppCard>
+            ))
+          )}
 
           <AppCard style={{ marginTop: 16 }}>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 6 }}>

@@ -15,34 +15,34 @@ const reportGroups = [
   {
     title: 'Sales & Revenue',
     items: [
-      { title: 'Net Sales Summary', icon: 'pie-chart', screen: 'NetSalesSummary' as const, color: '#E0F2FE', iconColor: '#0284C7' },
-      { title: 'Bill-wise Sales', icon: 'file-text', screen: 'BillWiseReport' as const, color: '#E0F2FE', iconColor: '#0284C7' },
-      { title: 'Outstanding Dues', icon: 'user-minus', screen: 'OutstandingDues' as const, color: '#FFE4E6', iconColor: '#E11D48' },
-      { title: 'Discounts Issued', icon: 'percent', screen: 'DiscountReport' as const, color: '#FFE4E6', iconColor: '#E11D48' },
-      { title: 'Service Charge', icon: 'briefcase', screen: 'ServiceChargeReport' as const, color: '#F3E8FF', iconColor: '#9333EA' },
+      { title: 'Net Sales Summary', icon: 'pie-chart', screen: 'NetSalesSummary' as const, color: colors.tint.sky.bg, iconColor: colors.tint.sky.fg },
+      { title: 'Bill-wise Sales', icon: 'file-text', screen: 'BillWiseReport' as const, color: colors.tint.sky.bg, iconColor: colors.tint.sky.fg },
+      { title: 'Outstanding Dues', icon: 'user-minus', screen: 'OutstandingDues' as const, color: colors.tint.rose.bg, iconColor: colors.tint.rose.fg },
+      { title: 'Discounts Issued', icon: 'percent', screen: 'DiscountReport' as const, color: colors.tint.rose.bg, iconColor: colors.tint.rose.fg },
+      { title: 'Service Charge', icon: 'briefcase', screen: 'ServiceChargeReport' as const, color: colors.tint.violet.bg, iconColor: colors.tint.violet.fg },
     ],
   },
   {
     title: 'Menu & Categories',
     items: [
-      { title: 'Item Sales', icon: 'shopping-bag', screen: 'ItemSalesReport' as const, color: '#FEF3C7', iconColor: '#D97706' },
-      { title: 'Category Sales', icon: 'grid', screen: 'CategorySalesReport' as const, color: '#FEF3C7', iconColor: '#D97706' },
-      { title: 'Parent Category', icon: 'layers', screen: 'ParentCategoryReport' as const, color: '#FEF3C7', iconColor: '#D97706' },
-      { title: 'Addon Sales', icon: 'plus-circle', screen: 'AddonSalesReport' as const, color: '#F3E8FF', iconColor: '#9333EA' },
-      { title: 'Item Type', icon: 'tag', screen: 'ItemTypeReport' as const, color: '#E0F2FE', iconColor: '#0284C7' },
-      { title: 'Item Variant', icon: 'list', screen: 'ItemVariantReport' as const, color: '#E0F2FE', iconColor: '#0284C7' },
-      { title: 'Open Item Sales', icon: 'unlock', screen: 'OpenItemSales' as const, color: '#DCFCE7', iconColor: '#16A34A' },
+      { title: 'Item Sales', icon: 'shopping-bag', screen: 'ItemSalesReport' as const, color: colors.tint.amber.bg, iconColor: colors.tint.amber.fg },
+      { title: 'Category Sales', icon: 'grid', screen: 'CategorySalesReport' as const, color: colors.tint.amber.bg, iconColor: colors.tint.amber.fg },
+      { title: 'Parent Category', icon: 'layers', screen: 'ParentCategoryReport' as const, color: colors.tint.amber.bg, iconColor: colors.tint.amber.fg },
+      { title: 'Addon Sales', icon: 'plus-circle', screen: 'AddonSalesReport' as const, color: colors.tint.violet.bg, iconColor: colors.tint.violet.fg },
+      { title: 'Item Type', icon: 'tag', screen: 'ItemTypeReport' as const, color: colors.tint.sky.bg, iconColor: colors.tint.sky.fg },
+      { title: 'Item Variant', icon: 'list', screen: 'ItemVariantReport' as const, color: colors.tint.sky.bg, iconColor: colors.tint.sky.fg },
+      { title: 'Open Item Sales', icon: 'unlock', screen: 'OpenItemSales' as const, color: colors.tint.green.bg, iconColor: colors.tint.green.fg },
     ],
   },
   {
     title: 'Audits & Operations',
     items: [
-      { title: 'Area Report', icon: 'map-pin', screen: 'AreaReport' as const, color: '#DCFCE7', iconColor: '#16A34A' },
-      { title: 'Area-Item Sales', icon: 'map', screen: 'AreaItemReport' as const, color: '#DCFCE7', iconColor: '#16A34A' },
-      { title: 'Table Report', icon: 'layout', screen: 'TableReport' as const, color: '#DCFCE7', iconColor: '#16A34A' },
-      { title: 'Deleted KOTs', icon: 'trash-2', screen: 'DeletedKotReport' as const, color: '#FFE4E6', iconColor: '#E11D48' },
-      { title: 'Transfer KOTs', icon: 'arrow-right-circle', screen: 'TransferKotReport' as const, color: '#F3E8FF', iconColor: '#9333EA' },
-      { title: 'Transfer Tables', icon: 'shuffle', screen: 'TransferTableReport' as const, color: '#F3E8FF', iconColor: '#9333EA' },
+      { title: 'Area Report', icon: 'map-pin', screen: 'AreaReport' as const, color: colors.tint.green.bg, iconColor: colors.tint.green.fg },
+      { title: 'Area-Item Sales', icon: 'map', screen: 'AreaItemReport' as const, color: colors.tint.green.bg, iconColor: colors.tint.green.fg },
+      { title: 'Table Report', icon: 'layout', screen: 'TableReport' as const, color: colors.tint.green.bg, iconColor: colors.tint.green.fg },
+      { title: 'Deleted KOTs', icon: 'trash-2', screen: 'DeletedKotReport' as const, color: colors.tint.rose.bg, iconColor: colors.tint.rose.fg },
+      { title: 'Transfer KOTs', icon: 'arrow-right-circle', screen: 'TransferKotReport' as const, color: colors.tint.violet.bg, iconColor: colors.tint.violet.fg },
+      { title: 'Transfer Tables', icon: 'shuffle', screen: 'TransferTableReport' as const, color: colors.tint.violet.bg, iconColor: colors.tint.violet.fg },
     ],
   },
 ];
@@ -55,7 +55,7 @@ export function ReportsOverviewScreen() {
 
   return (
     <ScreenWrapper scrollable>
-      <TopBar title={currentOutlet?.name || 'Reports'} subtitle="Business Analytics" />
+      <TopBar title={currentOutlet?.name || 'Reports'} subtitle="Business Analytics" showBack={false} />
 
       <View style={{ marginVertical: 8 }}>
         <Text style={{ fontFamily: fonts.semibold, fontSize: 13, color: colors.text.muted, marginBottom: 2 }}>
@@ -90,7 +90,7 @@ export function ReportsOverviewScreen() {
                   flex: 1,
                   minWidth: 140,
                   maxWidth: '48%',
-                  backgroundColor: '#FFFFFF',
+                  backgroundColor: colors.surface.card,
                   padding: 12,
                 }}
               >

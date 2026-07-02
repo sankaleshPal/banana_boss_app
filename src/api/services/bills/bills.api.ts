@@ -1,5 +1,13 @@
 import { apiClient } from '@/api/client';
-import type { BillsDashboardData, BillsListPage, BillsListFilters, BillListItem } from './bills.types';
+import type {
+  BillsDashboardData,
+  BillsListPage,
+  BillsListFilters,
+  BillListItem,
+  PosRunningTablesData,
+  TableKot,
+  KotItemLine,
+} from './bills.types';
 
 function mapBillItem(b: any): BillListItem {
   if (!b) return b;
@@ -110,5 +118,35 @@ export const billsApi = {
   async getDetail(billId: string): Promise<BillListItem> {
     const res = await apiClient.get<any>(`/r/dine-in/bills/${billId}`);
     return mapBillItem(res);
+  },
+
+  /**
+   * Full bill journey — the only single-bill endpoint that resolves the table
+   * name and the KOT line items (the raw bill doc only stores tableId and has
+   * no embedded items). Used to fill the bill-detail screen.
+   */
+  async getBillJourney(billId: string): Promise<any> {
+    return await apiClient.get<any>(`/r/dine-in/bills/${billId}/journey`);
+  },
+
+  /** Live running tables (includes tableId — unlike the dashboard summary). */
+  async getRunningTables(outletId: string): Promise<PosRunningTablesData> {
+    return await apiClient.get<PosRunningTablesData>(
+      `/r/dine-in/bills/running-tables?outletId=${encodeURIComponent(outletId)}`,
+    );
+  },
+
+  /** Running/active KOTs for a single table (fetched lazily on drill-down). */
+  async getTableKots(outletId: string, tableId: string): Promise<TableKot[]> {
+    const params = new URLSearchParams({ outletId, tableId });
+    const res = await apiClient.get<TableKot[]>(`/r/kots/kots?${params.toString()}`);
+    return Array.isArray(res) ? res : [];
+  },
+
+  /** Line items for a single KOT. */
+  async getKotItems(kotId: string): Promise<KotItemLine[]> {
+    const params = new URLSearchParams({ kotId });
+    const res = await apiClient.get<KotItemLine[]>(`/r/kots/kot-items?${params.toString()}`);
+    return Array.isArray(res) ? res : [];
   },
 };

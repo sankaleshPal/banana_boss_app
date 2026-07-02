@@ -39,3 +39,46 @@ export function useBillByIdQuery(billId: string | null) {
     enabled: !!billId,
   });
 }
+
+export function useBillJourneyQuery(billId: string | null) {
+  return useQuery({
+    queryKey: ['bills', 'journey', billId],
+    queryFn: () => billsApi.getBillJourney(billId!),
+    enabled: !!billId,
+  });
+}
+
+/** KOT statuses that count as "currently running" on a table (not finalised). */
+export const RUNNING_KOT_STATUSES = ['PLACED', 'PREPARING', 'READY', 'SERVED'];
+
+export function useRunningTablesQuery(outletId: string | null, enabled = true) {
+  return useQuery({
+    queryKey: queryKeys.bills.runningTables(outletId),
+    queryFn: () => billsApi.getRunningTables(outletId!),
+    enabled: !!outletId && enabled,
+    staleTime: 30_000,
+  });
+}
+
+/** Lazily fetch the KOTs for one running table (only when a table is selected). */
+export function useTableKotsQuery(
+  outletId: string | null,
+  tableId: string | null,
+) {
+  return useQuery({
+    queryKey: queryKeys.bills.tableKots(outletId, tableId),
+    queryFn: () => billsApi.getTableKots(outletId!, tableId!),
+    enabled: !!outletId && !!tableId,
+    staleTime: 30_000,
+  });
+}
+
+/** Lazily fetch the line items for a single KOT. */
+export function useKotItemsQuery(kotId: string | null) {
+  return useQuery({
+    queryKey: queryKeys.bills.kotItems(kotId),
+    queryFn: () => billsApi.getKotItems(kotId!),
+    enabled: !!kotId,
+    staleTime: 30_000,
+  });
+}

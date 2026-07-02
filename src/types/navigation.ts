@@ -35,6 +35,10 @@ export type SettingsStackParamList = {
   OutletSelector: undefined;
 };
 
+export type OutletAdminStackParamList = {
+  AllOutlets: undefined;
+};
+
 export type AppTabsParamList = {
   ReportsTab: undefined;
   BillingTab: undefined;

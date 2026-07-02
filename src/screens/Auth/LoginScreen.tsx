@@ -32,10 +32,14 @@ function BananaLogo() {
   );
 }
 
+type LoginMode = 'email' | 'mobile';
+
 export function LoginScreen() {
-  const { login, rememberedPhone, rememberedPassword } = useAuth();
+  const { login, loginAdmin, rememberedPhone, rememberedPassword } = useAuth();
   // Login already sets selectedBusiness inside useAuth.login — no need to call it here.
 
+  const [mode, setMode] = useState<LoginMode>('email');
+  const [email, setEmail] = useState('');
   const [phone, setPhone] = useState(rememberedPhone || '');
   const [password, setPassword] = useState(rememberedPassword || '');
   const [secure, setSecure] = useState(true);
@@ -68,14 +72,23 @@ export function LoginScreen() {
   const handleLogin = async () => {
     Keyboard.dismiss();
     setError('');
-    if (!phone.trim() || !password.trim()) {
+    if (mode === 'email') {
+      if (!email.trim() || !password.trim()) {
+        setError('Please enter email and password');
+        return;
+      }
+    } else if (!phone.trim() || !password.trim()) {
       setError('Please enter phone and password');
       return;
     }
     setLoading(true);
     try {
-      await login(phone.trim(), password.trim(), remember);
-      // selectedBusiness is set inside login() — navigation happens via RootNavigator
+      if (mode === 'email') {
+        // Main admin → all businesses. Navigation happens via RootNavigator.
+        await loginAdmin(email.trim(), password.trim());
+      } else {
+        await login(phone.trim(), password.trim(), remember);
+      }
     } catch (e: any) {
       setError(e?.message || 'Login failed. Please try again.');
     } finally {
@@ -110,14 +123,67 @@ export function LoginScreen() {
             ...shadows.soft,
           }}
         >
-          <AppInput
-            label="Phone Number"
-            placeholder="Enter phone number"
-            keyboardType="phone-pad"
-            value={phone}
-            onChangeText={setPhone}
-            leftIcon="phone"
-          />
+          {/* Mode toggle: Email (admin, all outlets) vs Mobile (staff, single) */}
+          <View
+            style={{
+              flexDirection: 'row',
+              backgroundColor: colors.surface.canvas,
+              borderRadius: radii.chip,
+              padding: 4,
+              marginBottom: 20,
+            }}
+          >
+            {(['email', 'mobile'] as LoginMode[]).map((m) => {
+              const active = mode === m;
+              return (
+                <TouchableOpacity
+                  key={m}
+                  onPress={() => {
+                    setMode(m);
+                    setError('');
+                  }}
+                  style={{
+                    flex: 1,
+                    paddingVertical: 10,
+                    borderRadius: radii.chip - 2,
+                    backgroundColor: active ? colors.primary : 'transparent',
+                    alignItems: 'center',
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontFamily: fonts.semibold,
+                      fontSize: 13,
+                      color: active ? colors.text.onAccent : colors.text.muted,
+                    }}
+                  >
+                    {m === 'email' ? 'Email (Admin)' : 'Mobile (Staff)'}
+                  </Text>
+                </TouchableOpacity>
+              );
+            })}
+          </View>
+
+          {mode === 'email' ? (
+            <AppInput
+              label="Email"
+              placeholder="Enter admin email"
+              keyboardType="email-address"
+              autoCapitalize="none"
+              value={email}
+              onChangeText={setEmail}
+              leftIcon="mail"
+            />
+          ) : (
+            <AppInput
+              label="Phone Number"
+              placeholder="Enter phone number"
+              keyboardType="phone-pad"
+              value={phone}
+              onChangeText={setPhone}
+              leftIcon="phone"
+            />
+          )}
           <AppInput
             label="Password"
             placeholder="Enter password"

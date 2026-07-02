@@ -88,7 +88,7 @@ export function NpcScreen() {
         data={data || []}
         keyExtractor={(item) => item._id}
         renderItem={({ item }) => (
-          <AppCard style={{ marginBottom: 10, flexDirection: 'row', alignItems: 'center', backgroundColor: '#FFFFFF' }}>
+          <AppCard style={{ marginBottom: 10, flexDirection: 'row', alignItems: 'center', backgroundColor: colors.surface.card }}>
             <View style={{
               width: 44,
               height: 44,

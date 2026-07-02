@@ -144,11 +144,55 @@ export interface ReportResponse<T = any> {
 //   ApiResponse.data = [{ outletId, outletname, from, to, <namedField>: [...] }]
 // After apiClient strips the outer envelope we get that array.
 // Each helper below extracts the correct named field into { data: [] }.
+/**
+ * The backend returns canonical field names (grossAmount, totalTax, totalSales,
+ * contribution, categoryName, itemName, areaName, tableName, …) but the report
+ * screens historically read short aliases (gross, tax, total, category, …).
+ * Normalise each row so both the screens and any future code find the value —
+ * we only FILL missing keys, never overwrite a value the server already sent.
+ */
+function normalizeReportRow(row: any): any {
+  if (!row || typeof row !== 'object') return row;
+  const out: any = { ...row };
+  const fill = (key: string, ...candidates: any[]) => {
+    if (out[key] == null) {
+      const v = candidates.find((c) => c != null);
+      if (v != null) out[key] = v;
+    }
+  };
+
+  // Numeric aliases
+  fill('gross', row.grossAmount);
+  fill('grossAmount', row.gross);
+  fill('tax', row.totalTax, row.gst);
+  fill('totalTax', row.tax, row.gst);
+  fill('total', row.totalSales, row.amount, row.net);
+  fill('totalSales', row.total, row.amount);
+  fill('net', row.totalSales, row.total);
+  fill('count', row.categoryCount, row.billCount, row.orderCount);
+  fill('quantity', row.qty);
+  fill('contribution', row.contributionPercent);
+  fill('contributionPercent', row.contribution);
+
+  // Name aliases
+  fill('category', row.categoryName);
+  fill('parentCategory', row.parentCategoryName, row.categoryName);
+  fill('item', row.itemName);
+  fill('area', row.areaName);
+  fill('table', row.tableName);
+  fill('itemType', row.itemTypeName);
+  fill('addonName', row.addOnName);
+  fill('variantName', row.variant);
+
+  return out;
+}
+
 function extractField<T>(raw: any[], field: string): ReportResponse<T> {
   const first = Array.isArray(raw) ? (raw[0] ?? {}) : raw ?? {};
   const arr = first[field];
+  const data = Array.isArray(arr) ? arr : arr != null ? [arr] : [];
   return {
-    data: Array.isArray(arr) ? arr : arr != null ? [arr] : [],
+    data: data.map(normalizeReportRow) as T[],
     pagination: first.pagination,
     totals: first.totals,
   };
@@ -250,13 +294,24 @@ export const reportsApi = {
     return extractField(raw, 'itemVariants');
   },
 
-  // NOTE: Area report routes do not exist on the backend yet — return empty until implemented
-  getAreaReport(_outletId: string, _from: number, _to: number): Promise<ReportResponse> {
-    return Promise.resolve({ data: [] });
+  // areas: [{ areaName, quantity, grossAmount, discount, totalTax, totalSales, contribution }]
+  async getAreaReport(outletId: string, from: number, to: number, opts?: { page?: number; limit?: number }): Promise<ReportResponse> {
+    const raw = await apiClient.get<any[]>(`/r/reports/area/summary?${reportQuery(outletId, from, to, opts?.page, opts?.limit)}`);
+    return extractField(raw, 'areas');
   },
 
-  getAreaItemSaleReport(_outletId: string, _from: number, _to: number): Promise<ReportResponse> {
-    return Promise.resolve({ data: [] });
+  // Nested response: areas: [{ areaName, items: [{ itemName, variantName, quantity, grossAmount, totalTax, totalSales, categoryName }] }]
+  // → flatten to one row per (area, item).
+  async getAreaItemSaleReport(outletId: string, from: number, to: number, opts?: { page?: number; limit?: number }): Promise<ReportResponse> {
+    const raw = await apiClient.get<any>(`/r/reports/area/item-sales?${reportQuery(outletId, from, to, opts?.page, opts?.limit)}`);
+    const first = Array.isArray(raw) ? (raw[0] ?? {}) : raw ?? {};
+    const areas = Array.isArray(first.areas) ? first.areas : [];
+    const data = areas.flatMap((a: any) =>
+      (Array.isArray(a.items) ? a.items : []).map((it: any) =>
+        normalizeReportRow({ ...it, areaName: a.areaName }),
+      ),
+    );
+    return { data, pagination: first.pagination };
   },
 
   // outstandingDues: [{ customerName, phone, amount, status }]

@@ -98,6 +98,42 @@ export interface DashboardRunningTables {
   totalActiveTableValue: number;
 }
 
+/** A live running table from the dedicated running-tables endpoint (has tableId). */
+export interface PosRunningTable {
+  tableId: string;
+  tableName: string;
+  tableCurrentAmount: number;
+}
+
+export interface PosRunningTablesData {
+  posOnline: boolean;
+  totalActiveTableValue: number;
+  tables: PosRunningTable[];
+}
+
+/** A KOT synced from the local POS (for running-table KOT drill-down). */
+export interface TableKot {
+  _id: string;
+  tableId: string;
+  /** PLACED | PREPARING | READY | SERVED | CANCELLED | SETTLED */
+  status: string;
+  kotType?: string;
+  kotInvoiceNumber: number;
+  createdAt: number;
+  [key: string]: unknown;
+}
+
+/** A single line item on a KOT. */
+export interface KotItemLine {
+  _id: string;
+  kotId: string;
+  itemName: string;
+  quantity: number;
+  itemPrice: number;
+  status?: string;
+  [key: string]: unknown;
+}
+
 export interface BillsDashboardOverall {
   totalSale: number;
   totalOrders: number;

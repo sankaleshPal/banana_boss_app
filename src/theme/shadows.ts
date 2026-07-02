@@ -1,41 +1,52 @@
 import { Platform, type ViewStyle } from 'react-native';
 
 /**
- * Elevation tokens — warm charcoal shadow, mirrors the "Cream" design system.
+ * Elevation tokens — "Midnight" (CRED-inspired) dark theme.
+ *
+ * On a near-black canvas, depth reads through deep black drop-shadows plus the
+ * hairline borders defined in colours. Shadow colour is pure black so lifts
+ * feel like true elevation against the dark surface.
  *
  *   card   — subtle lift for resting cards/rows
- *   soft   — a touch more presence (floating panels)
+ *   soft   — floating panels / sheets
  *   button — pronounced lift for primary floating buttons / nav bar
- *
- * Shadow colour is warm espresso (#1A1612), never cool black, so lifts read
- * as warm depth on the cream canvas.
+ *   glow   — accent glow for hero/primary elements (CRED signature)
  */
-const INK = '#1A1612';
+const BLACK = '#000000';
 
 export const shadows = {
   none: {} as ViewStyle,
 
   card: {
-    shadowColor: INK,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.05,
-    shadowRadius: 10,
-    elevation: 2,
+    shadowColor: BLACK,
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.35,
+    shadowRadius: 14,
+    elevation: 3,
   } as ViewStyle,
 
   soft: {
-    shadowColor: INK,
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.1,
-    shadowRadius: 18,
-    elevation: 4,
+    shadowColor: BLACK,
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.45,
+    shadowRadius: 24,
+    elevation: 6,
   } as ViewStyle,
 
   button: {
-    shadowColor: INK,
-    shadowOffset: { width: 0, height: 12 },
-    shadowOpacity: Platform.OS === 'ios' ? 0.22 : 0.26,
-    shadowRadius: 24,
-    elevation: 12,
+    shadowColor: BLACK,
+    shadowOffset: { width: 0, height: 14 },
+    shadowOpacity: Platform.OS === 'ios' ? 0.5 : 0.55,
+    shadowRadius: 28,
+    elevation: 14,
+  } as ViewStyle,
+
+  // Accent glow — for the yellow primary button / hero moments.
+  glow: {
+    shadowColor: '#FFE45C',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.35,
+    shadowRadius: 20,
+    elevation: 8,
   } as ViewStyle,
 } as const;
