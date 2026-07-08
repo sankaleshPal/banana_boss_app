@@ -14,6 +14,7 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "@/queries/queryClient";
 import { RootNavigator } from "@/navigation/RootNavigator";
+import { useOTAUpdates } from "@/hooks/useOTAUpdates";
 import { fonts } from "@/theme";
 
 // Inject Feather icon font on web so icons render correctly
@@ -48,6 +49,9 @@ function configureDefaultTextFont() {
 }
 
 export default function App() {
+  // Auto-apply over-the-air (EAS) updates on launch + foreground.
+  useOTAUpdates();
+
   const [fontsReady, setFontsReady] = useState(Platform.OS !== "web");
   const [poppinsReady] = useFonts({
     Poppins_400Regular,
